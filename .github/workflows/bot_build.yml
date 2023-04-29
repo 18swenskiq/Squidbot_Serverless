@@ -28,13 +28,17 @@ jobs:
       with:
         node-version: '16.x'
         cache: 'npm'
-        cache-dependency-path: 'src/package-lock.json'
-        
-    - run: npm run build --if-present
     
-    - run: zip lambda_bot.zip -r dist
+    - name: NPM Install
+      run: npm install
     
-    - name: deploy
+    - name: Build
+      run: npm run build --if-present
+    
+    - name: Create Zip
+      run: zip lambda_bot.zip -r dist
+    
+    - name: Deploy Zip to Lambda
       uses: appleboy/lambda-action@master
       with:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
