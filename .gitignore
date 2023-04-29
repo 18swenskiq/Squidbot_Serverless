@@ -1,0 +1,5 @@
+dist/*
+src/node_modules
+register_commands
+create_lambda_zip.ps1
+lambda_bot.zip
