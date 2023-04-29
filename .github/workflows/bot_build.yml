@@ -40,7 +40,7 @@ jobs:
       run: cd ..
     
     - name: Create Zip
-      run: zip lambda_bot.zip -r dist
+      run: zip lambda_bot.zip -r ./dist
     
     - name: Deploy to AWS
       uses: appleboy/lambda-action@master
