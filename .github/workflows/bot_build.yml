@@ -14,14 +14,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Create Distribution Folder
+      run: mkdir dist
+      
+    - name: Change to Source Directory
+      run: cd src
+      
+    - name: Use Node.js 16.x
       uses: actions/setup-node@v3
       with:
         node-version: 16.x
         cache: 'npm'
-    - run: mkdir dist
-    - run: cd src
     - run: npm run build --if-present
     - run: zip lambda_bot.zip -r dist
     - name: deploy
