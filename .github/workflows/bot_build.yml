@@ -37,7 +37,7 @@ jobs:
       run: npm run build --if-present
     
     - name: Create Zip
-      run: zip lambda_bot.zip -r dist
+      run: zip ../lambda_bot.zip -r ../dist
     
     - name: Deploy Zip to Lambda
       uses: appleboy/lambda-action@master
@@ -46,4 +46,4 @@ jobs:
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_region: ${{ secrets.AWS_REGION }}
         function_name: SquidBotLambda
-        source: lambda_bot.zip
+        source: ../lambda_bot.zip
