@@ -31,13 +31,16 @@ jobs:
         cache-dependency-path: '**/package-lock.json'
     
     - name: NPM Install
-      run: npm install
+      run: npm ci
     
     - name: Build
       run: npm run build --if-present
     
+    - name: Change Dir
+      run: cd ..
+    
     - name: Create Zip
-      run: zip ../lambda_bot.zip -r ../dist
+      run: zip lambda_bot.zip -r dist
     
     - name: Deploy to AWS
       uses: appleboy/lambda-action@master
@@ -46,4 +49,4 @@ jobs:
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_region: us-east-2
         function_name: SquidBotLambda
-        zip_file: ../lambda_bot.zip
+        zip_file: lambda_bot.zip
