@@ -29,8 +29,8 @@ for (var command of commands) {
 	};
 
 	if (command.data.options.length > 0) {
+		localCommand['options'] = [];
 		for (var option of command.data.options) {
-			localCommand['options'] = [];
 			localCommand.options.push({
 				"name": option.name,
 				"description": option.description,
