@@ -10,6 +10,7 @@ const headers = {
 }
 
 // Load Commands
+let commands = [];
 let commandsPath = path.resolve(__dirname, "../dist/commands/");
 let commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 console.log(`Loading ${commandFiles.length} commands...`);
