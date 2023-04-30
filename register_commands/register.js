@@ -31,6 +31,8 @@ for (var command of commands) {
 	);
 }
 
+console.log(`Attempting to register ${command_data.length} commands...`);
+
 axios.put(url, JSON.stringify(command_data), {
   headers: headers,
 })
