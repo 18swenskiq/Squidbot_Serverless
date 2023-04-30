@@ -1,5 +1,8 @@
 import nacl from 'tweetnacl';
+import fs from 'fs';
+import path from 'path';
 import { Interaction, InteractionType } from "./discord_api/interaction";
+import { CommandDescription } from './discord_api/command';
 
 exports.handler = async (event: { headers: { [x: string]: any; }; body: string; }) => {
   // Checking signature (requirement 1.)
@@ -28,6 +31,17 @@ exports.handler = async (event: { headers: { [x: string]: any; }; body: string; 
     };
   }
 
+  // Load Commands
+  const commandsPath = path.resolve(__dirname, "commands/");
+  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+  let commands: CommandDescription[] = [];
+  console.log(`Loading ${commandFiles.length} commands...`);
+  for (const file of commandFiles) {
+    const command: CommandDescription = require(`${commandsPath}/${file}`);
+    commands.push(command);
+  }
+
+  registerCommands(commands);
 
   // Replying to ping (requirement 2.)
   const body: Interaction = JSON.parse(strBody);
@@ -41,9 +55,16 @@ exports.handler = async (event: { headers: { [x: string]: any; }; body: string; 
         body: JSON.stringify({ "type": 1}),
       };
     case InteractionType.APPLICATION_COMMAND:
-      if (body.data.name == 'foo') {
-        return JSON.stringify({ "type": 4, "data": { "content": "bar" }});
+      let chosenCommand = commands.find(c => c.data.name === body.data.name);
+
+      if (chosenCommand) {
+        let result = chosenCommand.execute();
+        return JSON.stringify({ "type": 4, "data": { "content": result }});
       }
+      
+      //if (body.data.name == 'foo') {
+      //  return JSON.stringify({ "type": 4, "data": { "content": "bar" }});
+      //}
     default:
       console.log("returning 404 from unexpected body. Body is as follows:");
 	    console.log(body);
@@ -52,3 +73,27 @@ exports.handler = async (event: { headers: { [x: string]: any; }; body: string; 
       }
   }
 };
+
+function registerCommands(commands: CommandDescription[]) {
+  // Register Commands
+  require('dotenv').config();
+  const axios = require('axios').default;
+  let url = `https://discord.com/api/v8/applications/${process.env.APP_ID}/guilds/${process.env.GUILD_ID}/commands`;
+
+  const commandHeaders = {
+    "Authorization": `Bot ${process.env.BOT_TOKEN}`,
+    "Content-Type": "application/json"
+  }
+
+  for (const com of commands) {
+    let command_data = {
+      "name": com.data.name,
+      "type": 1,
+      "description": com.data.description,
+    }
+
+    axios.post(url, JSON.stringify(command_data), {
+      headers: commandHeaders,
+    });
+  }
+}
