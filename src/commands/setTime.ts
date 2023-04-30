@@ -6,9 +6,9 @@ module.exports = <CommandDescription><unknown>{
     data: new SlashCommandBuilder()
         .setName('setTime')
         .setDescription('Sets your time zone, to be used with the /times command')
-        .addStringOption(option => option
-            .setName('input')
-            .setDescription('The input to echo back')),
+        .addBooleanOption(option => option
+            .setName('shouldThisWork')
+            .setDescription('booo')),
     execute(interaction: Interaction): string {
         return 'you successfully tested this function';
     }
