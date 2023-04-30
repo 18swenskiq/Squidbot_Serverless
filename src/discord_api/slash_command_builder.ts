@@ -1,3 +1,12 @@
+import { ApplicationCommandOptionBase } from "./SlashCommands/ApplicationCommandOptionBase";
+import { SlashCommandRoleOption } from "./SlashCommands/SlashCommanRoleOption";
+import { SlashCommandAttachmentOption } from "./SlashCommands/SlashCommandAttachmentOption";
+import { SlashCommandBooleanOption } from "./SlashCommands/SlashCommandBooleanOption";
+import { SlashCommandChannelOption } from "./SlashCommands/SlashCommandChannelOption";
+import { SlashCommandMentionableOption } from "./SlashCommands/SlashCommandMentionableOption";
+import { SlashCommandStringOption } from "./SlashCommands/SlashCommandStringOption";
+import { SlashCommandUserOption } from "./SlashCommands/SlashCommandUserOption";
+
 export class SlashCommandBuilder {
     public readonly name: string = undefined!;
     public readonly description: string = undefined!;
@@ -43,6 +52,54 @@ export class SlashCommandBuilder {
         return this;
     }
 
+    public addBooleanOption(
+        input: SlashCommandBooleanOption | ((builder: SlashCommandBooleanOption) => SlashCommandBooleanOption),
+    ) {
+        return this._sharedAddOptionMethod(input, SlashCommandBooleanOption);
+    }
+
+    public addUserOption(input: SlashCommandUserOption | ((builder: SlashCommandUserOption) => SlashCommandUserOption)) {
+        return this._sharedAddOptionMethod(input, SlashCommandUserOption);
+    }
+
+    public addChannelOption(
+        input: SlashCommandChannelOption | ((builder: SlashCommandChannelOption) => SlashCommandChannelOption),
+    ) {
+        return this._sharedAddOptionMethod(input, SlashCommandChannelOption);
+    }
+
+    public addRoleOption(input: SlashCommandRoleOption | ((builder: SlashCommandRoleOption) => SlashCommandRoleOption)) {
+        return this._sharedAddOptionMethod(input, SlashCommandRoleOption);
+    }
+
+    public addAttachmentOption(
+        input: SlashCommandAttachmentOption | ((builder: SlashCommandAttachmentOption) => SlashCommandAttachmentOption),
+    ) {
+        return this._sharedAddOptionMethod(input, SlashCommandAttachmentOption);
+    }
+
+    public addMentionableOption(
+        input: SlashCommandMentionableOption | ((builder: SlashCommandMentionableOption) => SlashCommandMentionableOption),
+    ) {
+        return this._sharedAddOptionMethod(input, SlashCommandMentionableOption);
+    }
+
+    public addStringOption(
+        input:
+            | Omit<SlashCommandStringOption, 'addchoices'>
+            | Omit<SlashCommandStringOption, 'setAutocomplete'>
+            | SlashCommandStringOption
+            | ((
+                    builder: SlashCommandStringOption,
+                ) =>
+                    | Omit<SlashCommandStringOption, 'addChoices'>
+                    | Omit<SlashCommandStringOption, 'setAutocomplete'>
+                    | SlashCommandStringOption),
+                    
+    ) {
+        return this._sharedAddOptionMethod(input, SlashCommandStringOption);
+    }
+
     /*
     public addSubcommandGroup(
         input:
@@ -79,15 +136,24 @@ export class SlashCommandBuilder {
 	}
     */
 
-    public toJSON(): any {//RESTPostAPIChatInputApplicationCommandsJSONBody {
-		//validateRequiredParameters(this.name, this.description, this.options);
+    private _sharedAddOptionMethod<T extends ApplicationCommandOptionBase>(
+        input:
+            | Omit<T, 'addChoices'>
+            | Omit<T, 'setAutocomplete'>
+            | T
+            | ((builder: T) => Omit<T, 'addChoices'> | Omit<T, 'setAutocomplete'> | T),
+        Instance: new () => T,
+    ): true extends true ? Omit<this, 'addSubcommand' | 'addSubcommandGroup'> : this {
+        const { options } = this;
 
-		//validateLocalizationMap(this.name_localizations);
-		//validateLocalizationMap(this.description_localizations);
+        //validateMaxOptionsLength(options);
 
-		return {
-			...this,
-			options: this.options.map((option) => option.toJSON()),
-		};
-	}
+        const result = typeof input === 'function' ? input(new Instance()) : input;
+
+        //assertReturnOfBuilder(result, Instance);
+
+        options.push(result);
+
+        return this;
+    }
 }

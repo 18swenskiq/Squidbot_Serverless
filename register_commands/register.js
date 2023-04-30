@@ -22,13 +22,24 @@ for (const file of commandFiles) {
 let command_data = [];
 
 for (var command of commands) {
-	command_data.push(
-		{ 
-			"name": command.data.name,
-			"description": command.data.description,
-			"type": 1
+	let localCommand = { 
+		"name": command.data.name,
+		"description": command.data.description,
+		"type": 1
+	};
+
+	if (command.options.length > 0) {
+		for (var option of command.options) {
+			localCommand['options'].push({
+				"name": option.name,
+				"description": option.description,
+				"type": option.type,
+				"required": option.required
+			});
 		}
-	);
+	}
+
+	command_data.push(localCommand);
 }
 
 console.log(`Attempting to register ${command_data.length} commands...`);
