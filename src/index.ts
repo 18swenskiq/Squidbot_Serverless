@@ -33,22 +33,15 @@ exports.handler = async (event: { headers: { [x: string]: any; }; body: string; 
 
   console.log("Loading commands");
   let commands: CommandDescription[] = [];
-  try {
-    // Load Commands
-    const commandsPath = path.resolve(__dirname, "commands/");
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    console.log(`Loading ${commandFiles.length} commands...`);
-    for (const file of commandFiles) {
-      const command: CommandDescription = require(`${commandsPath}/${file}`);
-      commands.push(command);
-    }
-  }
-  catch (exception: any) {
-    console.log("Could not load commands because of this");
-    console.log(exception.message);
-  }
 
-  registerCommands(commands);
+  // Load Commands
+  const commandsPath = path.resolve(__dirname, "commands/");
+  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+  console.log(`Loading ${commandFiles.length} commands...`);
+  for (const file of commandFiles) {
+    const command: CommandDescription = require(`${commandsPath}/${file}`);
+    commands.push(command);
+  }
 
   // Replying to ping (requirement 2.)
   const body: Interaction = JSON.parse(strBody);
@@ -80,26 +73,3 @@ exports.handler = async (event: { headers: { [x: string]: any; }; body: string; 
       }
   }
 };
-
-function registerCommands(commands: CommandDescription[]) {
-  // Register Commands
-  const axios = require('axios').default;
-  let url = `https://discord.com/api/v8/applications/${process.env.APP_ID}/guilds/${process.env.GUILD_ID}/commands`;
-
-  const commandHeaders = {
-    "Authorization": `Bot ${process.env.BOT_TOKEN}`,
-    "Content-Type": "application/json"
-  }
-
-  for (const com of commands) {
-    let command_data = {
-      "name": com.data.name,
-      "type": 1,
-      "description": com.data.description,
-    }
-
-    axios.post(url, JSON.stringify(command_data), {
-      headers: commandHeaders,
-    });
-  }
-}
