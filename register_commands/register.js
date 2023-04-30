@@ -43,6 +43,9 @@ for (var command of commands) {
 	command_data.push(localCommand);
 }
 
+console.log("commands:");
+console.log(command_data);
+
 console.log(`Attempting to register ${command_data.length} commands...`);
 
 axios.put(url, JSON.stringify(command_data), {
