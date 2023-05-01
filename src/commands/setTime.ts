@@ -12,22 +12,19 @@ module.exports = {
       .setDescription('A city that you are in the time zone of. Try to select the biggest city you share a timezone with.')
       .setRequired(true)),
   execute (interaction: Interaction): string {
-    console.log('Step 1');
     const cityName = interaction.data.options[0].value.toLowerCase();
     const zones = getTimeZones({ includeUtc: true });
 
-    console.log('Step 2');
     let requestedZone = zones.find(z => z.mainCities.some(c => c.toLowerCase() === cityName));
 
     if (requestedZone === undefined) {
       // If it wasn't in the main cities, let's try searching the name directly
-      requestedZone = zones.find(z => z.name.toLowerCase().includes(cityName));
+      requestedZone = zones.find(z => z.group.some(c => c.toLowerCase().includes(cityName)));
       if (requestedZone === undefined) {
         return 'City name could not be found';
       }
     }
 
-    console.log('Step 3');
     // If we're here, the city name was valid and we can go forward with writing the information
     return 'City name was valid! Functionality coming later';
   }
