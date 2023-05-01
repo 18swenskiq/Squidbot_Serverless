@@ -17,10 +17,14 @@ module.exports = {
     const zones = getTimeZones({ includeUtc: true });
 
     console.log('Step 2');
-    const requestedZone = zones.find(z => z.mainCities.some(c => c.toLowerCase() === cityName));
+    let requestedZone = zones.find(z => z.mainCities.some(c => c.toLowerCase() === cityName));
 
     if (requestedZone === undefined) {
-      return 'City name could not be found';
+      // If it wasn't in the main cities, let's try searching the name directly
+      requestedZone = zones.find(z => z.name.toLowerCase().includes(cityName));
+      if (requestedZone === undefined) {
+        return 'City name could not be found';
+      }
     }
 
     console.log('Step 3');
