@@ -31,12 +31,24 @@ for (var command of commands) {
 	if (command.data.options.length > 0) {
 		localCommand['options'] = [];
 		for (var option of command.data.options) {
-			localCommand.options.push({
+			let localOption = {
 				"name": option.name,
 				"description": option.description,
 				"type": option.type,
 				"required": option.required
-			});
+			}
+
+			if (option['choices']) {
+				localOption['choices'] = [];
+				for (var choice of option.choices) {
+					localOption.choices.push({
+						"name": choice.name,
+						"value": choice.value
+					});
+				}
+			}
+
+			localCommand.options.push(localOption);
 		}
 	}
 
