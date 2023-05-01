@@ -1,0 +1,16 @@
+env:
+  browser: false
+  es2021: true
+extends: standard-with-typescript
+overrides: []
+parserOptions:
+  ecmaVersion: latest,
+  project: ["src/tsconfig.json"]
+  sourceType: "module"
+rules: {
+  "@typescript-eslint/consistent-type-assertions": "off",
+  "@typescript-eslint/semi": "off",
+  "@typescript-eslint/consistent-type-imports": "off",
+  "@typescript-eslint/member-delimiter-style": "off",
+  "@typescript-eslint/no-var-requires": "off"
+}

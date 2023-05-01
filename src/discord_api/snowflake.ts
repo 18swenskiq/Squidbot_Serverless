@@ -1,1 +1,1 @@
-type Snowflake = string;
+export type Snowflake = string;

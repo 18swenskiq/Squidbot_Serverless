@@ -1,6 +1,6 @@
-import { SlashCommandBuilder } from "./slash_command_builder";
+import { SlashCommandBuilder } from './slash_command_builder';
 
 export interface CommandDescription {
-    data: SlashCommandBuilder;
-    execute: Function;
+  data: SlashCommandBuilder;
+  execute: () => string;
 }
