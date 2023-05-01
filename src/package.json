@@ -1,12 +1,12 @@
 {
   "dependencies": {
+    "@vvo/tzdb": "^6.107.0",
     "axios": "^1.4.0",
     "copyfiles": "^2.4.1",
     "dotenv": "^16.0.3",
     "rimraf": "^5.0.0",
     "tweetnacl": "^1.0.3",
-    "typescript-eslint": "^0.0.1-alpha.0",
-    "tzdata": "^1.0.38"
+    "typescript-eslint": "^0.0.1-alpha.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
