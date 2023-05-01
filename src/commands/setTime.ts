@@ -11,7 +11,7 @@ module.exports = {
       .setDescription('A city that you are in the time zone of. Try to select the biggest city you share a timezone with.')
       .setRequired(true)),
   execute (interaction: Interaction): string {
-    const cityName = interaction.data.options[0].value; // There will only be one argument
-    return `You passed the city name: ${cityName}`;
+    // const cityName = interaction.data.options[0].value; // There will only be one argument
+    return 'You passed the city name: test';
   }
 } as CommandDescription
