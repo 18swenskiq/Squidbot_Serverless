@@ -1,4 +1,5 @@
 import { Member } from './member';
+import { Snowflake } from './snowflake';
 
 export class Interaction {
   type: InteractionType;

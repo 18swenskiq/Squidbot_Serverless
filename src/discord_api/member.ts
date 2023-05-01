@@ -1,3 +1,4 @@
+import { Snowflake } from './snowflake';
 import { User } from './user';
 
 export class Member {
