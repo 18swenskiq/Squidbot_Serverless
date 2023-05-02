@@ -6,13 +6,13 @@ export abstract class Database {
   private static readonly ddb: DocumentClient = new AWS.DynamoDB.DocumentClient();
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  public static async UpdateItem (primaryKey: string, sortKey: string) {
+  public static async UpdateItem (primaryKey: string, sortKey: string): Promise<void> {
     const params: DocumentClient.UpdateItemInput = {
       TableName: 'SquidBot',
       Key: {
         squidBot: primaryKey
       },
-      UpdateExpression: 'set timeZone = :r',
+      UpdateExpression: 'set userTimeZone = :r',
       ExpressionAttributeValues: {
         ':r': sortKey
       }
