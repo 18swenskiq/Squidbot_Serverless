@@ -2,6 +2,7 @@ import { getTimeZones } from '@vvo/tzdb';
 import { CommandDescription } from '../discord_api/command';
 import { Interaction } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { Database } from '../util/database';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -24,6 +25,8 @@ module.exports = {
         return 'City name could not be found';
       }
     }
+
+    Database.UpdateItem('66318815247466496', requestedZone.name);
 
     // If we're here, the city name was valid and we can go forward with writing the information
     return 'City name was valid! Functionality coming later';
