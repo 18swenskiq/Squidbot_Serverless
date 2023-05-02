@@ -5,20 +5,27 @@ const AWS = require('aws-sdk');
 export abstract class Database {
   private static readonly ddb: DocumentClient = new AWS.DynamoDB.DocumentClient();
 
-  public static UpdateItem (primaryKey: string, sortKey: string): void {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  static UpdateItem = async (primaryKey: string, sortKey: string) => {
     const params: DocumentClient.UpdateItemInput = {
       TableName: 'SquidBot',
       Key: {
-        PRIMARY_KEY: primaryKey,
-        SORT_KEY: sortKey
+        squidBot: primaryKey
+      },
+      UpdateExpression: 'set TimeZone = :r',
+      ExpressionAttributeValues: {
+        ':r': sortKey
       }
     };
 
-    try {
-      const result = Database.ddb.update(params);
-      console.log('Success - item added or updated', result);
-    } catch (err) {
-      console.log('Error', err);
-    }
+    await Database.ddb.update(params).promise().then(
+      p => {
+        if (p.$response.error != null) {
+          console.log(p.$response.error);
+        } else {
+          console.log(p.$response.data);
+        }
+      }
+    );
   }
 }
