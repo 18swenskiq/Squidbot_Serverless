@@ -12,7 +12,7 @@ export abstract class Database {
       Key: {
         squidBot: primaryKey
       },
-      UpdateExpression: 'set TimeZone = :r',
+      UpdateExpression: 'set timeZone = :r',
       ExpressionAttributeValues: {
         ':r': sortKey
       }
