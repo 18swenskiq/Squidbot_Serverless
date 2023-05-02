@@ -7,7 +7,7 @@ export abstract class Database {
 
   public static UpdateItem (primaryKey: string, sortKey: string): void {
     const params: DocumentClient.UpdateItemInput = {
-      TableName: 'SquidBot-Times',
+      TableName: 'SquidBot',
       Key: {
         PRIMARY_KEY: primaryKey,
         SORT_KEY: sortKey
