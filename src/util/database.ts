@@ -14,6 +14,11 @@ export abstract class Database {
       }
     };
 
-    Database.ddb.update(params);
+    try {
+      const result = Database.ddb.update(params);
+      console.log('Success - item added or updated', result);
+    } catch (err) {
+      console.log('Error', err);
+    }
   }
 }
