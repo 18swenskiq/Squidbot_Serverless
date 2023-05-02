@@ -21,9 +21,9 @@ export abstract class Database {
     await Database.ddb.update(params).promise().then(
       p => {
         if (p.$response.error != null) {
-          console.log(p.$response.error);
+          console.log('Error - ', p.$response.error);
         } else {
-          console.log(p.$response.data);
+          console.log('Success - ', p.$response.data)
         }
       }
     );
