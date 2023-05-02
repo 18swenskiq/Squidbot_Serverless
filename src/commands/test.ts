@@ -6,7 +6,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('test')
     .setDescription('test description'),
-  execute (interaction: Interaction): string {
+  async execute (interaction: Interaction): Promise<string> {
     return 'you successfully tested this function'
   }
 } as CommandDescription

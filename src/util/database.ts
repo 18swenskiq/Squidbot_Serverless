@@ -6,7 +6,7 @@ export abstract class Database {
   private static readonly ddb: DocumentClient = new AWS.DynamoDB.DocumentClient();
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  static UpdateItem = async (primaryKey: string, sortKey: string) => {
+  public static async UpdateItem (primaryKey: string, sortKey: string) {
     const params: DocumentClient.UpdateItemInput = {
       TableName: 'SquidBot',
       Key: {
