@@ -30,11 +30,14 @@ export abstract class Database {
   }
 
   public static async BatchGet (primaryKeys: string[]): Promise<any> {
-    const keyMap: Array<{ squidBot: { S: string; }; }> = [];
+    // eslint-disable-next-line @typescript-eslint/array-type
+    const keyMap: { squidBot: { S: string; } }[] = [];
 
     primaryKeys.forEach(p => {
       keyMap.push({ squidBot: { S: p } });
-    })
+    });
+
+    console.log('the key map:', keyMap);
 
     const params: DocumentClient.BatchGetItemInput = {
       RequestItems: {
