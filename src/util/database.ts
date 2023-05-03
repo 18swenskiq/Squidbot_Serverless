@@ -28,4 +28,32 @@ export abstract class Database {
       }
     );
   }
+
+  public static async BatchGet (primaryKeys: string[]): Promise<any> {
+    const keyMap: Array<{ squidBot: { N: string; }; }> = [];
+
+    primaryKeys.forEach(p => {
+      keyMap.push({ squidBot: { N: p } });
+    })
+
+    const params: DocumentClient.BatchGetItemInput = {
+      RequestItems: {
+        SquidBot: {
+          Keys: keyMap,
+          ProjectionExpression: 'squidBot, userTimeZone'
+        }
+      }
+    }
+    await Database.ddb.batchGet(params).promise().then(
+      p => {
+        if (p.$response.error != null) {
+          console.log('Error - ', p.$response.error);
+          return {};
+        } else {
+          console.log('Success - ', p.$response.data);
+          return p;
+        }
+      }
+    );
+  }
 }

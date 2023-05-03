@@ -26,7 +26,8 @@ module.exports = {
       }
     }
 
-    await Database.UpdateItem('66318815247466496', requestedZone.name);
+    const userId = interaction.member.user.id;
+    await Database.UpdateItem(userId, requestedZone.name);
 
     // If we're here, the city name was valid and we can go forward with writing the information
     return 'City name was valid! Functionality coming later';
