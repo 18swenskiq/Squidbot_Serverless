@@ -17,12 +17,17 @@ module.exports = {
     console.log('calling from times:');
     console.log(response);
 
-    // let retString = '';
+    let retString = '```py\n';
 
-    // response.forEach(r => {
-    //  retString += (r.nick !== null ? r.nick : 'unresolvable nickname');
-    // });
+    response.SquidBot.forEach((r: any) => {
+      const id: string = r.squidBot;
+      const timeZoneCode: string = r.userTimeZone;
+      const nick = result.find(e => e.user?.id === id)?.user?.username;
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      retString += `${nick}: ${timeZoneCode}\n`;
+    });
 
-    return 'testing but more';
+    retString += '```';
+    return retString;
   }
 } as CommandDescription
