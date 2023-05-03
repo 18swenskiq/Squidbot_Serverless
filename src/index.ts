@@ -69,6 +69,7 @@ exports.handler = async (event: { headers: Record<string, any>; body: string; })
 
       // eslint-disable-next-line no-case-declarations
       const deferResult: Interaction = await axios.post(`https://discord.com/api/v10/interactions/${body.id}/${body.token}/callback`, deferBody);
+      console.log('Deferral result:', deferResult);
 
       // eslint-disable-next-line no-case-declarations
       const chosenCommand = commands.find(c => c.data.name === body.data.name);
