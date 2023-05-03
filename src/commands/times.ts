@@ -51,9 +51,11 @@ module.exports = {
 
     let retString = '```py\n';
 
+    Object.keys(dict).sort()
+
     for (const [timeStr, userList] of Object.entries(dict)) {
       const test = userList.join(', ');
-      retString += `${timeStr} - (${test})`;
+      retString += `${timeStr} - (${test})\n`;
     }
 
     retString += '```';
