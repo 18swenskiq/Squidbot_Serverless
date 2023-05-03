@@ -61,7 +61,9 @@ module.exports = {
 
     for (const kvp of coolSortingList) {
       const test = kvp[1].join(', ');
-      retString += `${kvp[0]} - (${test})\n`;
+      const hrs = kvp[0].split(':')[0].padStart(2, '0');
+      const mns = kvp[0].split(':')[1].padStart(2, '0');
+      retString += `${hrs}:${mns} - (${test})\n`;
     }
 
     retString += '```';
