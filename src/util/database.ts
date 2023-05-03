@@ -31,10 +31,10 @@ export abstract class Database {
 
   public static async BatchGet (primaryKeys: string[]): Promise<any> {
     // eslint-disable-next-line @typescript-eslint/array-type
-    const keyMap: { squidBot: { S: string; } }[] = [];
+    const keyMap: { squidBot: string }[] = [];
 
     primaryKeys.forEach(p => {
-      keyMap.push({ squidBot: { S: p } });
+      keyMap.push({ squidBot: p });
     });
 
     console.log('the key map:', keyMap);
