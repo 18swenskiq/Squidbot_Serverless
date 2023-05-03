@@ -13,7 +13,7 @@ module.exports = {
       .setDescription('A city that you are in the time zone of. Try to select the biggest city you share a timezone with.')
       .setRequired(true)),
   async execute (interaction: Interaction): Promise<string> {
-    const cityName = interaction.data.options[0].value.toLowerCase();
+    const cityName = interaction.data.options[0].value.toLowerCase().replace(' ', '_');
     const zones = getTimeZones({ includeUtc: true });
 
     let requestedZone = zones.find(z => z.mainCities.some(c => c.toLowerCase() === cityName));
@@ -30,6 +30,11 @@ module.exports = {
     await Database.UpdateItem(userId, requestedZone.name);
 
     // If we're here, the city name was valid and we can go forward with writing the information
-    return 'City name was valid! Functionality coming later';
+    const currentOffset = requestedZone.currentTimeOffsetInMinutes;
+
+    const now = new Date();
+    const resultTz = new Date(now);
+    resultTz.setMinutes(now.getMinutes() + currentOffset);
+    return `Timezone set to ${requestedZone.name}! (${resultTz.getUTCHours()}:${resultTz.getUTCMinutes()})`;
   }
 } as CommandDescription
