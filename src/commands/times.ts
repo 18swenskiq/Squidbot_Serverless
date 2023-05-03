@@ -51,11 +51,17 @@ module.exports = {
 
     let retString = '```py\n';
 
-    Object.keys(dict).sort()
+    const coolSortingList = Object.entries(dict);
 
-    for (const [timeStr, userList] of Object.entries(dict)) {
-      const test = userList.join(', ');
-      retString += `${timeStr} - (${test})\n`;
+    coolSortingList.sort(function (a, b) {
+      const aHours = Number(a[0].split(':')[0]);
+      const bHours = Number(b[0].split(':')[0]);
+      return aHours > bHours ? 1 : -1;
+    })
+
+    for (const kvp of coolSortingList) {
+      const test = kvp[1].join(', ');
+      retString += `${kvp[0]} - (${test})\n`;
     }
 
     retString += '```';
