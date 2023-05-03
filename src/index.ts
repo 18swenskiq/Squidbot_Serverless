@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { Interaction, InteractionType } from './discord_api/interaction';
 import { CommandDescription } from './discord_api/command';
+import axios from 'axios';
 
 exports.handler = async (event: { headers: Record<string, any>; body: string; }) => {
   // Checking signature (requirement 1.)
@@ -54,11 +55,26 @@ exports.handler = async (event: { headers: Record<string, any>; body: string; })
         body: JSON.stringify({ type: 1 })
       };
     case InteractionType.APPLICATION_COMMAND:
+      // We need to defer the reply as this could take a bit of time
+      // eslint-disable-next-line no-case-declarations
+      const deferBody = {
+        body: {
+          type: 6,
+          data: {
+            flags: undefined
+          }
+        },
+        auth: false
+      };
+
+      // eslint-disable-next-line no-case-declarations
+      const deferResult: Interaction = await axios.post(`https://discord.com/api/v10/interactions/${body.id}/${body.token}/callback`, deferBody);
+
       // eslint-disable-next-line no-case-declarations
       const chosenCommand = commands.find(c => c.data.name === body.data.name);
 
       if (chosenCommand != null) {
-        const result = await chosenCommand.execute(body);
+        const result = await chosenCommand.execute(deferResult);
         console.log('Returning result:', result);
         return JSON.stringify({ type: 4, data: { content: result } });
       }
