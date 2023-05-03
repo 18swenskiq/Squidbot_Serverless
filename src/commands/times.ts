@@ -12,16 +12,16 @@ module.exports = {
     const result = await MiscEndpoints.GetGuildMembers(interaction.guild_id);
 
     const userIds: string[] = result.map(r => r.user !== null ? r.user.id : '');
-    const response = Database.BatchGet(userIds);
+    const response = await Database.BatchGet(userIds);
 
     console.log(response);
 
     // let retString = '';
 
-    // result.forEach(r => {
+    // response.forEach(r => {
     //  retString += (r.nick !== null ? r.nick : 'unresolvable nickname');
     // });
 
-    return 'testing';
+    return 'testing but more';
   }
 } as CommandDescription
