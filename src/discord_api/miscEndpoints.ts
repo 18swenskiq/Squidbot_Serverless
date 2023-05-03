@@ -13,7 +13,6 @@ export abstract class MiscEndpoints {
     try {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       const response = await axios.get(url, { headers: { Authorization: `Bot ${process.env.BOT_TOKEN}` } });
-      console.log('Success! Response data:', response.data);
       return response.data;
     } catch (exception) {
       console.log(`ERROR recieved from ${url}`, exception);

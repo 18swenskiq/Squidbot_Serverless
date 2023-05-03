@@ -30,10 +30,10 @@ export abstract class Database {
   }
 
   public static async BatchGet (primaryKeys: string[]): Promise<any> {
-    const keyMap: Array<{ squidBot: { N: string; }; }> = [];
+    const keyMap: Array<{ squidBot: { S: string; }; }> = [];
 
     primaryKeys.forEach(p => {
-      keyMap.push({ squidBot: { N: p } });
+      keyMap.push({ squidBot: { S: p } });
     })
 
     const params: DocumentClient.BatchGetItemInput = {
