@@ -47,16 +47,12 @@ export abstract class Database {
       }
     }
 
-    await Database.ddb.batchGet(params).promise().then(
-      p => {
-        if (p.$response.error != null) {
-          console.log('Error - ', p.$response.error);
-          return {};
-        } else {
-          console.log('Success - ', p.$response.data);
-          return p;
-        }
-      }
-    );
+    const result = await Database.ddb.batchGet(params).promise()
+    if (result.$response.error != null) {
+      console.log('Error - ', result.$response.error);
+      return {};
+    } else {
+      return result.Responses;
+    }
   }
 }

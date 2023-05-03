@@ -14,6 +14,7 @@ module.exports = {
     const userIds: string[] = result.map(r => r.user !== null ? r.user.id : '');
     const response = await Database.BatchGet(userIds);
 
+    console.log('calling from times:');
     console.log(response);
 
     // let retString = '';
