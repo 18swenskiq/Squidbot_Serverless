@@ -37,8 +37,6 @@ export abstract class Database {
       keyMap.push({ squidBot: p });
     });
 
-    console.log('the key map:', keyMap);
-
     const params: DocumentClient.BatchGetItemInput = {
       RequestItems: {
         SquidBot: {

@@ -59,6 +59,7 @@ exports.handler = async (event: { headers: Record<string, any>; body: string; })
 
       if (chosenCommand != null) {
         const result = await chosenCommand.execute(body);
+        console.log('Returning result:', result);
         return JSON.stringify({ type: 4, data: { content: result } });
       }
 
