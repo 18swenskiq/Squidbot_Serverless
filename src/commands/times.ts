@@ -17,14 +17,17 @@ module.exports = {
 
     const zones = getTimeZones({ includeUtc: true });
 
-    let retString = '```py\n';
+    const dict: Record<string, string[]> = {};
 
-    // const dict: Record<string, string[]> = {};
-
+    const now = Date.now();
     response.SquidBot.forEach((r: any) => {
       const id: string = r.squidBot;
       const timeZoneCode: string = r.userTimeZone;
-      const nick = result.find(e => e.user?.id === id)?.user?.username;
+      const username = result.find(e => e.user?.id === id)?.user?.username;
+
+      if (username === undefined) {
+        throw Error();
+      }
 
       const currentTimeZone = zones.find(z => z.name === timeZoneCode);
 
@@ -34,14 +37,24 @@ module.exports = {
 
       const currentOffset = currentTimeZone?.currentTimeOffsetInMinutes;
 
-      const now = Date.now();
       const offsetMs = currentOffset * 60000;
       const resultTz = new Date(now + offsetMs);
 
-      const timeString = `${resultTz.getHours()}: ${resultTz.getMinutes()}`;
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      retString += `${nick}: ${timeString}\n`;
+      const timeString = `${resultTz.getHours()}:${resultTz.getMinutes()}`;
+
+      if (dict[timeString] === undefined) {
+        dict[timeString] = [username];
+      } else {
+        dict[timeString].push(username);
+      }
     });
+
+    let retString = '```py\n';
+
+    for (const [timeStr, userList] of Object.entries(dict)) {
+      const test = userList.join(', ');
+      retString += `${timeStr} - (${test})`;
+    }
 
     retString += '```';
     return retString;
