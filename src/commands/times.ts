@@ -12,7 +12,7 @@ module.exports = {
     const result = await MiscEndpoints.GetGuildMembers(interaction.guild_id);
 
     const userIds: string[] = result.map(r => r.user !== null ? r.user.id : '');
-    const response = Database.BatchQuery(userIds);
+    const response = Database.BatchGet(userIds);
 
     console.log(response);
 

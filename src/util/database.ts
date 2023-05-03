@@ -29,21 +29,22 @@ export abstract class Database {
     );
   }
 
-  public static async BatchQuery (primaryKeys: string[]): Promise<any> {
+  public static async BatchGet (primaryKeys: string[]): Promise<any> {
     const keyMap: Array<{ squidBot: { N: string; }; }> = [];
 
     primaryKeys.forEach(p => {
       keyMap.push({ squidBot: { N: p } });
     })
 
-    const params: DocumentClient.QueryInput = {
-      TableName: 'SquidBot',
-      FilterExpression: 'squidBot IN (:val)',
-      ExpressionAttributeValues: {
-        ':val': primaryKeys
+    const params: DocumentClient.BatchGetItemInput = {
+      RequestItems: {
+        SquidBot: {
+          Keys: keyMap
+        }
       }
     }
-    await Database.ddb.query(params).promise().then(
+
+    await Database.ddb.batchGet(params).promise().then(
       p => {
         if (p.$response.error != null) {
           console.log('Error - ', p.$response.error);
