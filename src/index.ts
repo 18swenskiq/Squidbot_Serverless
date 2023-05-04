@@ -1,8 +1,10 @@
+/* eslint-disable no-case-declarations */
 import nacl from 'tweetnacl';
 import fs from 'fs';
 import path from 'path';
 import { Interaction, InteractionType } from './discord_api/interaction';
 import { CommandDescription } from './discord_api/command';
+import axios from 'axios';
 
 exports.handler = async (event: { headers: Record<string, any>; body: string; }) => {
   // Checking signature (requirement 1.)
@@ -55,15 +57,16 @@ exports.handler = async (event: { headers: Record<string, any>; body: string; })
       };
     case InteractionType.APPLICATION_COMMAND:
       // We need to defer the reply as this could take a bit of time
-      // eslint-disable-next-line no-case-declarations
+      const newInteraction = await createDeferral(body);
 
-      // eslint-disable-next-line no-case-declarations
       const chosenCommand = commands.find(c => c.data.name === body.data.name);
 
       if (chosenCommand != null) {
-        const result = await chosenCommand.execute(body);
+        const result = await chosenCommand.execute(newInteraction);
         console.log('Returning result:', result);
-        return JSON.stringify({ type: 4, data: { content: result } });
+        // return JSON.stringify({ type: 4, data: { content: result } });
+        await sendCommandResponse(newInteraction, result);
+        return { statusCode: 200 };
       }
 
       break;
@@ -76,3 +79,21 @@ exports.handler = async (event: { headers: Record<string, any>; body: string; })
       }
   }
 };
+
+async function createDeferral (originalInteraction: Interaction): Promise<Interaction> {
+  const res = await axios.post(`https://discord.com/api/v10/interactions/${originalInteraction.id}/${originalInteraction.token}/callback`, {
+    type: 6
+  });
+  console.log('Response from post: ', res);
+  return res.data;
+}
+
+async function sendCommandResponse (interaction: Interaction, message: string): Promise<void> {
+  const res = await axios.post(`https://discord.com/api/v10/interactions/${interaction.id}/${interaction.token}/callback`, {
+    type: 4,
+    data: {
+      content: message
+    }
+  });
+  console.log('Response from final send: ', res);
+}
