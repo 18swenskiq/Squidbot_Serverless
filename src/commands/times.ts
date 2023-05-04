@@ -10,12 +10,18 @@ module.exports = {
     .setName('times')
     .setDescription('Gets the current times for all registered users currently in the guild'),
   async execute (interaction: Interaction): Promise<string> {
+    const totalStart = Date.now();
     const result = await MiscEndpoints.GetGuildMembers(interaction.guild_id);
+    console.log(`Getting guild members took - ${Date.now() - totalStart}ms`);
 
     const userIds: string[] = result.map(r => r.user !== null ? r.user.id : '');
+    const databaseCallStart = Date.now();
     const response = await Database.BatchGet(userIds);
+    console.log(`Getting information from database took - ${Date.now() - databaseCallStart}ms`);
 
+    const getTzStart = Date.now();
     const zones = getTimeZones({ includeUtc: true });
+    console.log(`Getting time zones took - ${Date.now() - getTzStart}ms`);
 
     const dict: Record<string, string[]> = {};
 
@@ -67,6 +73,8 @@ module.exports = {
     }
 
     retString += '```';
+    console.log(`Building response content string took - ${Date.now() - now}ms`);
+    console.log(`Total time: ${Date.now() - totalStart}ms`);
     return retString;
   }
 } as CommandDescription
