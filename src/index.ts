@@ -58,13 +58,10 @@ exports.handler = async (event: { headers: Record<string, any>; body: string; })
       // We need to defer the reply as this could take a bit of time
       // eslint-disable-next-line no-case-declarations
       const deferBody = {
-        body: {
-          type: 6,
-          data: {
-            flags: undefined
-          }
-        },
-        auth: false
+        type: 6,
+        data: {
+          flags: undefined
+        }
       };
 
       // eslint-disable-next-line no-case-declarations
