@@ -82,7 +82,7 @@ exports.handler = async (event: { headers: Record<string, any>; body: string; })
 
 async function createDeferral (originalInteraction: Interaction): Promise<Interaction> {
   const res = await axios.post(`https://discord.com/api/v10/interactions/${originalInteraction.id}/${originalInteraction.token}/callback`, {
-    type: 6
+    type: 5
   });
   console.log('Response from post: ', res);
   return res.data;
