@@ -45,14 +45,7 @@ exports.handler = async(event) => {
       };
 
       const lambda = new aws.Lambda({ region: 'us-east-2' });
-      const reuslt = lambda.invoke(lambdaParams, function(err, data) {
-        console.log("Invoking SquidBot");
-        if (err) {
-          console.log(err, err.stack);
-        } else {
-          console.log("Lambda triggered!");
-        }
-      });
+      const reuslt = await lambda.invoke(lambdaParams).promise();
 
       console.log(reuslt);
 
