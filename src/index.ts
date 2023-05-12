@@ -89,6 +89,7 @@ async function createDeferral (originalInteraction: Interaction): Promise<Intera
 }
 
 async function sendCommandResponse (interaction: Interaction, message: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, {
     content: message
   });
