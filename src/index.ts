@@ -57,15 +57,15 @@ exports.handler = async (event: { headers: Record<string, any>; body: string; })
       };
     case InteractionType.APPLICATION_COMMAND:
       // We need to defer the reply as this could take a bit of time
-      const newInteraction = await createDeferral(body);
+      await createDeferral(body);
 
       const chosenCommand = commands.find(c => c.data.name === body.data.name);
 
       if (chosenCommand != null) {
-        const result = await chosenCommand.execute(newInteraction);
+        const result = await chosenCommand.execute(body);
         console.log('Returning result:', result);
         // return JSON.stringify({ type: 4, data: { content: result } });
-        await sendCommandResponse(newInteraction, result);
+        await sendCommandResponse(body, result);
         return { statusCode: 200 };
       }
 
@@ -89,6 +89,12 @@ async function createDeferral (originalInteraction: Interaction): Promise<Intera
 }
 
 async function sendCommandResponse (interaction: Interaction, message: string): Promise<void> {
+  const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, {
+    content: message
+  });
+  console.log('Response from editing message: ', res);
+
+  /*
   const res = await axios.post(`https://discord.com/api/v10/interactions/${interaction.id}/${interaction.token}/callback`, {
     type: 4,
     data: {
@@ -96,4 +102,5 @@ async function sendCommandResponse (interaction: Interaction, message: string): 
     }
   });
   console.log('Response from final send: ', res);
+  */
 }
