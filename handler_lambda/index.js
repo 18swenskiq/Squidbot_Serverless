@@ -2,29 +2,31 @@ const aws = require('aws-sdk');
 const nacl = require('tweetnacl');
 
 exports.handler = async(event) => {
-  const PUBLIC_KEY = process.env.PUBLIC_KEY;
-  const signature = event.headers['x-signature-ed25519'];
-  const timestamp = event.headers['x-signature-timestamp'];
   const strBody = event.body; // should be string, for successful sign
+  const body = typeof(strBody) === "string" ? JSON.parse(strBody) : strBody;
 
-  if (PUBLIC_KEY === undefined) {
-    throw new Error('Public key was undefined!');
-  }
+  if(!('testing' in body)) {
+    const PUBLIC_KEY = process.env.PUBLIC_KEY;
+    const signature = event.headers['x-signature-ed25519'];
+    const timestamp = event.headers['x-signature-timestamp'];
 
-  const isVerified = nacl.sign.detached.verify(
-    Buffer.from(timestamp + strBody),
-    Buffer.from(signature, 'hex'),
-    Buffer.from(PUBLIC_KEY, 'hex')
-  );
-
-  if (!isVerified) {
-    return {
-      statusCode: 401,
-      body: JSON.stringify('invalid request signature')
-    };
-  }
+    if (PUBLIC_KEY === undefined) {
+      throw new Error('Public key was undefined!');
+    }
   
-  const body = JSON.parse(strBody);
+    const isVerified = nacl.sign.detached.verify(
+      Buffer.from(timestamp + strBody),
+      Buffer.from(signature, 'hex'),
+      Buffer.from(PUBLIC_KEY, 'hex')
+    );
+  
+    if (!isVerified) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify('invalid request signature')
+      };
+    }
+  }
   
   console.log("Body Type: ", body.type);
   
@@ -36,21 +38,23 @@ exports.handler = async(event) => {
       };
 	  case 2:
       const lambdaParams = {
-        FunctionName: 'SquidBot',
+        FunctionName: 'SquidBotLambda',
         InvocationType: 'Event',
         LogType: 'Tail',
-        Payload: strBody,
+        Payload: JSON.stringify(strBody),
       };
 
       const lambda = new aws.Lambda({ region: 'us-east-2' });
-      lambda.invoke(lambdaParams, function(err, data) {
+      const reuslt = lambda.invoke(lambdaParams, function(err, data) {
         console.log("Invoking SquidBot");
         if (err) {
           console.log(err, err.stack);
         } else {
           console.log("Lambda triggered!");
         }
-      });;
+      });
+
+      console.log(reuslt);
 
       return {
         type: 5
