@@ -26,6 +26,8 @@ exports.handler = async(event) => {
   
   const body = JSON.parse(strBody);
   
+  console.log("Body Type: ", body.type);
+  
   switch (body.type) {
 	  case 1:
       return {
@@ -37,7 +39,7 @@ exports.handler = async(event) => {
         FunctionName: 'SquidBot',
         InvocationType: 'Event',
         LogType: 'Tail',
-        Payload: Buffer.from('...') || strBody,
+        Payload: strBody,
       };
 
       const lambda = new aws.Lambda({ region: 'us-east-2' });
@@ -48,7 +50,7 @@ exports.handler = async(event) => {
         } else {
           console.log("Lambda triggered!");
         }
-      });
+      });;
 
       return {
         type: 5

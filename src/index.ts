@@ -5,9 +5,8 @@ import { Interaction } from './discord_api/interaction';
 import { CommandDescription } from './discord_api/command';
 import axios from 'axios';
 
-exports.handler = async (event: { headers: Record<string, any>; body: string; }) => {
-  // Checking signature (requirement 1.)
-  // Your public key can be found on your application in the Developer Portal
+exports.handler = async (event: any) => {
+  console.log('AAAAAAAAAAAAAAAAASDNFJDSKJAFJDSAF');
   console.log(event);
   const strBody = event.body; // should be string, for successful sign
 
