@@ -55,7 +55,7 @@ module.exports = {
       }
     });
 
-    let retString = 'Use `/set_time` to add your time to the list!\n```py\n';
+    let retString = 'Use `/set_time` to add your time to the list!\n```yml\n';
 
     const coolSortingList = Object.entries(dict);
 
