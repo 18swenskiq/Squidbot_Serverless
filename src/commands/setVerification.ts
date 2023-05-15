@@ -4,7 +4,7 @@ import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('setVerification')
+    .setName('set_verification')
     .setDescription('Sets the verification channel that will be used, and enables verification')
     .addChannelOption(option => option
       .setName('channel')
