@@ -16,7 +16,7 @@ module.exports = {
 
     const userIds: string[] = result.map(r => r.user !== null ? r.user.id : '');
     const databaseCallStart = Date.now();
-    const response = await Database.BatchGet(userIds);
+    const response = await Database.GetUserInformation(userIds);
     console.log(`Getting information from database took - ${Date.now() - databaseCallStart}ms`);
 
     const getTzStart = Date.now();

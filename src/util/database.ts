@@ -5,35 +5,26 @@ const AWS = require('aws-sdk');
 export abstract class Database {
   private static readonly ddb: DocumentClient = new AWS.DynamoDB.DocumentClient();
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  public static async UpdateItem (primaryKey: string, sortKey: string): Promise<void> {
+  public static async UpdateUserTimezone (userId: string, timezoneName: string): Promise<void> {
     const params: DocumentClient.UpdateItemInput = {
       TableName: 'SquidBot',
       Key: {
-        squidBot: primaryKey
+        squidBot: userId
       },
       UpdateExpression: 'set userTimeZone = :r',
       ExpressionAttributeValues: {
-        ':r': sortKey
+        ':r': timezoneName
       }
     };
 
-    await Database.ddb.update(params).promise().then(
-      p => {
-        if (p.$response.error != null) {
-          console.log('Error - ', p.$response.error);
-        } else {
-          console.log('Success - ', p.$response.data)
-        }
-      }
-    );
+    await this.UpdateItem(params);
   }
 
-  public static async BatchGet (primaryKeys: string[]): Promise<any> {
+  public static async GetUserInformation (userIds: string[]): Promise<any> {
     // eslint-disable-next-line @typescript-eslint/array-type
     const keyMap: { squidBot: string }[] = [];
 
-    primaryKeys.forEach(p => {
+    userIds.forEach(p => {
       keyMap.push({ squidBot: p });
     });
 
@@ -45,6 +36,22 @@ export abstract class Database {
       }
     }
 
+    return await this.BatchGet(params);
+  }
+
+  private static async UpdateItem (params: DocumentClient.UpdateItemInput): Promise<void> {
+    await Database.ddb.update(params).promise().then(
+      p => {
+        if (p.$response.error != null) {
+          console.log('Error - ', p.$response.error);
+        } else {
+          console.log('Success - ', p.$response.data)
+        }
+      }
+    );
+  }
+
+  private static async BatchGet (params: DocumentClient.BatchGetItemInput): Promise<any> {
     const result = await Database.ddb.batchGet(params).promise()
     if (result.$response.error != null) {
       console.log('Error - ', result.$response.error);

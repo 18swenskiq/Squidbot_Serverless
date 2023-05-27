@@ -27,7 +27,7 @@ module.exports = {
     }
 
     const userId = interaction.member.user.id;
-    await Database.UpdateItem(userId, requestedZone.name);
+    await Database.UpdateUserTimezone(userId, requestedZone.name);
 
     // If we're here, the city name was valid and we can go forward with writing the information
     const currentOffset = requestedZone.currentTimeOffsetInMinutes;
