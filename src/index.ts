@@ -9,6 +9,13 @@ exports.handler = async (event: any) => {
   console.log(event);
   const strBody = event; // should be string, for successful sign
 
+  console.log('checking directory for things');
+  fs.readdir('/var/task/node_modules/sqlite3/lib/binding', (_err: any, files: any) => {
+    files.forEach((filey: any) => {
+      console.log(filey);
+    })
+  });
+
   console.log('Loading commands');
   const commands: CommandDescription[] = [];
 
