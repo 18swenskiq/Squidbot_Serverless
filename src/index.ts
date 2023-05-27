@@ -19,8 +19,13 @@ exports.handler = async (event: any) => {
   for (const file of commandFiles) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     console.log('Loading Command:', file);
-    const command: CommandDescription = require(`${commandsPath}/${file}`);
-    commands.push(command);
+    try {
+      const command: CommandDescription = require(`${commandsPath}/${file}`);
+      commands.push(command);
+    } catch (exception: any) {
+      console.log(`Could not load command: ${file}`);
+      console.log(exception);
+    }
   }
 
   console.log('Commands loaded!');
