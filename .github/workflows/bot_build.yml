@@ -38,7 +38,7 @@ jobs:
       run: npm ci
     
     - name: Tactical Rename
-      run: mv ../src/node_modules/sqlite3/lib/binding/node-v93-linux-x64 ../src/node_modules/sqlite3/lib/binding/node-v108-linux-x64
+      run: cp ../src/node_modules/sqlite3/lib/binding/node-v93-linux-x64 ../src/node_modules/sqlite3/lib/binding/node-v108-linux-x64
 
     - name: Debug Print
       run: tree ../src/node_modules/sqlite3/lib/binding
