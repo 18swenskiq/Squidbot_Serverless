@@ -40,6 +40,9 @@ jobs:
     - name: Build
       run: npm run build --if-present
     
+    - name: Debug Print
+      run: tree ../dist/node_modules/sqlite3/lib/binding
+
     - name: Register Commands
       run: (cd ../register_commands && npm ci && node register.js)
 
