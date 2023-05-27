@@ -1,51 +1,74 @@
-import fs from 'fs';
-import { S3 } from 'aws-sdk';
-import axios from 'axios';
-import sqlite3 from 'sqlite3';
-import { Database, open } from 'sqlite';
+import { S3Client, GetObjectCommand, GetObjectRequest, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { BSON, EJSON, Document } from 'bson';
+import { UserSettings } from '../database_models/userSettings';
+import { Snowflake } from '../discord_api/snowflake';
 
-const AWS = require('aws-sdk');
-const s3: S3 = new AWS.S3();
-const localDBPath = '/tmp/squidbot_db.db';
+const bucketName = 'squidbot';
+type ObjectDirectory = 'UserSettings' | 'GuildSettings';
+
+const client = new S3Client({ region: 'us-east-2' });
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
-  public static async PassRawSql (sql: string): Promise<string> {
-    const db = await DatabaseWrapper.LoadDatabase();
-    let databaseResult: any;
-    await db.all(sql, (err: any, rows: any) => {
-      if (err != null) {
-        console.log('uh oh, error!', err);
-      } else {
-        databaseResult = rows;
-      }
-    });
+  public static async SetUserTimeString (userId: Snowflake, timeString: string): Promise<void> {
+    const obj = await DatabaseWrapper.GetBSONObject<UserSettings>('UserSettings', userId);
 
-    await db.close();
-    // TODO: push DB again
-    return databaseResult;
-  }
-
-  private static async LoadDatabase (): Promise<Database> {
-    const params = {
-      Bucket: 'squidbot',
-      Expires: 3000,
-      Key: 'squidbot.db'
+    if (Object.keys(obj).length === 0) {
+      console.log("Object wasn't found");
     }
 
-    const url = await s3.getSignedUrlPromise('getObject', params).catch((err) => { console.log(err) });
+    obj.timeZoneName = timeString;
 
-    const res = await axios.get(url as string, {
-      responseType: 'stream'
-    });
+    await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
+  }
 
-    const iStream = res.data;
-    const oStream = fs.createWriteStream(localDBPath);
-    iStream.pipe(oStream);
+  private static async GetBSONObject<T>(dir: ObjectDirectory, key: string): Promise<T> {
+    const itemKey = `${dir}/${key}.bson`;
 
-    return await open({
-      filename: localDBPath,
-      driver: sqlite3.Database
-    })
+    const input: GetObjectRequest = {
+      Bucket: bucketName,
+      Key: itemKey
+    }
+
+    const command = new GetObjectCommand(input);
+
+    try {
+      const response = await client.send(command);
+      const respBytes = await response.Body?.transformToByteArray();
+
+      if (respBytes === undefined) {
+        throw Error('thing was undefined');
+      }
+
+      const doc: Document = BSON.deserialize(respBytes);
+      const obj = JSON.parse(EJSON.stringify(doc));
+
+      return obj as T;
+    } catch (err: any) {
+      console.log(err);
+      return <T>{};
+    }
+  }
+
+  private static async PutBSONObject (obj: any, dir: ObjectDirectory, key: string): Promise<boolean> {
+    const itemKey = `${dir}/${key}.bson`;
+
+    const binObj = BSON.serialize(obj);
+
+    const input: PutObjectCommandInput = {
+      Body: binObj,
+      Bucket: bucketName,
+      Key: itemKey
+    }
+
+    const command = new PutObjectCommand(input);
+    try {
+      const response = await client.send(command);
+      console.log('response', response);
+      return true;
+    } catch (error: any) {
+      console.log(error);
+      return false;
+    }
   }
 }

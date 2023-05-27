@@ -2,7 +2,8 @@ import { getTimeZones } from '@vvo/tzdb';
 import { CommandDescription } from '../discord_api/command';
 import { Interaction } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { Database } from '../util/database';
+// import { Database } from '../util/database';
+import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -27,7 +28,8 @@ module.exports = {
     }
 
     const userId = interaction.member.user.id;
-    await Database.UpdateUserTimezone(userId, requestedZone.name);
+    // await Database.UpdateUserTimezone(userId, requestedZone.name);
+    await DatabaseWrapper.SetUserTimeString(userId, requestedZone.name);
 
     // If we're here, the city name was valid and we can go forward with writing the information
     const currentOffset = requestedZone.currentTimeOffsetInMinutes;
