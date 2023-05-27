@@ -7,7 +7,7 @@ const userList = ['66318815247466496'];
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('databaseRaw')
+    .setName('database_raw')
     .setDescription('[SQUIDSKI ONLY] Enables ability to run raw SQL')
     .setAllowedUsersOnly(userList),
   async execute (interaction: Interaction): Promise<string> {

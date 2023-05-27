@@ -23,6 +23,6 @@
   "scripts": {
     "prebuild": "rimraf ../dist",
     "build": "tsc",
-    "postbuild": "copyfiles package*.json ../dist/ && cd ../dist && npm ci --production"
+    "postbuild": "copyfiles package*.json ../dist/ && cd ../dist && npm ci --omit=dev"
   }
 }
