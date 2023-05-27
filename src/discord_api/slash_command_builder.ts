@@ -6,6 +6,7 @@ import { SlashCommandChannelOption } from './SlashCommands/SlashCommandChannelOp
 import { SlashCommandMentionableOption } from './SlashCommands/SlashCommandMentionableOption';
 import { SlashCommandStringOption } from './SlashCommands/SlashCommandStringOption';
 import { SlashCommandUserOption } from './SlashCommands/SlashCommandUserOption';
+import { Snowflake } from './snowflake';
 
 export class SlashCommandBuilder {
   public readonly name: string = '';
@@ -15,6 +16,7 @@ export class SlashCommandBuilder {
   public readonly default_member_permissions: Permissions | null | undefined = undefined;
   public readonly dm_permission: boolean | undefined = undefined;
   public readonly nsfw: boolean | undefined = undefined;
+  public readonly valid_users: Snowflake[] = [];
 
   public setName (name: string): SlashCommandBuilder {
     // validateName(name);
@@ -49,6 +51,11 @@ export class SlashCommandBuilder {
   public setNSFW (nsfw: boolean = true): SlashCommandBuilder {
     // validateNSFW(nsfw);
     Reflect.set(this, 'nsfw', nsfw);
+    return this;
+  }
+
+  public setAllowedUsersOnly (users: Snowflake[]): SlashCommandBuilder {
+    Reflect.set(this, 'valid_users', users);
     return this;
   }
 
