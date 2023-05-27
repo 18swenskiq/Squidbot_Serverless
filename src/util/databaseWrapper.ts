@@ -13,16 +13,19 @@ export abstract class DatabaseWrapper {
   public static async SetUserTimeString (userId: Snowflake, timeString: string): Promise<void> {
     const obj = await DatabaseWrapper.GetBSONObject<UserSettings>('UserSettings', userId);
 
+    console.log('Successfully got');
     if (Object.keys(obj).length === 0) {
       console.log("Object wasn't found");
     }
 
+    console.log('Putting');
     obj.timeZoneName = timeString;
 
     await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
   }
 
   private static async GetBSONObject<T>(dir: ObjectDirectory, key: string): Promise<T> {
+    console.log('getting BSON object');
     const itemKey = `${dir}/${key}.bson`;
 
     const input: GetObjectRequest = {
@@ -32,8 +35,10 @@ export abstract class DatabaseWrapper {
 
     const command = new GetObjectCommand(input);
 
+    console.log('command', command);
     try {
       const response = await client.send(command);
+      console.log('first response', response);
       const respBytes = await response.Body?.transformToByteArray();
 
       if (respBytes === undefined) {

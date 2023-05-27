@@ -54,18 +54,3 @@ async function sendCommandResponse (interaction: Interaction, message: string): 
   });
   console.log('Response from editing message: ', res);
 }
-
-const _getAllFilesFromFolder = function (dir: string): any {
-  let results: any[] = [];
-
-  fs.readdirSync(dir).forEach(function (file: string) {
-    file = dir + '/' + file;
-    const stat = fs.statSync(file);
-
-    if (stat.isDirectory()) {
-      results = results.concat(_getAllFilesFromFolder(file))
-    } else results.push(file);
-  });
-
-  return results;
-};

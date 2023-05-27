@@ -14,6 +14,7 @@ module.exports = {
       .setDescription('A city that you are in the time zone of. Try to select the biggest city you share a timezone with.')
       .setRequired(true)),
   async execute (interaction: Interaction): Promise<string> {
+    console.log('Setting time');
     const cityName = interaction.data.options[0].value.toLowerCase().replace(' ', '_');
     const zones = getTimeZones({ includeUtc: true });
 
@@ -29,6 +30,7 @@ module.exports = {
 
     const userId = interaction.member.user.id;
     // await Database.UpdateUserTimezone(userId, requestedZone.name);
+    console.log('Launching database wrapper');
     await DatabaseWrapper.SetUserTimeString(userId, requestedZone.name);
 
     // If we're here, the city name was valid and we can go forward with writing the information
