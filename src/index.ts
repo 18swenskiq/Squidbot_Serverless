@@ -9,10 +9,6 @@ exports.handler = async (event: any) => {
   console.log(event);
   const strBody = event; // should be string, for successful sign
 
-  console.log('checking directory for things');
-  const pebis = _getAllFilesFromFolder('/var/task/node_modules/sqlite3')
-  console.log(pebis);
-
   console.log('Loading commands');
   const commands: CommandDescription[] = [];
 
