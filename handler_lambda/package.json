@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "aws-sdk": "^2.1377.0",
+    "s3lite": "^0.0.6",
     "tweetnacl": "^1.0.3"
   }
 }
