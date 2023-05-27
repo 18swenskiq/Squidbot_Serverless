@@ -36,15 +36,15 @@ jobs:
     
     - name: NPM Install
       run: npm ci
-    
-    - name: Tactical Copy
-      run: cp -r ../src/node_modules/sqlite3/lib/binding/node-v93-linux-x64 ../src/node_modules/sqlite3/lib/binding/node-v108-linux-x64
-
-    - name: Debug Print
-      run: tree ../src/node_modules/sqlite3/lib/binding
 
     - name: Build
       run: npm run build --if-present
+
+    - name: Tactical Copy
+      run: cp -r ../dist/node_modules/sqlite3/lib/binding/node-v93-linux-x64 ../dist/node_modules/sqlite3/lib/binding/node-v108-linux-x64
+
+    - name: Debug Print
+      run: tree ../src/node_modules/sqlite3/lib/binding
 
     - name: Register Commands
       run: (cd ../register_commands && npm ci && node register.js)
