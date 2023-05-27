@@ -37,8 +37,8 @@ jobs:
     - name: NPM Install
       run: npm ci
     
-    - name: Tactical Rename
-      run: cp ../src/node_modules/sqlite3/lib/binding/node-v93-linux-x64 ../src/node_modules/sqlite3/lib/binding/node-v108-linux-x64
+    - name: Tactical Copy
+      run: cp -r ../src/node_modules/sqlite3/lib/binding/node-v93-linux-x64 ../src/node_modules/sqlite3/lib/binding/node-v108-linux-x64
 
     - name: Debug Print
       run: tree ../src/node_modules/sqlite3/lib/binding
