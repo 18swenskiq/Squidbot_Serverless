@@ -10,11 +10,8 @@ exports.handler = async (event: any) => {
   const strBody = event; // should be string, for successful sign
 
   console.log('checking directory for things');
-  fs.readdir('/var/task/node_modules/sqlite3/lib/binding', (_err: any, files: any) => {
-    files.forEach((filey: any) => {
-      console.log(filey);
-    })
-  });
+  const pebis = _getAllFilesFromFolder('/var/task/node_modules/sqlite3')
+  console.log(pebis);
 
   console.log('Loading commands');
   const commands: CommandDescription[] = [];
@@ -61,3 +58,18 @@ async function sendCommandResponse (interaction: Interaction, message: string): 
   });
   console.log('Response from editing message: ', res);
 }
+
+const _getAllFilesFromFolder = function (dir: string): any {
+  let results: any[] = [];
+
+  fs.readdirSync(dir).forEach(function (file: string) {
+    file = dir + '/' + file;
+    const stat = fs.statSync(file);
+
+    if (stat.isDirectory()) {
+      results = results.concat(_getAllFilesFromFolder(file))
+    } else results.push(file);
+  });
+
+  return results;
+};
