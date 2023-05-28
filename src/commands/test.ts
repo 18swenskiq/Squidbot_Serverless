@@ -8,7 +8,7 @@ module.exports = {
     .setName('test')
     .setDescription('test description')
     .addStringOption(option => option
-      .setName('userId')
+      .setName('userid')
       .setDescription('the user to set the timezone of')
       .setRequired(true))
     .addStringOption(option => option
