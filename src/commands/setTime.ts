@@ -2,7 +2,6 @@ import { getTimeZones } from '@vvo/tzdb';
 import { CommandDescription } from '../discord_api/command';
 import { Interaction } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-// import { Database } from '../util/database';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
