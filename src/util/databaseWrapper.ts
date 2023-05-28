@@ -1,12 +1,11 @@
-import { S3Client, GetObjectCommand, GetObjectRequest, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { GetObjectCommand, GetObjectRequest, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { BSON, EJSON, Document } from 'bson';
 import { UserSettings } from '../database_models/userSettings';
 import { Snowflake } from '../discord_api/snowflake';
+import { StaticDeclarations } from './staticDeclarations';
 
 const bucketName = 'squidbot';
 type ObjectDirectory = 'UserSettings' | 'GuildSettings';
-
-const client = new S3Client({ region: 'us-east-2' });
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
@@ -37,7 +36,7 @@ export abstract class DatabaseWrapper {
 
     console.log('command', command);
     try {
-      const response = await client.send(command);
+      const response = await StaticDeclarations.s3client.send(command);
       console.log('first response', response);
       const respBytes = await response.Body?.transformToByteArray();
 
@@ -68,7 +67,7 @@ export abstract class DatabaseWrapper {
 
     const command = new PutObjectCommand(input);
     try {
-      const response = await client.send(command);
+      const response = await StaticDeclarations.s3client.send(command);
       console.log('response', response);
       return true;
     } catch (error: any) {

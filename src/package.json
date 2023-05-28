@@ -2,7 +2,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.341.0",
     "@types/bson": "^4.2.0",
-    "@types/sqlite3": "^3.1.8",
     "@vvo/tzdb": "^6.107.0",
     "axios": "^1.4.0",
     "bson": "^5.3.0",

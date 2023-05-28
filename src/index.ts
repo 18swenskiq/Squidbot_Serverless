@@ -4,10 +4,14 @@ import path from 'path';
 import { Interaction } from './discord_api/interaction';
 import { CommandDescription } from './discord_api/command';
 import axios from 'axios';
+import { StaticDeclarations } from './util/staticDeclarations';
 
 exports.handler = async (event: any) => {
   console.log(event);
   const strBody = event; // should be string, for successful sign
+
+  // Creating static declarations
+  StaticDeclarations.GenerateOptions();
 
   console.log('Loading commands');
   const commands: CommandDescription[] = [];
