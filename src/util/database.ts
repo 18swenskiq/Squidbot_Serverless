@@ -1,8 +1,8 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-const AWS = require('aws-sdk');
+// const AWS = require('aws-sdk');
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class Database {
+  /*
   private static readonly ddb: DocumentClient = new AWS.DynamoDB.DocumentClient();
 
   public static async UpdateUserTimezone (userId: string, timezoneName: string): Promise<void> {
@@ -60,4 +60,5 @@ export abstract class Database {
       return result.Responses;
     }
   }
+  */
 }

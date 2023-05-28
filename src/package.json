@@ -4,7 +4,6 @@
     "@types/bson": "^4.2.0",
     "@types/sqlite3": "^3.1.8",
     "@vvo/tzdb": "^6.107.0",
-    "aws-sdk": "^2.1370.0",
     "axios": "^1.4.0",
     "bson": "^5.3.0",
     "copyfiles": "^2.4.1",
@@ -25,8 +24,8 @@
     "typescript": "^5.0.4"
   },
   "scripts": {
-    "prebuild": "rimraf ../dist && rimraf ../intermediate_dist",
+    "prebuild": "rimraf ../dist",
     "build": "tsc",
-    "postbuild": "copyfiles package*.json ../intermediate_dist/ && cd ../intermediate_dist && npm ci --omit=dev && esbuild ./index.js --bundle --minify --platform=node --target=node16.14 --outdir=../dist"
+    "postbuild": "copyfiles package*.json ../dist/ && cd ../dist && npm ci --omit=dev"
   }
 }

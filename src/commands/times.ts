@@ -1,15 +1,16 @@
-import { getTimeZones } from '@vvo/tzdb'
+// import { getTimeZones } from '@vvo/tzdb'
 import { type CommandDescription } from '../discord_api/command'
 import { type Interaction } from '../discord_api/interaction'
-import { MiscEndpoints } from '../discord_api/miscEndpoints'
+// import { MiscEndpoints } from '../discord_api/miscEndpoints'
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder'
-import { Database } from '../util/database'
+// import { Database } from '../util/database'
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('times')
     .setDescription('Gets the current times for all registered users currently in the guild'),
   async execute (interaction: Interaction): Promise<string> {
+    /*
     const totalStart = Date.now();
     const result = await MiscEndpoints.GetGuildMembers(interaction.guild_id);
     console.log(`Getting guild members took - ${Date.now() - totalStart}ms`);
@@ -76,5 +77,7 @@ module.exports = {
     console.log(`Building response content string took - ${Date.now() - now}ms`);
     console.log(`Total time: ${Date.now() - totalStart}ms`);
     return retString;
+    */
+    return 'temporarily broken!';
   }
 } as CommandDescription
