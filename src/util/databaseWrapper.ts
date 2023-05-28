@@ -1,6 +1,6 @@
 import { GetObjectCommand, GetObjectRequest, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { BSON, EJSON, Document } from 'bson';
-import { UserSettings } from '../database_models/userSettings';
+import { DB_UserSettings } from '../database_models/userSettings';
 import { Snowflake } from '../discord_api/snowflake';
 import { StaticDeclarations } from './staticDeclarations';
 
@@ -10,17 +10,30 @@ type ObjectDirectory = 'UserSettings' | 'GuildSettings';
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
   public static async SetUserTimeString (userId: Snowflake, timeString: string): Promise<void> {
-    const obj = await DatabaseWrapper.GetBSONObject<UserSettings>('UserSettings', userId);
+    const obj = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', userId);
 
-    console.log('Successfully got');
     if (Object.keys(obj).length === 0) {
       console.log("Object wasn't found");
     }
 
-    console.log('Putting');
     obj.timeZoneName = timeString;
 
     await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
+  }
+
+  public static async GetUserSettings (userIds: Snowflake[]): Promise<Record<Snowflake, DB_UserSettings>> {
+    const retObj: Record<Snowflake, DB_UserSettings> = {};
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    userIds.forEach(async f => {
+      const res = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', f);
+
+      if (Object.keys(res).length > 0) {
+        retObj[f] = res;
+      }
+    })
+
+    return retObj;
   }
 
   private static async GetBSONObject<T>(dir: ObjectDirectory, key: string): Promise<T> {

@@ -1,23 +1,23 @@
-// import { getTimeZones } from '@vvo/tzdb'
+import { getTimeZones } from '@vvo/tzdb';
 import { type CommandDescription } from '../discord_api/command'
 import { type Interaction } from '../discord_api/interaction'
-// import { MiscEndpoints } from '../discord_api/miscEndpoints'
+import { MiscEndpoints } from '../discord_api/miscEndpoints';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder'
-// import { Database } from '../util/database'
+import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('times')
     .setDescription('Gets the current times for all registered users currently in the guild'),
   async execute (interaction: Interaction): Promise<string> {
-    /*
     const totalStart = Date.now();
     const result = await MiscEndpoints.GetGuildMembers(interaction.guild_id);
     console.log(`Getting guild members took - ${Date.now() - totalStart}ms`);
 
     const userIds: string[] = result.map(r => r.user !== null ? r.user.id : '');
     const databaseCallStart = Date.now();
-    const response = await Database.GetUserInformation(userIds);
+    // const response = await Database.GetUserInformation(userIds);
+    const response = await DatabaseWrapper.GetUserSettings(userIds);
     console.log(`Getting information from database took - ${Date.now() - databaseCallStart}ms`);
 
     const getTzStart = Date.now();
@@ -27,10 +27,11 @@ module.exports = {
     const dict: Record<string, string[]> = {};
 
     const now = Date.now();
-    response.SquidBot.forEach((r: any) => {
-      const id: string = r.squidBot;
-      const timeZoneCode: string = r.userTimeZone;
-      const username = result.find(e => e.user?.id === id)?.user?.username;
+    for (const userId in response) {
+      const settings = response[userId];
+
+      const timeZoneCode: string = settings.timeZoneName;
+      const username = result.find(e => e.user?.id === userId)?.user?.username;
 
       if (username === undefined) {
         throw Error();
@@ -54,7 +55,7 @@ module.exports = {
       } else {
         dict[timeString].push(username);
       }
-    });
+    }
 
     let retString = 'Use `/set_time` to add your time to the list!\n```yml\n';
 
@@ -77,7 +78,5 @@ module.exports = {
     console.log(`Building response content string took - ${Date.now() - now}ms`);
     console.log(`Total time: ${Date.now() - totalStart}ms`);
     return retString;
-    */
-    return 'temporarily broken!';
   }
 } as CommandDescription
