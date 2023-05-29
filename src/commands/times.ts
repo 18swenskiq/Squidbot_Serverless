@@ -19,6 +19,8 @@ module.exports = {
     const response = await DatabaseWrapper.GetUserSettings(userIds);
     console.log(`Getting information from database took - ${Date.now() - databaseCallStart}ms`);
 
+    console.log('database response:', response);
+
     const getTzStart = Date.now();
     const zones = getTimeZones({ includeUtc: true });
     console.log(`Getting time zones took - ${Date.now() - getTzStart}ms`);
