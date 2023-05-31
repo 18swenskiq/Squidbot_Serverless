@@ -24,6 +24,9 @@ export abstract class DatabaseWrapper {
   public static async GetUserSettings (userIds: Snowflake[]): Promise<Record<Snowflake, DB_UserSettings>> {
     const listObj = await DatabaseWrapper.ListObjects('UserSettings');
 
+    listObj.shift()
+    listObj.map(o => o.split('/')[1].replace('.bson', ''));
+
     const validUserIds = listObj.filter(l => userIds.includes(l));
 
     const retObj: Record<Snowflake, DB_UserSettings> = {};
