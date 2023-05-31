@@ -29,13 +29,19 @@ export abstract class DatabaseWrapper {
 
     console.log('new list object', listObj);
 
+    console.log('passed user ids', userIds);
+
     const validUserIds = listObj.filter(l => userIds.includes(l));
+
+    console.log(validUserIds);
 
     const retObj: Record<Snowflake, DB_UserSettings> = {};
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     validUserIds.forEach(async f => {
+      console.log('testing id:', f);
       const res = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', f);
+      console.log('line response: res');
 
       if (Object.keys(res).length > 0) {
         retObj[f] = res;
