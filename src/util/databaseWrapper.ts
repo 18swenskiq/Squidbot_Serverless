@@ -41,6 +41,7 @@ export abstract class DatabaseWrapper {
   }
 
   private static async ListObjects (dir: ObjectDirectory): Promise<string[]> {
+    console.log('Calling list objects api...');
     const input: ListObjectsRequest = {
       Bucket: bucketName,
       MaxKeys: 1000
@@ -48,6 +49,8 @@ export abstract class DatabaseWrapper {
 
     const command = new ListObjectsCommand(input);
     const response = await StaticDeclarations.s3client.send(command);
+
+    console.log('Full response: ', response);
 
     if (response.Contents === undefined) {
       console.log('response was error!');

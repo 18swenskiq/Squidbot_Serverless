@@ -15,6 +15,9 @@ module.exports = {
     console.log(`Getting guild members took - ${Date.now() - totalStart}ms`);
 
     const userIds: string[] = result.map(r => r.user !== null ? r.user.id : '');
+
+    console.log('searching for users:', userIds);
+
     const databaseCallStart = Date.now();
     const response = await DatabaseWrapper.GetUserSettings(userIds);
     console.log(`Getting information from database took - ${Date.now() - databaseCallStart}ms`);
