@@ -1,4 +1,4 @@
-import { GetObjectCommand, GetObjectRequest, ListObjectsV2Command, ListObjectsV2Request, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { GetObjectCommand, GetObjectRequest, ListObjectsCommand, ListObjectsRequest, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { BSON, EJSON, Document } from 'bson';
 import { DB_UserSettings } from '../database_models/userSettings';
 import { Snowflake } from '../discord_api/snowflake';
@@ -41,12 +41,12 @@ export abstract class DatabaseWrapper {
   }
 
   private static async ListObjects (dir: ObjectDirectory): Promise<string[]> {
-    const input: ListObjectsV2Request = {
+    const input: ListObjectsRequest = {
       Bucket: bucketName,
       MaxKeys: 1000
     }
 
-    const command = new ListObjectsV2Command(input);
+    const command = new ListObjectsCommand(input);
     const response = await StaticDeclarations.s3client.send(command);
 
     if (response.Contents === undefined) {
