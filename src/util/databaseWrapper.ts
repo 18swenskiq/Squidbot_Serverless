@@ -41,7 +41,7 @@ export abstract class DatabaseWrapper {
     validUserIds.forEach(async f => {
       console.log('testing id:', f);
       const res = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', f);
-      console.log('line response: res');
+      console.log('line response: ', res);
 
       if (Object.keys(res).length > 0) {
         retObj[f] = res;
@@ -79,6 +79,8 @@ export abstract class DatabaseWrapper {
   private static async GetBSONObject<T>(dir: ObjectDirectory, key: string): Promise<T> {
     console.log('getting BSON object');
     const itemKey = `${dir}/${key}.bson`;
+
+    console.log('getting item:', itemKey);
 
     const input: GetObjectRequest = {
       Bucket: bucketName,
