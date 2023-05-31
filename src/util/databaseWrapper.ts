@@ -1,4 +1,4 @@
-import { GetObjectCommand, GetObjectRequest, ListObjectsCommand, ListObjectsRequest, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { GetObjectCommand, GetObjectRequest, ListObjectsCommand, ListObjectsCommandInput, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { BSON, EJSON, Document } from 'bson';
 import { DB_UserSettings } from '../database_models/userSettings';
 import { Snowflake } from '../discord_api/snowflake';
@@ -42,9 +42,10 @@ export abstract class DatabaseWrapper {
 
   private static async ListObjects (dir: ObjectDirectory): Promise<string[]> {
     console.log('Calling list objects api...');
-    const input: ListObjectsRequest = {
+    const input: ListObjectsCommandInput = {
       Bucket: bucketName,
-      MaxKeys: 1000
+      MaxKeys: 1000,
+      Prefix: dir
     }
 
     const command = new ListObjectsCommand(input);
@@ -58,6 +59,8 @@ export abstract class DatabaseWrapper {
     }
 
     const contents = response.Contents === undefined ? [] : response.Contents;
+
+    console.log('the contents', contents);
 
     return contents.map(c => c.Key) as string[];
   }
