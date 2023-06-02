@@ -90,23 +90,18 @@ export abstract class DatabaseWrapper {
     const command = new GetObjectCommand(input);
 
     console.log('command', command);
-    try {
-      const response = await StaticDeclarations.s3client.send(command);
-      console.log('first response', response);
-      const respBytes = await response.Body?.transformToByteArray();
+    const response = await StaticDeclarations.s3client.send(command);
+    console.log('first response', response);
+    const respBytes = await response.Body?.transformToByteArray();
 
-      if (respBytes === undefined) {
-        throw Error('thing was undefined');
-      }
-
-      const doc: Document = BSON.deserialize(respBytes);
-      const obj = JSON.parse(EJSON.stringify(doc));
-
-      return obj as T;
-    } catch (err: any) {
-      console.log(err);
-      return <T>{};
+    if (respBytes === undefined) {
+      throw Error('thing was undefined');
     }
+
+    const doc: Document = BSON.deserialize(respBytes);
+    const obj = JSON.parse(EJSON.stringify(doc));
+
+    return obj as T;
   }
 
   private static async PutBSONObject (obj: any, dir: ObjectDirectory, key: string): Promise<boolean> {
@@ -121,13 +116,8 @@ export abstract class DatabaseWrapper {
     }
 
     const command = new PutObjectCommand(input);
-    try {
-      const response = await StaticDeclarations.s3client.send(command);
-      console.log('response', response);
-      return true;
-    } catch (error: any) {
-      console.log(error);
-      return false;
-    }
+    const response = await StaticDeclarations.s3client.send(command);
+    console.log('response', response);
+    return true;
   }
 }
