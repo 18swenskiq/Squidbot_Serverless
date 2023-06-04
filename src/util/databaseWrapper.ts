@@ -38,15 +38,16 @@ export abstract class DatabaseWrapper {
     const retObj: Record<Snowflake, DB_UserSettings> = {};
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    validUserIds.forEach(async f => {
-      console.log('testing id:', f);
-      const res = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', f);
+    for (let i = 0; i < validUserIds.length; i++) {
+      const id = validUserIds[i];
+      console.log('testing id:', id);
+      const res = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', id);
       console.log('line response: ', res);
 
       if (Object.keys(res).length > 0) {
-        retObj[f] = res;
+        retObj[id] = res;
       }
-    })
+    }
 
     return retObj;
   }
