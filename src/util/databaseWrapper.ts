@@ -37,7 +37,6 @@ export abstract class DatabaseWrapper {
 
     const retObj: Record<Snowflake, DB_UserSettings> = {};
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     for (let i = 0; i < validUserIds.length; i++) {
       const id = validUserIds[i];
       console.log('testing id:', id);
