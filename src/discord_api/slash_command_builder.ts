@@ -6,14 +6,14 @@ import { SlashCommandChannelOption } from './SlashCommands/SlashCommandChannelOp
 import { SlashCommandMentionableOption } from './SlashCommands/SlashCommandMentionableOption';
 import { SlashCommandStringOption } from './SlashCommands/SlashCommandStringOption';
 import { SlashCommandUserOption } from './SlashCommands/SlashCommandUserOption';
+import { GuildPermission } from './permissions';
 import { Snowflake } from './snowflake';
 
 export class SlashCommandBuilder {
   public readonly name: string = '';
   public readonly description: string = '';
   public readonly options: any[] = [];// ToAPIApplicationCommandOptions[] = [];
-  public readonly default_permission: boolean | undefined = undefined;
-  public readonly default_member_permissions: Permissions | null | undefined = undefined;
+  public readonly default_member_permissions: GuildPermission[] = [];
   public readonly dm_permission: boolean | undefined = undefined;
   public readonly nsfw: boolean | undefined = undefined;
   public readonly valid_users: Snowflake[] = [];
@@ -30,15 +30,9 @@ export class SlashCommandBuilder {
     return this;
   }
 
-  public setDefaultPermission (value: boolean): SlashCommandBuilder {
-    // validateDefaultPermission(value);
-    Reflect.set(this, 'default_permission', value);
-    return this;
-  }
-
-  public setDefaultMemberPermissions (permissions: Permissions | bigint | number | null | undefined): SlashCommandBuilder {
+  public setDefaultMemberPermissions (permissions: GuildPermission[]): SlashCommandBuilder {
     // const permissionValue = validateDefaultMemberPermissions(permissions);
-    // Reflect.set(this, 'default_member_permissions', permissionValue);
+    Reflect.set(this, 'default_member_permissions', permissions);
     return this;
   }
 

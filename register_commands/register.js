@@ -52,6 +52,16 @@ for (var command of commands) {
 		}
 	}
 
+	if (command.data.default_member_permissions.length > 0) {
+		if (command.data.default_member_permissions.length > 1) {
+			localCommand['default_member_permissions'] = command.data.default_member_permissions.reduce(function(a, b) {
+				return a | b;
+			});
+		} else {
+			localCommand['default_member_permissions'] = command.data.default_member_permissions[0];
+		}
+	}
+
 	command_data.push(localCommand);
 }
 
