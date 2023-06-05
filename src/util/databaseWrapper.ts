@@ -3,6 +3,7 @@ import { BSON, EJSON, Document } from 'bson';
 import { DB_UserSettings } from '../database_models/userSettings';
 import { Snowflake } from '../discord_api/snowflake';
 import { StaticDeclarations } from './staticDeclarations';
+import { DB_GuildSettings } from '../database_models/guildSettings';
 
 const bucketName = 'squidbot';
 type ObjectDirectory = 'UserSettings' | 'GuildSettings';
@@ -17,6 +18,24 @@ export abstract class DatabaseWrapper {
     }
 
     await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
+  }
+
+  public static async SetGuildRoleAssignable (guildId: Snowflake, roleId: Snowflake): Promise<string> {
+    let obj: DB_GuildSettings;
+    try {
+      obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
+    } catch (err: any) {
+      console.log('error getting object from db, file: ', `GuildSettings/${guildId}.bson`, err);
+      obj = { assignableRoles: [] };
+    }
+
+    if (obj.assignableRoles.includes(roleId)) {
+      return 'Role is already assignable!';
+    } else {
+      obj.assignableRoles.push(roleId);
+      await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
+      return 'Role successfully marked as assignable';
+    }
   }
 
   public static async GetUserSettings (userIds: Snowflake[]): Promise<Record<Snowflake, DB_UserSettings>> {
