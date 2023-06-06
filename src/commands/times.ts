@@ -4,29 +4,19 @@ import { type Interaction } from '../discord_api/interaction'
 import { MiscEndpoints } from '../discord_api/miscEndpoints';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder'
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { CommandResult } from '../discord_api/commandResult';
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('times')
     .setDescription('Gets the current times for all registered users currently in the guild'),
-  async execute (interaction: Interaction): Promise<string> {
-    const totalStart = Date.now();
+  async execute (interaction: Interaction): Promise<CommandResult> {
     const result = await MiscEndpoints.GetGuildMembers(interaction.guild_id);
-    console.log(`Getting guild members took - ${Date.now() - totalStart}ms`);
 
     const userIds: string[] = result.map(r => r.user !== null ? r.user.id : '');
-
-    console.log('searching for users:', userIds);
-
-    const databaseCallStart = Date.now();
     const response = await DatabaseWrapper.GetUserSettings(userIds);
-    console.log(`Getting information from database took - ${Date.now() - databaseCallStart}ms`);
 
-    console.log('database response:', response);
-
-    const getTzStart = Date.now();
     const zones = getTimeZones({ includeUtc: true });
-    console.log(`Getting time zones took - ${Date.now() - getTzStart}ms`);
 
     const dict: Record<string, string[]> = {};
 
@@ -79,8 +69,6 @@ module.exports = {
     }
 
     retString += '```';
-    console.log(`Building response content string took - ${Date.now() - now}ms`);
-    console.log(`Total time: ${Date.now() - totalStart}ms`);
-    return retString;
+    return new CommandResult(retString, false);
   }
 } as CommandDescription
