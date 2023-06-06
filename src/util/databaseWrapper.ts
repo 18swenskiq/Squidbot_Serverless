@@ -44,21 +44,13 @@ export abstract class DatabaseWrapper {
     listObj.shift()
     listObj = listObj.map(o => o.split('/')[1].replace('.bson', ''));
 
-    console.log('new list object', listObj);
-
-    console.log('passed user ids', userIds);
-
     const validUserIds = listObj.filter(l => userIds.includes(l));
-
-    console.log(validUserIds);
 
     const retObj: Record<Snowflake, DB_UserSettings> = {};
 
     for (let i = 0; i < validUserIds.length; i++) {
       const id = validUserIds[i];
-      console.log('testing id:', id);
       const res = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', id);
-      console.log('line response: ', res);
 
       if (Object.keys(res).length > 0) {
         retObj[id] = res;
@@ -69,7 +61,6 @@ export abstract class DatabaseWrapper {
   }
 
   private static async ListObjects (dir: ObjectDirectory): Promise<string[]> {
-    console.log('Calling list objects api...');
     const input: ListObjectsCommandInput = {
       Bucket: bucketName,
       MaxKeys: 1000,
@@ -79,8 +70,6 @@ export abstract class DatabaseWrapper {
     const command = new ListObjectsCommand(input);
     const response = await StaticDeclarations.s3client.send(command);
 
-    console.log('Full response: ', response);
-
     if (response.Contents === undefined) {
       console.log('response was error!');
       return [];
@@ -88,16 +77,11 @@ export abstract class DatabaseWrapper {
 
     const contents = response.Contents === undefined ? [] : response.Contents;
 
-    console.log('the contents', contents);
-
     return contents.map(c => c.Key) as string[];
   }
 
   private static async GetBSONObject<T>(dir: ObjectDirectory, key: string): Promise<T> {
-    console.log('getting BSON object');
     const itemKey = `${dir}/${key}.bson`;
-
-    console.log('getting item:', itemKey);
 
     const input: GetObjectRequest = {
       Bucket: bucketName,
@@ -106,9 +90,7 @@ export abstract class DatabaseWrapper {
 
     const command = new GetObjectCommand(input);
 
-    console.log('command', command);
     const response = await StaticDeclarations.s3client.send(command);
-    console.log('first response', response);
     const respBytes = await response.Body?.transformToByteArray();
 
     if (respBytes === undefined) {
@@ -133,8 +115,7 @@ export abstract class DatabaseWrapper {
     }
 
     const command = new PutObjectCommand(input);
-    const response = await StaticDeclarations.s3client.send(command);
-    console.log('response', response);
+    await StaticDeclarations.s3client.send(command);
     return true;
   }
 }

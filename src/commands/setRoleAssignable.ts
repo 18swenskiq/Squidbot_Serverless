@@ -1,4 +1,5 @@
 import { type CommandDescription } from '../discord_api/command'
+import { CommandResult } from '../discord_api/commandResult';
 import { type Interaction } from '../discord_api/interaction'
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder'
@@ -13,9 +14,9 @@ module.exports = {
       .setDescription('The role to mark as assignable')
       .setRequired(true))
     .setDefaultMemberPermissions([GuildPermissions.MANAGE_ROLES]),
-  async execute (interaction: Interaction): Promise<string> {
+  async execute (interaction: Interaction): Promise<CommandResult> {
     const roleOpt = interaction.data.options[0];
     const result = await DatabaseWrapper.SetGuildRoleAssignable(interaction.guild_id, roleOpt.value);
-    return result;
+    return new CommandResult(result, false);
   }
 } as CommandDescription;

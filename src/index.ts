@@ -5,24 +5,21 @@ import { Interaction } from './discord_api/interaction';
 import { CommandDescription } from './discord_api/command';
 import axios from 'axios';
 import { StaticDeclarations } from './util/staticDeclarations';
+import { CommandResult } from './discord_api/commandResult';
 
 exports.handler = async (event: any) => {
-  console.log(event);
   const strBody = event; // should be string, for successful sign
 
   // Creating static declarations
   StaticDeclarations.GenerateOptions();
 
-  console.log('Loading commands');
   const commands: CommandDescription[] = [];
 
   // Load Commands
   const commandsPath = path.resolve(__dirname, 'commands/');
   const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-  console.log(`Loading ${commandFiles.length} commands...`);
   for (const file of commandFiles) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    console.log('Loading Command:', file);
     try {
       const command: CommandDescription = require(`${commandsPath}/${file}`);
       commands.push(command);
@@ -36,14 +33,12 @@ exports.handler = async (event: any) => {
 
   // Replying to ping (requirement 2.)
   const body: Interaction = JSON.parse(strBody);
-  console.log(`Body name: ${body.data.name}`);
 
   const chosenCommand = commands.find(c => c.data.name === body.data.name);
 
   if (chosenCommand != null) {
     const result = await chosenCommand.execute(body);
     console.log('Returning result:', result);
-    // return JSON.stringify({ type: 4, data: { content: result } });
     await sendCommandResponse(body, result);
     return { statusCode: 200 };
   } else {
@@ -51,10 +46,21 @@ exports.handler = async (event: any) => {
   }
 }
 
-async function sendCommandResponse (interaction: Interaction, message: string): Promise<void> {
+async function sendCommandResponse (interaction: Interaction, result: CommandResult): Promise<void> {
+  const body: any = {};
+
+  const message = (result.message !== undefined ? result.message : true);
+  body.content = message;
+
+  if (result.embeds !== undefined && result.embeds.length > 0) {
+    body.embeds = result.embeds;
+  }
+
+  if (result.components !== undefined && result.components.length > 0) {
+    body.components = result.components;
+  }
+
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, {
-    content: message
-  });
+  const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, body);
   console.log('Response from editing message: ', res);
 }
