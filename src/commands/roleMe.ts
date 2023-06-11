@@ -2,7 +2,7 @@ import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { Interaction } from '../discord_api/interaction';
-import { RoleSelectComponent, SelectOption } from '../discord_api/messageComponent';
+import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 
@@ -17,7 +17,7 @@ module.exports = {
     const allRoles = await DiscordApiRoutes.getGuildRoles(interaction.guild_id);
 
     const cr = new CommandResult('Select your roles!', true);
-    const roleDropdownComponent = new RoleSelectComponent();
+    const roleDropdownComponent = new StringSelectComponent();
 
     global.crypto = require('crypto');
     // eslint-disable-next-line @typescript-eslint/dot-notation
