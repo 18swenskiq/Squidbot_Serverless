@@ -18,7 +18,7 @@ module.exports = {
 
     const cr = new CommandResult('Select your roles!', true);
     const roleDropdownComponent = new RoleSelectComponent();
-    const interactionGuid = crypto.randomUUID();
+    const interactionGuid = (<any>crypto).randomUUID(); // i hate this workaround
 
     roleDropdownComponent.placeholder = 'Select your roles!';
     roleDropdownComponent.custom_id = interactionGuid;
