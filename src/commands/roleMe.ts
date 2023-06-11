@@ -23,6 +23,8 @@ module.exports = {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const interactionGuid = crypto['randomUUID'](); // i hate this workaround
 
+    roleDropdownComponent.min_values = 1;
+    roleDropdownComponent.max_values = 30;
     roleDropdownComponent.placeholder = 'Select your roles!';
     roleDropdownComponent.custom_id = interactionGuid;
     roleDropdownComponent.options = assignableRoles.map(r => {
