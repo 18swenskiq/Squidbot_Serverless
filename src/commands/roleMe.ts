@@ -34,7 +34,7 @@ module.exports = {
     })
 
     const componentWrapper: any = { type: 1, components: [] };
-    componentWrapper.push(<any>roleDropdownComponent);
+    componentWrapper.components.push(<any>roleDropdownComponent);
 
     cr.components = [];
     cr.components.push(componentWrapper);
