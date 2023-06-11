@@ -33,7 +33,11 @@ module.exports = {
       return <SelectOption>{ label, value, default: isDefault };
     })
 
-    cr.components = [roleDropdownComponent];
+    const componentWrapper: any = { type: 1, components: [] };
+    componentWrapper.push(<any>roleDropdownComponent);
+
+    cr.components = [];
+    cr.components.push(componentWrapper);
 
     // Store this interaction in the db
     // Actually let's see what happens
