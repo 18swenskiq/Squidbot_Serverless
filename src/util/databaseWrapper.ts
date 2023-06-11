@@ -6,7 +6,7 @@ import { StaticDeclarations } from './staticDeclarations';
 import { DB_GuildSettings } from '../database_models/guildSettings';
 
 const bucketName = 'squidbot';
-type ObjectDirectory = 'UserSettings' | 'GuildSettings';
+type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
@@ -35,6 +35,15 @@ export abstract class DatabaseWrapper {
       obj.assignableRoles.push(roleId);
       await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
       return 'Role successfully marked as assignable';
+    }
+  }
+
+  public static async GetGuildRolesAssignable (guildId: Snowflake): Promise<Snowflake[]> {
+    try {
+      const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
+      return obj.assignableRoles;
+    } catch (err: any) {
+      return [];
     }
   }
 
