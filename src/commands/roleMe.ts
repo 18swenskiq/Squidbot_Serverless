@@ -18,6 +18,8 @@ module.exports = {
 
     const cr = new CommandResult('Select your roles!', true);
     const roleDropdownComponent = new RoleSelectComponent();
+
+    global.crypto = require('crypto');
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const interactionGuid = crypto['randomUUID'](); // i hate this workaround
 
