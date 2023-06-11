@@ -33,6 +33,8 @@ module.exports = {
       return <SelectOption>{ label, value, default: isDefault };
     })
 
+    cr.components = [roleDropdownComponent];
+
     // Store this interaction in the db
     // Actually let's see what happens
 
