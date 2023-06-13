@@ -35,6 +35,8 @@ module.exports = {
       return <SelectOption>{ label, value, default: isDefault };
     })
 
+    console.log(roleDropdownComponent);
+
     const componentWrapper: any = { type: 1, components: [] };
     componentWrapper.components.push(<any>roleDropdownComponent);
 
