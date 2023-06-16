@@ -78,7 +78,7 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
 
   try {
     if (result.sendEphemeralDeleteOriginal) {
-      body.flags = 64;
+      body.data.flags = 64;
 
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       const originalInteractionReply = await axios.get(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`);
