@@ -9,40 +9,52 @@ import { CommandResult } from './discord_api/commandResult';
 
 exports.handler = async (event: any) => {
   const strBody = event; // should be string, for successful sign
+  const body: Interaction = JSON.parse(strBody);
 
   // Creating static declarations
   StaticDeclarations.GenerateOptions();
 
   const commands: CommandDescription[] = [];
 
-  // Load Commands
-  const commandsPath = path.resolve(__dirname, 'commands/');
-  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-  for (const file of commandFiles) {
+  let commandsPath: string;
+  let commandFiles: string[];
+  if (body.type === 2) {
+    // Load Commands (only if type 2)
+    // eslint-disable-next-line prefer-const
+    commandsPath = path.resolve(__dirname, 'commands/');
+    // eslint-disable-next-line prefer-const
+    commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    try {
-      const command: CommandDescription = require(`${commandsPath}/${file}`);
-      commands.push(command);
-    } catch (exception: any) {
-      console.log(`Could not load command: ${file}`);
-      console.log(exception);
+      try {
+        const command: CommandDescription = require(`${commandsPath}/${file}`);
+        commands.push(command);
+      } catch (exception: any) {
+        console.log(`Could not load command: ${file}`);
+        console.log(exception);
+      }
     }
+
+    console.log('Commands loaded!');
   }
 
-  console.log('Commands loaded!');
+  switch (body.type) {
+    case 2:
+      const chosenCommand = commands.find(c => c.data.name === body.data.name);
 
-  // Replying to ping (requirement 2.)
-  const body: Interaction = JSON.parse(strBody);
-
-  const chosenCommand = commands.find(c => c.data.name === body.data.name);
-
-  if (chosenCommand != null) {
-    const result = await chosenCommand.execute(body);
-    console.log('Returning result:', result);
-    await sendCommandResponse(body, result);
-    return { statusCode: 200 };
-  } else {
-    return { statusCode: 404 };
+      if (chosenCommand != null) {
+        const result = await chosenCommand.execute(body);
+        console.log('Returning result:', result);
+        await sendCommandResponse(body, result);
+        return { statusCode: 200 };
+      } else {
+        return { statusCode: 404 };
+      }
+    case 3:
+      // Handle interaction
+      console.log('Interaction handled as follows,');
+      console.log(body);
+      return { statusCode: 200 }
   }
 }
 

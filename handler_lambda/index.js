@@ -37,6 +37,7 @@ exports.handler = async(event) => {
         body: JSON.stringify({ type: 1 })
       };
 	  case 2:
+    case 3:
       const lambdaParams = {
         FunctionName: 'SquidBotLambda',
         InvocationType: 'Event',
