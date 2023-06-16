@@ -17,6 +17,6 @@ module.exports = {
   async execute (interaction: Interaction): Promise<CommandResult> {
     const roleOpt = interaction.data.options[0];
     const result = await DatabaseWrapper.SetGuildRoleAssignable(interaction.guild_id, roleOpt.value);
-    return new CommandResult(result, false);
+    return new CommandResult(result, false, false);
   }
 } as CommandDescription;

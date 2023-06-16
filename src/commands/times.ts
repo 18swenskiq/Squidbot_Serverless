@@ -69,6 +69,6 @@ module.exports = {
     }
 
     retString += '```';
-    return new CommandResult(retString, false);
+    return new CommandResult(retString, false, false);
   }
 } as CommandDescription

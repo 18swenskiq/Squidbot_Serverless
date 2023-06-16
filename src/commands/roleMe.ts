@@ -16,7 +16,7 @@ module.exports = {
     // We need to get the server roles for the names for the dropdown
     const allRoles = await DiscordApiRoutes.getGuildRoles(interaction.guild_id);
 
-    const cr = new CommandResult('Select your roles!', true);
+    const cr = new CommandResult('Select your roles!', true, true);
     const roleDropdownComponent = new StringSelectComponent();
 
     global.crypto = require('crypto');

@@ -23,7 +23,7 @@ module.exports = {
       // If it wasn't in the main cities, let's try searching the name directly
       requestedZone = zones.find(z => z.group.some(c => c.toLowerCase().includes(cityName)));
       if (requestedZone === undefined) {
-        return new CommandResult('City name could not be found', true);
+        return new CommandResult('City name could not be found', true, false);
       }
     }
 
@@ -36,6 +36,6 @@ module.exports = {
     const now = new Date();
     const resultTz = new Date(now);
     resultTz.setMinutes(now.getMinutes() + currentOffset);
-    return new CommandResult(`Timezone set to ${requestedZone.name}! (${resultTz.getUTCHours()}:${resultTz.getUTCMinutes()})`, false);
+    return new CommandResult(`Timezone set to ${requestedZone.name}! (${resultTz.getUTCHours()}:${resultTz.getUTCMinutes()})`, false, false);
   }
 } as CommandDescription

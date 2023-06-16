@@ -77,9 +77,18 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
   console.log(util.inspect(body, { showHidden: false, depth: null, colors: false }));
 
   try {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, body);
-    console.log('Response from editing message: ', res);
+    if (result.sendEphemeralDeleteOriginal) {
+      const followUpResult = await axios.post(`https://discord.com/api/v10/interactions/${interaction.id}/${interaction.token}/callback`, { type: 4, data: body });
+      console.log('Followup result: ', followUpResult);
+
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      const deleteResult = await axios.delete(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`);
+      console.log('Delete result: ', deleteResult);
+    } else {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, body);
+      console.log('Response from editing message: ', res);
+    }
   } catch (error: any) {
     console.log('Error Data', error.response.data);
     console.log('Error Status', error.response.status);

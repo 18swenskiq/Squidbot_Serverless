@@ -8,6 +8,6 @@ module.exports = {
     .setName('test')
     .setDescription('test description'),
   async execute (interaction: Interaction): Promise<CommandResult> {
-    return new CommandResult('nothing', false);
+    return new CommandResult('nothing', false, false);
   }
 } as CommandDescription
