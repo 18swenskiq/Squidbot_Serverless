@@ -87,7 +87,7 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
       // const newInteraction: Interaction = originalInteractionReply.data.interaction;
 
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      await axios.post(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}`, { content: 'User is selecting roles!' });
+      await axios.post(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}`, { content: 'Role dropdown sent! Use /roleme to assign your own roles!' });
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       const followUpResult = await axios.post(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}`, body);
       console.log('Followup result: ', followUpResult);
