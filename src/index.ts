@@ -78,7 +78,15 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
 
   try {
     if (result.sendEphemeralDeleteOriginal) {
-      const followUpResult = await axios.post(`https://discord.com/api/v10/interactions/${interaction.id}/${interaction.token}/callback`, { type: 4, data: body });
+      body.flags = 64;
+
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      const originalInteractionReply = await axios.get(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`);
+      console.log('Original Interaction Reply: ', originalInteractionReply);
+
+      const newInteraction: Interaction = originalInteractionReply.data;
+
+      const followUpResult = await axios.post(`https://discord.com/api/v10/interactions/${newInteraction.id}/${newInteraction.token}/callback`, { type: 4, data: body });
       console.log('Followup result: ', followUpResult);
 
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
