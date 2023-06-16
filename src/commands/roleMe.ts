@@ -30,7 +30,7 @@ module.exports = {
     roleDropdownComponent.options = assignableRoles.map(r => {
       const role = allRoles.find(a => a.id === r);
       const label = role?.name;
-      const value = interactionGuid;
+      const value = role?.id;
       const isDefault = interaction.member.roles.includes(r);
 
       return <SelectOption>{ label, value, default: isDefault };
