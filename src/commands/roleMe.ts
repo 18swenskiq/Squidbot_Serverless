@@ -19,14 +19,14 @@ module.exports = {
     const cr = new CommandResult('Select your roles!', true);
     const roleDropdownComponent = new StringSelectComponent();
 
-    global.crypto = require('crypto');
+    // global.crypto = require('crypto');
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    const interactionGuid = crypto['randomUUID'](); // i hate this workaround
+    // const interactionGuid = crypto['randomUUID'](); // i hate this workaround
 
     roleDropdownComponent.min_values = 1;
     roleDropdownComponent.max_values = 25;
     roleDropdownComponent.placeholder = 'Select your roles!';
-    roleDropdownComponent.custom_id = interactionGuid;
+    roleDropdownComponent.custom_id = 'pee_is_stored_in_the_balls';
     roleDropdownComponent.options = assignableRoles.map(r => {
       const label = allRoles.find(a => a.id === r)?.name;
       const value = r;
