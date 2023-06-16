@@ -60,6 +60,9 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
     body.components = result.components;
   }
 
+  console.log('body', body);
+  console.log('body.components', body.components);
+
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, body);
   console.log('Response from editing message: ', res);
