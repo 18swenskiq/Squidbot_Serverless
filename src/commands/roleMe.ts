@@ -24,7 +24,7 @@ module.exports = {
     const interactionGuid = crypto['randomUUID'](); // i hate this workaround
 
     roleDropdownComponent.min_values = 1;
-    roleDropdownComponent.max_values = 25;
+    roleDropdownComponent.max_values = assignableRoles.length;
     roleDropdownComponent.placeholder = 'Select your roles!';
     roleDropdownComponent.custom_id = interactionGuid;
     let iterator = 0;
