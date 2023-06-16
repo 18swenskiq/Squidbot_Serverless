@@ -52,6 +52,9 @@ exports.handler = async(event) => {
       return {
         type: 5
       };
+    case 1000:
+        // testing
+        return { statusCode: 200 }
 	  default:
       return {
         statusCode: 404

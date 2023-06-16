@@ -27,17 +27,14 @@ module.exports = {
     roleDropdownComponent.max_values = assignableRoles.length;
     roleDropdownComponent.placeholder = 'Select your roles!';
     roleDropdownComponent.custom_id = interactionGuid;
-    let iterator = 0;
     roleDropdownComponent.options = assignableRoles.map(r => {
-      const label = allRoles.find(a => a.id === r)?.name;
-      const value = `pee_is_stored_in_the_balls_${iterator}`;
-      iterator++;
+      const role = allRoles.find(a => a.id === r);
+      const label = role?.name;
+      const value = interactionGuid;
       const isDefault = interaction.member.roles.includes(r);
 
       return <SelectOption>{ label, value, default: isDefault };
     })
-
-    console.log(roleDropdownComponent);
 
     const componentWrapper: any = { type: 1, components: [] };
     componentWrapper.components.push(<any>roleDropdownComponent);
