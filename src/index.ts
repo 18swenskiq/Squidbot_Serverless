@@ -84,7 +84,7 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
       const originalInteractionReply = await axios.get(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`);
       console.log('Original Interaction Reply: ', originalInteractionReply);
 
-      const newInteraction: Interaction = originalInteractionReply.data;
+      const newInteraction: Interaction = originalInteractionReply.data.interaction;
 
       const followUpResult = await axios.post(`https://discord.com/api/v10/interactions/${newInteraction.id}/${newInteraction.token}/callback`, { type: 4, data: body });
       console.log('Followup result: ', followUpResult);
