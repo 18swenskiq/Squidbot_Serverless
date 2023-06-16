@@ -76,7 +76,13 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
 
   console.log(util.inspect(body, { showHidden: false, depth: null, colors: false }));
 
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, body);
-  console.log('Response from editing message: ', res);
+  try {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, body);
+    console.log('Response from editing message: ', res);
+  } catch (error: any) {
+    console.log('Error Data', error.response.data);
+    console.log('Error Status', error.response.status);
+    console.log('Error Response Headers', error.response.headers);
+  }
 }
