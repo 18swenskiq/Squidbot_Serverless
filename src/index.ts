@@ -87,7 +87,7 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
       // const newInteraction: Interaction = originalInteractionReply.data.interaction;
 
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      const followUpResult = await axios.post(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}`, { type: 4, data: body });
+      const followUpResult = await axios.post(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}`, body);
       console.log('Followup result: ', followUpResult);
 
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
