@@ -85,7 +85,7 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
       await DiscordApiRoutes.createFollowupMessage(interaction, { content: 'Role dropdown sent! Use /roleme to assign your own roles!' });
       await DiscordApiRoutes.createFollowupMessage(interaction, body);
     } else {
-      await DiscordApiRoutes.editInitialInteractionResponse(interaction);
+      await DiscordApiRoutes.editInitialInteractionResponse(interaction, body);
     }
   } catch (error: any) {
     console.log('Error Data', error.response.data);

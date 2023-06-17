@@ -34,9 +34,9 @@ export abstract class DiscordApiRoutes {
     await DiscordApiRoutes.sendRequest('POST', url, requestBody);
   }
 
-  public static async editInitialInteractionResponse (initialInteraction: Interaction): Promise<void> {
+  public static async editInitialInteractionResponse (initialInteraction: Interaction, newBody: any): Promise<void> {
     const url = `${DiscordApiRoutes.baseUrl}/webhooks/${process.env.APP_ID}/${initialInteraction.token}/messages/@original`;
-    await DiscordApiRoutes.sendRequest('PATCH', url, initialInteraction);
+    await DiscordApiRoutes.sendRequest('PATCH', url, newBody);
   }
 
   public static async deleteInitialInteractionResponse (initialInteraction: Interaction): Promise<void> {
