@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import axios, { AxiosRequestConfig } from 'axios';
 import { Role } from './role';
 import { Snowflake } from './snowflake';
+import { Interaction } from './interaction';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DiscordApiRoutes {
   static readonly baseUrl: string = 'https://discord.com/api/v10';
   static readonly authHeaderConfig: AxiosRequestConfig = {
     headers: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       Authorization: `Bot ${process.env.BOT_TOKEN}`
     }
   }
@@ -28,27 +29,36 @@ export abstract class DiscordApiRoutes {
     await DiscordApiRoutes.sendRequest('DELETE', url);
   }
 
-  private static async sendRequest (requestType: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string): Promise<void> {
+  public static async createFollowupMessage (initialInteraction: Interaction, requestBody: any): Promise<void> {
+    const url = `${DiscordApiRoutes.baseUrl}/webhooks/${process.env.APP_ID}/${initialInteraction.token}`;
+    await DiscordApiRoutes.sendRequest('POST', url, requestBody);
+  }
+
+  public static async editInitialInteractionResponse (initialInteraction: Interaction): Promise<void> {
+    const url = `${DiscordApiRoutes.baseUrl}/webhooks/${process.env.APP_ID}/${initialInteraction.token}/messages/@original`;
+    await DiscordApiRoutes.sendRequest('PATCH', url, initialInteraction);
+  }
+
+  public static async deleteInitialInteractionResponse (initialInteraction: Interaction): Promise<void> {
+    const url = `${DiscordApiRoutes.baseUrl}/webhooks/${process.env.APP_ID}/${initialInteraction.token}/messages/@original`;
+    await DiscordApiRoutes.sendRequest('DELETE', url);
+  }
+
+  private static async sendRequest (requestType: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string, payload: any = null): Promise<any> {
     const authHeader = DiscordApiRoutes.authHeaderConfig;
     try {
       switch (requestType) {
         case 'GET':
-          await axios.get(url, authHeader);
-          break;
+          return await axios.get(url, authHeader);
         case 'POST':
-          await axios.post(url, null, authHeader);
-          break;
+          return await axios.post(url, payload, authHeader);
         case 'PUT':
-          await axios.put(url, null, authHeader);
-          break;
+          return await axios.put(url, payload, authHeader);
         case 'PATCH':
-          await axios.patch(url, null, authHeader);
-          break;
+          return await axios.patch(url, payload, authHeader);
         case 'DELETE':
-          await axios.delete(url, authHeader);
-          break;
+          return await axios.delete(url, authHeader);
       }
-      console.log('Successfully completed ', requestType, ' request to ', url);
     } catch (error: any) {
       const util = require('util');
       console.log('FAILED running ', requestType, ' on ', url);
