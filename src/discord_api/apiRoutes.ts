@@ -48,8 +48,10 @@ export abstract class DiscordApiRoutes {
           await axios.delete(url, authHeader);
           break;
       }
+      console.log('Successfully completed ', requestType, ' request to ', url);
     } catch (error: any) {
       const util = require('util');
+      console.log('FAILED running ', requestType, ' on ', url);
       console.log('Error Data:', util.inspect(error.response.data, { showHidden: false, depth: null, colors: false }));
       console.log('Error Status', util.inspect(error.response.status, { showHidden: false, depth: null, colors: false }));
       console.log('Error Response Headers', util.inspect(error.response.headers, { showHidden: false, depth: null, colors: false }));
