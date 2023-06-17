@@ -50,7 +50,7 @@ export abstract class HandleComponentInteraction {
 
     // Add roles to member
     for (let i = 0; i < addRoles.length; i++) {
-      await DiscordApiRoutes.addMemberRole(interaction.guild_id, interaction.member.user.id, removeRoles[i]);
+      await DiscordApiRoutes.addMemberRole(interaction.guild_id, interaction.member.user.id, addRoles[i]);
     }
 
     // Update the interactionHandler
