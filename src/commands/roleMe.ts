@@ -22,7 +22,7 @@ module.exports = {
 
     const interactionGuid: Guid = GenerateGuid();
 
-    roleDropdownComponent.min_values = 1;
+    roleDropdownComponent.min_values = 0;
     roleDropdownComponent.max_values = assignableRoles.length;
     roleDropdownComponent.placeholder = 'Select your roles!';
     roleDropdownComponent.custom_id = interactionGuid;
