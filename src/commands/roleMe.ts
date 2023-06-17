@@ -5,6 +5,7 @@ import { Interaction } from '../discord_api/interaction';
 import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { GenerateGuid, Guid } from '../util/guid';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,9 +20,7 @@ module.exports = {
     const cr = new CommandResult('Select your roles!', true, true);
     const roleDropdownComponent = new StringSelectComponent();
 
-    global.crypto = require('crypto');
-    // eslint-disable-next-line @typescript-eslint/dot-notation
-    const interactionGuid = crypto['randomUUID'](); // i hate this workaround
+    const interactionGuid: Guid = GenerateGuid();
 
     roleDropdownComponent.min_values = 1;
     roleDropdownComponent.max_values = assignableRoles.length;
@@ -42,8 +41,7 @@ module.exports = {
     cr.components = [];
     cr.components.push(componentWrapper);
 
-    // Store this interaction in the db
-    // Actually let's see what happens
+    await DatabaseWrapper.SetInteractionHandler(interaction.member.user.id, interaction.guild_id, interactionGuid, 'AssignRoles');
 
     return cr;
   }

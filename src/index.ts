@@ -1,11 +1,12 @@
 /* eslint-disable no-case-declarations */
 import fs from 'fs';
 import path from 'path';
-import { Interaction } from './discord_api/interaction';
+import { Interaction, InteractionData } from './discord_api/interaction';
 import { CommandDescription } from './discord_api/command';
 import axios from 'axios';
 import { StaticDeclarations } from './util/staticDeclarations';
 import { CommandResult } from './discord_api/commandResult';
+import { HandleComponentInteraction } from './interactions/handleComponentInteraction';
 
 exports.handler = async (event: any) => {
   const strBody = event; // should be string, for successful sign
@@ -40,7 +41,8 @@ exports.handler = async (event: any) => {
 
   switch (body.type) {
     case 2:
-      const chosenCommand = commands.find(c => c.data.name === body.data.name);
+      const bodyData = <InteractionData>body.data;
+      const chosenCommand = commands.find(c => c.data.name === bodyData.name);
 
       if (chosenCommand != null) {
         const result = await chosenCommand.execute(body);
@@ -52,8 +54,8 @@ exports.handler = async (event: any) => {
       }
     case 3:
       // Handle interaction
-      console.log('Interaction handled as follows,');
-      console.log(body);
+      await HandleComponentInteraction.Handle(body);
+      await deleteInitialResponse(body);
       return { statusCode: 200 }
   }
 }
@@ -81,20 +83,11 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
       body.flags = 64;
 
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      // const originalInteractionReply = await axios.get(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`);
-      // console.log('Original Interaction Reply: ', originalInteractionReply);
-
-      // const newInteraction: Interaction = originalInteractionReply.data.interaction;
-
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       await axios.post(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}`, { content: 'Role dropdown sent! Use /roleme to assign your own roles!' });
+
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       const followUpResult = await axios.post(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}`, body);
       console.log('Followup result: ', followUpResult);
-
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      // const deleteResult = await axios.delete(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`);
-      // console.log('Delete result: ', deleteResult);
     } else {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       const res = await axios.patch(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`, body);
@@ -105,4 +98,9 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
     console.log('Error Status', error.response.status);
     console.log('Error Response Headers', error.response.headers);
   }
+}
+
+async function deleteInitialResponse (interaction: Interaction): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  await axios.delete(`https://discord.com/api/v10/webhooks/${process.env.APP_ID}/${interaction.token}/messages/@original`);
 }

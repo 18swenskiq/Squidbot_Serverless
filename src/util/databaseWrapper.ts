@@ -4,6 +4,8 @@ import { DB_UserSettings } from '../database_models/userSettings';
 import { Snowflake } from '../discord_api/snowflake';
 import { StaticDeclarations } from './staticDeclarations';
 import { DB_GuildSettings } from '../database_models/guildSettings';
+import { Guid } from './guid';
+import { DB_ComponentInteractionHandler, HandlableComponentInteractionType } from '../database_models/interactionHandler';
 
 const bucketName = 'squidbot';
 type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents';
@@ -67,6 +69,20 @@ export abstract class DatabaseWrapper {
     }
 
     return retObj;
+  }
+
+  public static async SetInteractionHandler (creator: Snowflake, guildId: Snowflake, handlerId: Guid, handleType: HandlableComponentInteractionType): Promise<void> {
+    const obj = <DB_ComponentInteractionHandler>{ type: handleType, creationTimeEpoch: Date.now(), createdBy: creator, timesHandled: 0 };
+
+    const keyName = `${guildId}/${handlerId}`;
+
+    await DatabaseWrapper.PutBSONObject(obj, 'InteractableComponents', keyName);
+  }
+
+  public static async GetInteractionHandler (guildId: Snowflake, handlerId: Guid): Promise<DB_ComponentInteractionHandler> {
+    const keyName = `${guildId}/${handlerId}`;
+
+    return await DatabaseWrapper.GetBSONObject<DB_ComponentInteractionHandler>('InteractableComponents', keyName);
   }
 
   private static async ListObjects (dir: ObjectDirectory): Promise<string[]> {

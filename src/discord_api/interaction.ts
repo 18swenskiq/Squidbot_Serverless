@@ -1,3 +1,4 @@
+import { ComponentInteractionData } from './componentInteraction';
 import { Member } from './member';
 import { Snowflake } from './snowflake';
 
@@ -10,10 +11,10 @@ export class Interaction {
   app_permisions: string;
   guild_locale: string;
   locale: string;
-  data: InteractionData;
+  data: InteractionData | ComponentInteractionData;
   channel_id: Snowflake;
 
-  constructor (type: number, token: string, member: Member, id: string, guildId: string, appPermissions: string, guildLocale: string, locale: string, data: InteractionData, channelId: string) {
+  constructor (type: number, token: string, member: Member, id: string, guildId: string, appPermissions: string, guildLocale: string, locale: string, data: InteractionData | ComponentInteractionData, channelId: string) {
     this.type = type;
     this.token = token;
     this.member = member;
