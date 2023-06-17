@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { DB_ComponentInteractionHandler } from '../database_models/interactionHandler';
 import { ComponentInteractionData } from '../discord_api/componentInteraction';
 import { Interaction } from '../discord_api/interaction';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { Guid } from '../util/guid';
+import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class HandleComponentInteraction {
@@ -45,12 +45,12 @@ export abstract class HandleComponentInteraction {
 
     // Remove roels from member
     for (let i = 0; i < removeRoles.length; i++) {
-      await axios.delete(`https://discord.com/api/v10/guilds/${interaction.guild_id}/members/${interaction.member.user.id}/roles/${removeRoles[i]}`);
+      await DiscordApiRoutes.removeMemberRole(interaction.guild_id, interaction.member.user.id, removeRoles[i]);
     }
 
     // Add roles to member
     for (let i = 0; i < addRoles.length; i++) {
-      await axios.put(`https://discord.com/api/v10/guilds/${interaction.guild_id}/members/${interaction.member.user.id}/roles/${addRoles[i]}`);
+      await DiscordApiRoutes.addMemberRole(interaction.guild_id, interaction.member.user.id, removeRoles[i]);
     }
 
     // Update the interactionHandler
