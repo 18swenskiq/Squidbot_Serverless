@@ -55,7 +55,7 @@ exports.handler = async (event: any) => {
     case 3:
       // Handle interaction
       await HandleComponentInteraction.Handle(body);
-      await DiscordApiRoutes.createFollowupMessage(body, { content: 'Succesfully modified roles!' });
+      await DiscordApiRoutes.createFollowupMessage(body, { content: 'Successfully modified roles!' });
       return { statusCode: 200 }
   }
 }
