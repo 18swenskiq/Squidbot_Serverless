@@ -36,13 +36,13 @@ export abstract class DiscordApiRoutes {
           await axios.get(url, authHeader);
           break;
         case 'POST':
-          await axios.post(url, authHeader);
+          await axios.post(url, null, authHeader);
           break;
         case 'PUT':
-          await axios.put(url, authHeader);
+          await axios.put(url, null, authHeader);
           break;
         case 'PATCH':
-          await axios.patch(url, authHeader);
+          await axios.patch(url, null, authHeader);
           break;
         case 'DELETE':
           await axios.delete(url, authHeader);
