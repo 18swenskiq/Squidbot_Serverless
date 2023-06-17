@@ -33,6 +33,8 @@ export abstract class DatabaseWrapper {
       obj = { assignableRoles: [] };
     }
 
+    console.log(obj.assignableRoles);
+
     let retString = '';
     if (obj.assignableRoles.includes(roleId)) {
       obj.assignableRoles = obj.assignableRoles.filter(r => r !== roleId);
