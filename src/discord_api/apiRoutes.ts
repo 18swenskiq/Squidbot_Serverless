@@ -20,11 +20,39 @@ export abstract class DiscordApiRoutes {
 
   public static async addMemberRole (guildId: Snowflake, userId: Snowflake, roleId: Snowflake): Promise<void> {
     const url = `${DiscordApiRoutes.baseUrl}/guilds/${guildId}/members/${userId}/roles/${roleId}`;
-    await axios.put(url, DiscordApiRoutes.authHeaderConfig);
+    await DiscordApiRoutes.sendRequest('PUT', url);
   }
 
   public static async removeMemberRole (guildId: Snowflake, userId: Snowflake, roleId: Snowflake): Promise<void> {
     const url = `${DiscordApiRoutes.baseUrl}/guilds/${guildId}/members/${userId}/roles/${roleId}`;
-    await axios.delete(url, DiscordApiRoutes.authHeaderConfig);
+    await DiscordApiRoutes.sendRequest('DELETE', url);
+  }
+
+  private static async sendRequest (requestType: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string): Promise<void> {
+    const authHeader = DiscordApiRoutes.authHeaderConfig;
+    try {
+      switch (requestType) {
+        case 'GET':
+          await axios.get(url, authHeader);
+          break;
+        case 'POST':
+          await axios.post(url, authHeader);
+          break;
+        case 'PUT':
+          await axios.put(url, authHeader);
+          break;
+        case 'PATCH':
+          await axios.patch(url, authHeader);
+          break;
+        case 'DELETE':
+          await axios.delete(url, authHeader);
+          break;
+      }
+    } catch (error: any) {
+      const util = require('util');
+      console.log('Error Data:', util.inspect(error.response.data, { showHidden: false, depth: null, colors: false }));
+      console.log('Error Status', util.inspect(error.response.status, { showHidden: false, depth: null, colors: false }));
+      console.log('Error Response Headers', util.inspect(error.response.headers, { showHidden: false, depth: null, colors: false }));
+    }
   }
 }
