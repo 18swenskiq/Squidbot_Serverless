@@ -52,5 +52,8 @@ export abstract class HandleComponentInteraction {
     for (let i = 0; i < addRoles.length; i++) {
       await axios.put(`https://discord.com/api/v10/guilds/${interaction.guild_id}/members/${interaction.member.user.id}/roles/${addRoles[i]}`);
     }
+
+    // Update the interactionHandler
+    await DatabaseWrapper.SetInteractionHandler(interactionHandler.createdBy, interaction.guild_id, data.custom_id as Guid, 'AssignRoles', interactionHandler.timesHandled++);
   }
 }

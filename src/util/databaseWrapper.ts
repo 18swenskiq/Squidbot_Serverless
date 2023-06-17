@@ -71,8 +71,8 @@ export abstract class DatabaseWrapper {
     return retObj;
   }
 
-  public static async SetInteractionHandler (creator: Snowflake, guildId: Snowflake, handlerId: Guid, handleType: HandlableComponentInteractionType): Promise<void> {
-    const obj = <DB_ComponentInteractionHandler>{ type: handleType, creationTimeEpoch: Date.now(), createdBy: creator, timesHandled: 0 };
+  public static async SetInteractionHandler (creator: Snowflake, guildId: Snowflake, handlerId: Guid, handleType: HandlableComponentInteractionType, handled: number = 0): Promise<void> {
+    const obj = <DB_ComponentInteractionHandler>{ type: handleType, creationTimeEpoch: Date.now(), createdBy: creator, timesHandled: handled };
 
     const keyName = `${guildId}/${handlerId}`;
 
