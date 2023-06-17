@@ -50,9 +50,10 @@ exports.handler = async(event) => {
 
       console.log(reuslt);
 
-      return {
-        type: 5
-      };
+      if (body.type === 2) {
+        return { type: 5 };
+      }
+      return { type: 5, data: { flags: 64 } };
     case 1000:
         // testing
         return { statusCode: 200 }
