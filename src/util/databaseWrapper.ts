@@ -24,7 +24,7 @@ export abstract class DatabaseWrapper {
     await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
   }
 
-  public static async SetGuildRoleAssignable (guildId: Snowflake, roleId: Snowflake): Promise<string> {
+  public static async ToggleGuildRoleAssignable (guildId: Snowflake, roleId: Snowflake): Promise<string> {
     let obj: DB_GuildSettings;
     try {
       obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
@@ -33,13 +33,17 @@ export abstract class DatabaseWrapper {
       obj = { assignableRoles: [] };
     }
 
+    let retString = '';
     if (obj.assignableRoles.includes(roleId)) {
-      return 'Role is already assignable!';
+      obj.assignableRoles = obj.assignableRoles.filter(r => r !== roleId);
+      retString = 'Role set to be unassignable';
     } else {
       obj.assignableRoles.push(roleId);
-      await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
-      return 'Role successfully marked as assignable';
+      retString = 'Role set to be assignable';
     }
+
+    await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
+    return retString;
   }
 
   public static async GetGuildRolesAssignable (guildId: Snowflake): Promise<Snowflake[]> {
