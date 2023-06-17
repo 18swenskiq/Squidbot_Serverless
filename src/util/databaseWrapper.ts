@@ -13,10 +13,12 @@ type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponent
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
   public static async SetUserTimeString (userId: Snowflake, timeString: string): Promise<void> {
-    const obj = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', userId);
-
-    if (Object.keys(obj).length === 0) {
-      console.log("Object wasn't found");
+    let obj: DB_UserSettings;
+    try {
+      obj = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', userId);
+    } catch (error) {
+      console.log("user wasn't found in DB, creating...");
+      obj = <DB_UserSettings>{ timeZoneName: timeString };
     }
 
     await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
