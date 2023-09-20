@@ -10,6 +10,11 @@ module.exports = {
     .setDescription('Lists the game servers for this server'),
   async execute (interaction: Interaction): Promise<CommandResult> {
     const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
+
+    if (servers.length === 0 ) {
+        return new CommandResult("No servers :(", false, false);
+    }
+
     const serverStringList = servers.join(', ');
     return new CommandResult(`Servers: ${serverStringList}`, false, false);
   }

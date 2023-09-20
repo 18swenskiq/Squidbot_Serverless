@@ -74,7 +74,7 @@ export abstract class DatabaseWrapper {
   public static async GetGameServers (guildId: Snowflake): Promise<GameServer[]> {
     try {
       const obj = await DatabaseWrapper.GetGuildSettings(guildId);
-      return obj.gameServers;
+      return obj.gameServers ?? [];
     } catch (err: any) {
       return [];
     }
