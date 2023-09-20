@@ -19,16 +19,31 @@ module.exports = {
     const embed: Embed = {
         title: 'Game Servers',
         type: 'rich',
-        description: 'List of Game Servers to be used',
         fields: []
     }
 
     servers.forEach(s => {
-        const field: EmbedField = { name: s.nickname, value: s.ip, inline: false };
+        let gameDisplayName = 'Unknown Game';
+        let countryCode = '';
+
+        if (s.game === 'cs2') {
+            gameDisplayName = 'Counter-Strike 2';
+        }
+
+        if (s.countryCode && s.countryCode !== '') {
+            countryCode = `:flag_${countryCode.toLowerCase()}:`
+        }
+
+        const field: EmbedField = { 
+            name: `${s.nickname} - ${gameDisplayName}`, 
+            value: s.ip, 
+            inline: false
+        };
+         
         embed.fields?.push(field);
     })
 
-    const cr = new CommandResult(`List of Game Servers: `, false, false);
+    const cr = new CommandResult(``, false, false);
     cr.embeds = [embed];
     return cr;
   }
