@@ -54,7 +54,7 @@ export abstract class DatabaseWrapper {
     try {
       obj = await DatabaseWrapper.GetGuildSettings(guildId);
 
-      if (obj.gameServers === null) {
+      if (!obj.gameServers) {
         obj.gameServers = [];
       }
 
