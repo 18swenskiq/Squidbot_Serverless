@@ -67,6 +67,6 @@ module.exports = {
 
     const result = await DatabaseWrapper.AddGameServer(interaction.guild_id, newGameServer);
 
-    return new CommandResult(result, true, true);
+    return new CommandResult(result, true, true, '', true);
   }
 } as CommandDescription

@@ -17,7 +17,7 @@ module.exports = {
     // We need to get the server roles for the names for the dropdown
     const allRoles = await DiscordApiRoutes.getGuildRoles(interaction.guild_id);
 
-    const cr = new CommandResult('Select your roles!', true, true);
+    const cr = new CommandResult('Select your roles!', true, true, 'Role dropdown sent! Use /roleme to assign your own roles!', false);
     const roleDropdownComponent = new StringSelectComponent();
 
     const interactionGuid: Guid = GenerateGuid();
@@ -41,7 +41,7 @@ module.exports = {
     cr.components = [];
     cr.components.push(componentWrapper);
 
-    await DatabaseWrapper.SetInteractionHandler(interaction.member.user.id, interaction.guild_id, interactionGuid, 'AssignRoles');
+    await DatabaseWrapper.SetInteractionHandler(interaction.member.user.id, interaction.guild_id, interactionGuid, 'AssignRoles',);
 
     return cr;
   }

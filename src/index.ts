@@ -82,8 +82,14 @@ async function sendCommandResponse (interaction: Interaction, result: CommandRes
     if (result.sendEphemeralDeleteOriginal) {
       body.flags = 64;
 
-      await DiscordApiRoutes.createFollowupMessage(interaction, { content: 'Role dropdown sent! Use /roleme to assign your own roles!' });
+      const followupContent = result.firstResponseMessage === '' ? 'Placeholder Message' : result.firstResponseMessage;
+
+      await DiscordApiRoutes.createFollowupMessage(interaction, { content: followupContent });
       await DiscordApiRoutes.createFollowupMessage(interaction, body);
+
+      if (result.deleteFirstResponse) {
+        await DiscordApiRoutes.deleteInitialInteractionResponse(interaction);
+      }
     } else {
       await DiscordApiRoutes.editInitialInteractionResponse(interaction, body);
     }
