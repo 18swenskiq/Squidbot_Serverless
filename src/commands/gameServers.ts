@@ -31,7 +31,7 @@ module.exports = {
         }
 
         if (s.countryCode && s.countryCode !== '') {
-            countryCode = `:flag_${countryCode.toLowerCase()}:`
+            countryCode = `:flag_${s.countryCode.toLowerCase()}:`
         }
 
         const field: EmbedField = { 
