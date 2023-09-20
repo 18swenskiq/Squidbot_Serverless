@@ -35,7 +35,7 @@ module.exports = {
         }
 
         const field: EmbedField = { 
-            name: `${s.nickname} - ${gameDisplayName}`, 
+            name: `${countryCode} ${s.nickname} - ${gameDisplayName}`, 
             value: s.ip, 
             inline: false
         };
