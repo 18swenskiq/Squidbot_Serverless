@@ -1,5 +1,6 @@
 import { type CommandDescription } from '../discord_api/command'
 import { CommandResult } from '../discord_api/commandResult';
+import { Embed, EmbedField } from '../discord_api/embed';
 import { type Interaction } from '../discord_api/interaction'
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder'
 import { DatabaseWrapper } from '../util/databaseWrapper';
@@ -15,7 +16,20 @@ module.exports = {
         return new CommandResult("No servers :(", false, false);
     }
 
-    const serverStringList = servers.join(', ');
-    return new CommandResult(`Servers: ${serverStringList}`, false, false);
+    const embed: Embed = {
+        title: 'Game Servers',
+        type: 'rich',
+        description: 'List of Game Servers to be used',
+        fields: []
+    }
+
+    servers.forEach(s => {
+        const field: EmbedField = { name: s.nickname, value: s.ip, inline: false };
+        embed.fields?.push(field);
+    })
+
+    const cr = new CommandResult(`List of Game Servers: `, false, false);
+    cr.embeds = [embed];
+    return cr;
   }
 } as CommandDescription
