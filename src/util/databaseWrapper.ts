@@ -53,6 +53,11 @@ export abstract class DatabaseWrapper {
     let obj: DB_GuildSettings;
     try {
       obj = await DatabaseWrapper.GetGuildSettings(guildId);
+
+      if (obj.gameServers === null) {
+        obj.gameServers = [];
+      }
+
       obj.gameServers.push(newServer);
       await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
       return `Added Game Server \`${newServer.nickname}\``;
