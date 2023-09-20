@@ -6,6 +6,7 @@ import { StaticDeclarations } from './staticDeclarations';
 import { DB_GuildSettings } from '../database_models/guildSettings';
 import { Guid } from './guid';
 import { DB_ComponentInteractionHandler, HandlableComponentInteractionType } from '../database_models/interactionHandler';
+import { GameServer } from './gameServer';
 
 const bucketName = 'squidbot';
 type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents';
@@ -30,7 +31,7 @@ export abstract class DatabaseWrapper {
       obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
     } catch (err: any) {
       console.log('error getting object from db, file: ', `GuildSettings/${guildId}.bson`, err);
-      obj = { assignableRoles: [] };
+      obj = { assignableRoles: [], gameServers: [] };
     }
 
     console.log(obj.assignableRoles);
@@ -48,10 +49,32 @@ export abstract class DatabaseWrapper {
     return retString;
   }
 
+  public static async AddGameServer (guildId: Snowflake, newServer: GameServer): Promise<string> {
+    let obj: DB_GuildSettings;
+    try {
+      obj = await DatabaseWrapper.GetGuildSettings(guildId);
+      obj.gameServers.push(newServer);
+      await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
+      return `Added Game Server \`${newServer.nickname}\``;
+    } catch (err: any) {
+      console.log('error adding game server to guild. ', `GuildSettings/${guildId}.bson`, err);
+      return "Failed to add game server";
+    }
+  }
+
   public static async GetGuildRolesAssignable (guildId: Snowflake): Promise<Snowflake[]> {
     try {
-      const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
+      const obj = await DatabaseWrapper.GetGuildSettings(guildId);
       return obj.assignableRoles;
+    } catch (err: any) {
+      return [];
+    }
+  }
+
+  public static async GetGameServers (guildId: Snowflake): Promise<GameServer[]> {
+    try {
+      const obj = await DatabaseWrapper.GetGuildSettings(guildId);
+      return obj.gameServers;
     } catch (err: any) {
       return [];
     }
@@ -150,5 +173,10 @@ export abstract class DatabaseWrapper {
     const command = new PutObjectCommand(input);
     await StaticDeclarations.s3client.send(command);
     return true;
+  }
+
+  private static async GetGuildSettings (guildId: Snowflake): Promise<DB_GuildSettings> {
+    const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
+    return obj;
   }
 }
