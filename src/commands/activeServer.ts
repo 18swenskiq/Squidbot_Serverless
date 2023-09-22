@@ -9,7 +9,8 @@ module.exports = {
     .setDescription('If a parameter is provided, the active RCON server can be given via a string parameter. Otherwise, the current value will be returned')
     .addStringOption(option => option
         .setName('server')
-        .setDescription('')),
+        .setDescription('The IP of the Game Server to set as active')
+        .setRequired(false)),
   async execute (interaction: Interaction): Promise<CommandResult> {
     return new CommandResult('nothing', false, false);
   }
