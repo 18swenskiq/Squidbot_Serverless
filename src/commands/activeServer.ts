@@ -6,7 +6,7 @@ import { SlashCommandBuilder } from '../discord_api/slash_command_builder'
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('active_rcon_server')
-    .setDescription('If a parameter is provided, the active RCON server can be given via a string parameter. Otherwise, the current value will be returned')
+    .setDescription('Sets or gets the active ron server')
     .addStringOption(option => option
         .setName('server')
         .setDescription('The IP of the Game Server to set as active')
