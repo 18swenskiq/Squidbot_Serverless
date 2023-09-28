@@ -6,10 +6,10 @@ import { StaticDeclarations } from './staticDeclarations';
 import { DB_GuildSettings } from '../database_models/guildSettings';
 import { Guid } from './guid';
 import { DB_ComponentInteractionHandler, HandlableComponentInteractionType } from '../database_models/interactionHandler';
-import { GameServer } from './gameServer';
+import { DB_RconServer } from '../database_models/rconServer';
 
 const bucketName = 'squidbot';
-type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents';
+type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents' | 'RconServers';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
@@ -19,7 +19,7 @@ export abstract class DatabaseWrapper {
       obj = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', userId);
     } catch (error) {
       console.log("user wasn't found in DB, creating...");
-      obj = <DB_UserSettings>{ timeZoneName: timeString };
+      obj = { timeZoneName: timeString, activeRconServer: {} };
     }
 
     await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
@@ -31,7 +31,7 @@ export abstract class DatabaseWrapper {
       obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
     } catch (err: any) {
       console.log('error getting object from db, file: ', `GuildSettings/${guildId}.bson`, err);
-      obj = { assignableRoles: [], gameServers: [] };
+      obj = { assignableRoles: [], rconServers: [], gameServers: [] };
     }
 
     console.log(obj.assignableRoles);
@@ -49,20 +49,22 @@ export abstract class DatabaseWrapper {
     return retString;
   }
 
-  public static async AddGameServer (guildId: Snowflake, newServer: GameServer): Promise<string> {
+  public static async AddGameServer (newServer: DB_RconServer): Promise<string> {
     let obj: DB_GuildSettings;
     try {
-      obj = await DatabaseWrapper.GetGuildSettings(guildId);
+      await DatabaseWrapper.PutBSONObject(newServer, 'RconServers', newServer.id);
 
-      if (!obj.gameServers) {
-        obj.gameServers = [];
+      obj = await DatabaseWrapper.GetGuildSettings(newServer.guildId);
+
+      if (!obj.rconServers) {
+        obj.rconServers = [];
       }
 
-      obj.gameServers.push(newServer);
-      await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
+      obj.rconServers.push(newServer.id);
+      await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', newServer.guildId);
       return `Added Game Server \`${newServer.nickname}\``;
     } catch (err: any) {
-      console.log('error adding game server to guild. ', `GuildSettings/${guildId}.bson`, err);
+      console.log('error adding game server to guild', err);
       return "Failed to add game server";
     }
   }
@@ -76,12 +78,63 @@ export abstract class DatabaseWrapper {
     }
   }
 
-  public static async GetGameServers (guildId: Snowflake): Promise<GameServer[]> {
+  public static async GetActiveRconServer (userId: Snowflake, guildId: Snowflake): Promise<DB_RconServer> {
+    const user = await DatabaseWrapper.GetUserSettings_Single(userId);
+
+    if (guildId in user.activeRconServer)
+    {
+      try {
+        const server = await DatabaseWrapper.GetBSONObject<DB_RconServer>('RconServers', user.activeRconServer[guildId]);
+        return server;
+      }
+      catch {
+        return <DB_RconServer>{};
+      }
+    }
+
+    return <DB_RconServer>{};
+
+  }
+
+  public static async SetActiveRconServer (userId: Snowflake, guildId: Snowflake, rconServerId: Guid): Promise<void> {
+    try {
+      const obj = await DatabaseWrapper.GetUserSettings_Single(userId);
+      obj.activeRconServer[guildId] = rconServerId;
+
+      await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
+    } catch (err: any) {
+      return;
+    }
+  }
+
+  public static async GetGameServers (guildId: Snowflake): Promise<DB_RconServer[]> {
     try {
       const obj = await DatabaseWrapper.GetGuildSettings(guildId);
-      return obj.gameServers ?? [];
+      const rconIds = obj.rconServers;
+
+      if (!rconIds || rconIds.length === 0) {
+        return [];
+      }
+
+      let rconServers: DB_RconServer[] = [];
+
+      for (let i = 0; i < rconIds.length - 1; i++) {
+        const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>('RconServers', rconIds[i]);
+        rconServers.push(rconServer);
+      }
+
+      return rconServers ?? [];
     } catch (err: any) {
       return [];
+    }
+  }
+
+  public static async GetUserSettings_Single(userId: Snowflake): Promise<DB_UserSettings> {
+    try {
+      const obj = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', userId);
+      return obj;
+    } catch (err: any) {
+      return <DB_UserSettings>{ activeRconServer: {}};
     }
   }
 

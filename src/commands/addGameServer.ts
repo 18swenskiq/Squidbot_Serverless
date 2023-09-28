@@ -1,10 +1,11 @@
+import { DB_RconServer, Game } from '../database_models/rconServer';
 import { type CommandDescription } from '../discord_api/command'
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction'
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder'
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { Game, GameServer } from '../util/gameServer';
+import { GenerateGuid, Guid } from '../util/guid';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,6 +20,10 @@ module.exports = {
         .setName('ip')
         .setDescription("The IP of the game server (don't include the port)")
         .setRequired(true))
+    .addStringOption((option => option
+        .setName('port')
+        .setDescription("The port of the game server")
+        .setRequired(true)))
     .addStringOption(option => option
         .setName("nickname")
         .setDescription("The friendly nickname of the server to refer to it as")
@@ -37,6 +42,7 @@ module.exports = {
 
     const chosenGame = interactionData.options.find(o => o.name === 'game')?.value;
     const chosenIp = interactionData.options.find(o => o.name === 'ip')?.value;
+    const chosenPort = interactionData.options.find(o => o.name === 'port')?.value;
     const chosenNickname = interactionData.options.find(o => o.name === 'nickname')?.value;
     const chosenRconPassword = interactionData.options.find(o => o.name === 'rcon_password')?.value;
     const chosenFlag = interactionData.options.find(o => o.name === 'flag')?.value ?? '';
@@ -57,15 +63,18 @@ module.exports = {
         }
     }
 
-    const newGameServer: GameServer = {
+    const newGameServer: DB_RconServer = {
+        id: GenerateGuid(),
         nickname: <string>chosenNickname,
         ip: <string>chosenIp,
+        port: <string>chosenPort,
         game: <Game>chosenGame,
+        guildId: interaction.guild_id,
         rconPassword: <string>chosenRconPassword,
         countryCode: chosenFlag
     };
 
-    const result = await DatabaseWrapper.AddGameServer(interaction.guild_id, newGameServer);
+    const result = await DatabaseWrapper.AddGameServer(newGameServer);
 
     return new CommandResult(result, true, true, '', true);
   }

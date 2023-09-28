@@ -7,7 +7,7 @@ import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('game_servers')
+    .setName('servers')
     .setDescription('Lists the game servers for this server'),
   async execute (interaction: Interaction): Promise<CommandResult> {
     const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);

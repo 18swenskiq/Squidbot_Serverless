@@ -1,7 +1,13 @@
 import { Snowflake } from '../discord_api/snowflake';
-import { GameServer } from '../util/gameServer';
+import { Guid } from '../util/guid';
+import { DB_RconServer } from './rconServer';
 
 export interface DB_GuildSettings {
   assignableRoles: Snowflake[];
-  gameServers: GameServer[];
+  rconServers: Guid[];
+
+  /**
+   * @deprecated Not used anymore
+   */
+  gameServers: DB_RconServer[]; 
 }
