@@ -110,9 +110,11 @@ export abstract class DatabaseWrapper {
   public static async GetGameServers (guildId: Snowflake): Promise<DB_RconServer[]> {
     try {
       const obj = await DatabaseWrapper.GetGuildSettings(guildId);
+      console.log("the obj", obj);
       const rconIds = obj.rconServers;
 
       if (!rconIds || rconIds.length === 0) {
+        console.log("rcon ids was bad");
         return [];
       }
 
