@@ -40,6 +40,11 @@ module.exports = {
                         interaction.guild_id,
                         server.id
                     );
+                    return new CommandResult(
+                        `Set the active server to \`${server.id}:${server.port}\` (${server.nickname})`,
+                        true,
+                        false
+                    );
                 } else {
                     return new CommandResult(
                         'Input was not recognized as a registered RCON server for this guild.',
