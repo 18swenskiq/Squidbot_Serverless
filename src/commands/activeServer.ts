@@ -23,7 +23,7 @@ module.exports = {
         }
 
         const options = (<InteractionData>interaction.data).options;
-        if (options) {
+        if (options?.length > 0) {
             const chosenServerIp = options.find((o) => o.name === 'server')?.value;
 
             console.log('chosen server ip:', chosenServerIp);
@@ -56,6 +56,6 @@ module.exports = {
             return new CommandResult(`Current active server is \`${res.ip}:${res.port}\``, true, false);
         }
 
-        return new CommandResult('how did you make this appear', true, false);
+        return new CommandResult('Currently no RCON server registered', true, false);
     },
 } as CommandDescription;
