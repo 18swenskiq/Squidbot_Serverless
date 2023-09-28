@@ -3,11 +3,11 @@ import { Guid } from '../util/guid';
 import { DB_RconServer } from './rconServer';
 
 export interface DB_GuildSettings {
-  assignableRoles: Snowflake[];
-  rconServers: Guid[];
+    assignableRoles: Snowflake[];
+    rconServers: Guid[];
 
-  /**
-   * @deprecated Not used anymore
-   */
-  gameServers: DB_RconServer[]; 
+    /**
+     * @deprecated Not used anymore
+     */
+    gameServers: DB_RconServer[];
 }
