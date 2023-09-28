@@ -120,8 +120,10 @@ export abstract class DatabaseWrapper {
 
       let rconServers: DB_RconServer[] = [];
 
-      for (let i = 0; i < rconIds.length - 1; i++) {
+      console.log("getting rcon servers");
+      for (let i = 0; i < rconIds.length; i++) {
         const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>('RconServers', rconIds[i]);
+        console.log(rconServer);
         rconServers.push(rconServer);
       }
 
