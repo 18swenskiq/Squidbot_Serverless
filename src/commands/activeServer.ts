@@ -19,33 +19,35 @@ module.exports = {
         return new CommandResult("No servers registered for this guild! Use /add_game_server to add some!", false, false);
     }
 
-    const chosenServerIp = (<InteractionData>interaction.data).options?.find(o => o.name === 'server')?.value;
-
-    console.log("chosen server ip:", chosenServerIp);
-    // If the server input was provided
-    if (chosenServerIp) 
+    const options = (<InteractionData>interaction.data).options;
+    if (options)
     {
-      const server = servers.find(s => s.ip === chosenServerIp);
+      const chosenServerIp = options.find(o => o.name === 'server')?.value;
 
-      console.log("relevant server", server);
-
-      if (server) 
+      console.log("chosen server ip:", chosenServerIp);
+      // If the server input was provided
+      if (chosenServerIp) 
       {
-        console.log("Setting the server");
-        await DatabaseWrapper.SetActiveRconServer(interaction.member.user.id, interaction.guild_id, server.id);
-      }
-      else 
-      {
-        return new CommandResult('Input was not recognized as a registered RCON server for this guild.', true, false);
+        const server = servers.find(s => s.ip === chosenServerIp);
+  
+        console.log("relevant server", server);
+  
+        if (server) 
+        {
+          console.log("Setting the server");
+          await DatabaseWrapper.SetActiveRconServer(interaction.member.user.id, interaction.guild_id, server.id);
+        }
+        else 
+        {
+          return new CommandResult('Input was not recognized as a registered RCON server for this guild.', true, false);
+        }
       }
     }
-    else // The server input was not provided
-    {
-      const res = await DatabaseWrapper.GetActiveRconServer(interaction.member.user.id, interaction.guild_id);
-      console.log("get active server response", res);
-      if (res?.ip) {
-        return new CommandResult(`Current active server is \`${res.ip}:${res.port}\``, true, false);
-      }
+
+    const res = await DatabaseWrapper.GetActiveRconServer(interaction.member.user.id, interaction.guild_id);
+    console.log("get active server response", res);
+    if (res?.ip) {
+      return new CommandResult(`Current active server is \`${res.ip}:${res.port}\``, true, false);
     }
 
     return new CommandResult('how did you make this appear', true, false);
