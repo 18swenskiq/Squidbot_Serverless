@@ -148,6 +148,11 @@ export abstract class DatabaseWrapper {
     public static async GetUserSettings_Single(userId: Snowflake): Promise<DB_UserSettings> {
         try {
             const obj = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', userId);
+
+            if (!obj.activeRconServer) {
+                obj.activeRconServer = {};
+            }
+
             return obj;
         } catch (err: any) {
             return <DB_UserSettings>{ activeRconServer: {} };
