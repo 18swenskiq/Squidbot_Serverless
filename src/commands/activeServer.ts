@@ -19,9 +19,9 @@ module.exports = {
         return new CommandResult("No servers registered for this guild! Use /add_game_server to add some!", false, false);
     }
 
-    const chosenServerIp = (<InteractionData>interaction.data).options.find(o => o.name === 'server')?.value;
+    const chosenServerIp = (<InteractionData>interaction.data).options?.find(o => o.name === 'server')?.value;
 
-    console.log("chosen server ip", chosenServerIp);
+    console.log("chosen server ip:", chosenServerIp);
     // If the server input was provided
     if (chosenServerIp) 
     {
