@@ -1,16 +1,18 @@
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
+import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('active_rcon_server')
-        .setDescription('Sets or gets the active ron server')
+        .setDescription('Sets or gets the active rcon server')
         .addStringOption((option) =>
             option.setName('server').setDescription('The IP of the Game Server to set as active').setRequired(false)
-        ),
+        )
+        .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
 

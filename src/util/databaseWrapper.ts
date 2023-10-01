@@ -204,7 +204,6 @@ export abstract class DatabaseWrapper {
         handlerId: Guid
     ): Promise<DB_ComponentInteractionHandler> {
         const keyName = `${guildId}/${handlerId}`;
-
         return await DatabaseWrapper.GetBSONObject<DB_ComponentInteractionHandler>('InteractableComponents', keyName);
     }
 

@@ -35,7 +35,36 @@ export class StringSelectComponent extends SelectMenuComponent {
 }
 
 export class TextInputComponent extends MessageComponent {
+    constructor(
+        custom_id: string,
+        style: 1 | 2,
+        label: string,
+        min_length: number = 0,
+        max_length: number = 4000,
+        required: boolean = true,
+        value: string = '',
+        placeholder: string = ''
+    ) {
+        super();
+        this.custom_id = custom_id;
+        this.style = style;
+        this.label = label;
+        this.min_length = min_length;
+        this.max_length = max_length;
+        this.required = required;
+        this.value = value;
+        this.placeholder = placeholder;
+    }
+
     type = 4;
+    custom_id: string;
+    style: 1 | 2;
+    label: string;
+    min_length?: number;
+    max_length?: number;
+    required?: boolean;
+    value?: string;
+    placeholder?: string;
 }
 
 export class UserSelectComponent extends SelectMenuComponent {
