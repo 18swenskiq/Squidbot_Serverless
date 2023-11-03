@@ -1,8 +1,9 @@
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
-import { type Interaction } from '../discord_api/interaction';
+import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -41,6 +42,25 @@ module.exports = {
         )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
-        return new CommandResult('nothing', false, false);
+        const interactionData = <InteractionData>interaction.data;
+
+        const playtestGame = interactionData.options.find((o) => o.name === 'playtest_game')?.value;
+        const requestChannel = interactionData.options.find((o) => o.name === 'request_channel')?.value;
+        const announceChannel = interactionData.options.find((o) => o.name === 'announce_channel')?.value;
+        const playtestChannel = interactionData.options.find((o) => o.name === 'playtest_channel')?.value;
+        const competitiveChannel = interactionData.options.find((o) => o.name === 'competitive_channel')?.value;
+
+        if (playtestGame === 'cs2') {
+            await DatabaseWrapper.EnableCS2Playtesting(
+                interaction.guild_id,
+                <string>requestChannel,
+                <string>announceChannel,
+                <string>playtestChannel,
+                <string>competitiveChannel
+            );
+            return new CommandResult('Enabled CS2 playtesting on this server!', true, false);
+        } else {
+            return new CommandResult('Unexpected game provided', true, false);
+        }
     },
 } as CommandDescription;

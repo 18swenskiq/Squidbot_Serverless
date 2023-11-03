@@ -19,7 +19,7 @@ import {
 import { DB_RconServer } from '../database_models/rconServer';
 
 const bucketName = 'squidbot';
-type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents' | 'RconServers';
+type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents' | 'RconServers' | 'PlaytestRequests';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
@@ -208,6 +208,8 @@ export abstract class DatabaseWrapper {
 
         return retObj;
     }
+
+    //public static async CreateCS2PlaytestRequest(guildId: Snowflake, )
 
     public static async SetInteractionHandler(
         creator: Snowflake,

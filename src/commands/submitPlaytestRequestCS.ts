@@ -1,5 +1,6 @@
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
+import { Embed } from '../discord_api/embed';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
@@ -116,6 +117,32 @@ module.exports = {
 
         // Create embed showcasing successful request
 
+        const embed: Embed = {
+            title: 'New Playtest Request',
+            description: `${mapName} by ${interaction.member.user.username}`,
+            type: 'rich',
+            image: {
+                url: map.preview_url,
+            },
+            fields: [
+                {
+                    name: 'Date',
+                    value: `${composedRequestDateTime.getMonth()}/${composedRequestDateTime.getDay()}/${composedRequestDateTime.getFullYear()}`,
+                    inline: true,
+                },
+                {
+                    name: 'Time',
+                    value: `${composedRequestDateTime.getHours()}:${composedRequestDateTime.getMinutes()}`,
+                    inline: true,
+                },
+                {
+                    name: 'Workshop Id',
+                    value: <string>workshopId,
+                    inline: true,
+                },
+            ],
+        };
+
         const cr = new CommandResult(
             `The playtest was requested for ${composedRequestDateTime
                 .toString()
@@ -123,6 +150,8 @@ module.exports = {
             false,
             false
         );
+        cr.embeds = [];
+        cr.embeds.push(embed);
         return cr;
     },
 } as CommandDescription;
