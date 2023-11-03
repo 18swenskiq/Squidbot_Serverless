@@ -5,7 +5,15 @@ import { DB_RconServer } from './rconServer';
 export interface DB_GuildSettings {
     assignableRoles: Snowflake[];
     rconServers: Guid[];
-    cs2PlaytestingEnabled: boolean;
+    playtesting: {
+        cs2: {
+            enabled: boolean;
+            requestChannel: Snowflake;
+            announceChannel: Snowflake;
+            playtestChannel: Snowflake;
+            competitiveChannel: Snowflake;
+        };
+    };
     /**
      * @deprecated Not used anymore
      */

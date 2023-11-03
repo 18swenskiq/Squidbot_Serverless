@@ -41,7 +41,20 @@ export abstract class DatabaseWrapper {
             obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
         } catch (err: any) {
             console.log('error getting object from db, file: ', `GuildSettings/${guildId}.bson`, err);
-            obj = { assignableRoles: [], rconServers: [], gameServers: [], cs2PlaytestingEnabled: false };
+            obj = {
+                assignableRoles: [],
+                rconServers: [],
+                gameServers: [],
+                playtesting: {
+                    cs2: {
+                        playtestChannel: '',
+                        announceChannel: '',
+                        enabled: false,
+                        requestChannel: '',
+                        competitiveChannel: '',
+                    },
+                },
+            };
         }
 
         console.log(obj.assignableRoles);
@@ -59,9 +72,19 @@ export abstract class DatabaseWrapper {
         return retString;
     }
 
-    public static async EnableCS2Playtesting(guildId: Snowflake): Promise<void> {
+    public static async EnableCS2Playtesting(
+        guildId: Snowflake,
+        requestChannel: Snowflake,
+        announceChannel: Snowflake,
+        playtestChannel: Snowflake,
+        competitiveChannel: Snowflake
+    ): Promise<void> {
         const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
-        obj.cs2PlaytestingEnabled = true;
+        obj.playtesting.cs2.enabled = true;
+        obj.playtesting.cs2.requestChannel = requestChannel;
+        obj.playtesting.cs2.announceChannel = announceChannel;
+        obj.playtesting.cs2.playtestChannel = playtestChannel;
+        obj.playtesting.cs2.competitiveChannel = competitiveChannel;
         await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
     }
 

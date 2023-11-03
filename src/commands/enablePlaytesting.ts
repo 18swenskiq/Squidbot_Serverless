@@ -21,6 +21,24 @@ module.exports = {
                 .setDescription('The channel that playtest requests will be sent to')
                 .setRequired(true)
         )
+        .addChannelOption((input) =>
+            input
+                .setName('announce_channel')
+                .setDescription('The channel that will be used for playtest announcements')
+                .setRequired(true)
+        )
+        .addChannelOption((input) =>
+            input
+                .setName('playtest_channel')
+                .setDescription('The channel that is used for general playtest chat')
+                .setRequired(true)
+        )
+        .addChannelOption((input) =>
+            input
+                .setName('competitive_channel')
+                .setDescription('The channel that is used for competitive testing')
+                .setRequired(true)
+        )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         return new CommandResult('nothing', false, false);

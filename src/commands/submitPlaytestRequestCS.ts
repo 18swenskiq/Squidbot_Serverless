@@ -26,9 +26,19 @@ module.exports = {
                 .setDescription('The gamemode of the map')
                 .setRequired(true)
                 .addChoices([
-                    { name: '5v5 - Defuse', value: 'defuse' },
-                    { name: '5v5 - Hostage', value: 'hostage' },
+                    { name: 'Defuse', value: 'defuse' },
+                    { name: 'Hostage', value: 'hostage' },
                     //{ name: '2v2 - Defuse', value: 'wingman_defuse' },
+                ])
+        )
+        .addStringOption((option) =>
+            option
+                .setName('playtest_type')
+                .setDescription('The type of the playtest')
+                .setRequired(true)
+                .addChoices([
+                    { name: 'Casual', value: 'casual' },
+                    { name: 'Competitive', value: 'competitive' },
                 ])
         )
         .addStringOption((option) =>
@@ -52,13 +62,14 @@ module.exports = {
 
         // Validate that guild has enabled CS2 playtesting
         const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
-        if (!guildSettings.cs2PlaytestingEnabled) {
+        if (!guildSettings.playtesting.cs2.enabled) {
             return new CommandResult('CS2 Playtesting is not enabled on this server!', true, false);
         }
 
         const mapName = interactionData.options.find((o) => o.name === 'map_name')?.value;
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
         const gameMode = interactionData.options.find((o) => o.name === 'gamemode')?.value;
+        const playtestType = interactionData.options.find((o) => o.name === 'playtest_type')?.value;
         const requestDate = interactionData.options.find((o) => o.name === 'request_date')?.value;
         const request_time = interactionData.options.find((o) => o.name === 'request_time')?.value;
 
