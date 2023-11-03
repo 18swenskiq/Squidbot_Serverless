@@ -82,5 +82,4 @@ axios
   })
   .catch((error) => {
     console.log(util.inspect(error, false, null));
-    throw Error("it broke");
   });
