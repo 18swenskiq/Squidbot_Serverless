@@ -79,5 +79,10 @@ try {
     headers: headers,
   });
 } catch (error) {
-  console.log(util.inspect(error.response, false, null));
+  const loggy = util.inspect(error.response, false, null);
+  fs.writeFile("/logs/error.txt", loggy, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
 }

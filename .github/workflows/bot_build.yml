@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build:
@@ -19,42 +19,45 @@ jobs:
 
     defaults:
       run:
-        working-directory: 'src'
+        working-directory: "src"
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      
-    - name: Create Distribution Folder
-      run: mkdir ../dist
-      
-    - name: Use Node.js 16.x
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16.x'
-        cache: 'npm'
-        cache-dependency-path: '**/package-lock.json'
-    
-    - name: NPM Install
-      run: npm ci
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Build
-      run: npm run build --if-present
+      - name: Create Distribution Folder
+        run: mkdir ../dist
 
-    - name: Register Commands
-      run: (cd ../register_commands && npm ci && node register.js)
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
 
-    - name: Change Dir
-      run: cd ..
-    
-    - name: Create Zip
-      run: (cd ../dist && zip -r ../lambda_bot.zip .)
-    
-    
-    - name: Deploy to AWS
-      uses: appleboy/lambda-action@master
-      with:
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws_region: us-east-2
-        function_name: SquidBotLambda
-        zip_file: lambda_bot.zip
+      - name: NPM Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Register Commands
+        run: (cd ../register_commands && npm ci && node register.js)
+
+      - name: Get Log
+        if: always()
+        run: echo /logs/error.txt
+
+      - name: Change Dir
+        run: cd ..
+
+      - name: Create Zip
+        run: (cd ../dist && zip -r ../lambda_bot.zip .)
+
+      - name: Deploy to AWS
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-east-2
+          function_name: SquidBotLambda
+          zip_file: lambda_bot.zip
