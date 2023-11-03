@@ -80,4 +80,7 @@ axios
   .put(url, JSON.stringify(command_data), {
     headers: headers,
   })
-  .catch((error) => util.inspect(error.response, false, null));
+  .catch((error) => {
+    console.log(util.inspect(error, false, null));
+    throw Error("it broke");
+  });
