@@ -102,7 +102,9 @@ module.exports = {
         // Create embed showcasing successful request
 
         const cr = new CommandResult(
-            `The playtest was requested for ${composedRequestDateTime.toString()}`,
+            `The playtest was requested for ${composedRequestDateTime
+                .toString()
+                .replace('GMT+0000 (Coordinated Universal Time)', '')}`,
             false,
             false
         );
