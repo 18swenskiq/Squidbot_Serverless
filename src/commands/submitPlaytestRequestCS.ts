@@ -52,7 +52,9 @@ module.exports = {
 
         // Validate that guild has enabled CS2 playtesting
         const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
-        guildSettings.
+        if (!guildSettings.cs2PlaytestingEnabled) {
+            return new CommandResult('CS2 Playtesting is not enabled on this server!', true, false);
+        }
 
         const mapName = interactionData.options.find((o) => o.name === 'map_name')?.value;
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
