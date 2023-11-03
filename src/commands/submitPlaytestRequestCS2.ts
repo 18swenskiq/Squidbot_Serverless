@@ -7,7 +7,7 @@ import { SteamApi } from '../steam_api/steamApi';
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('submit_playtest_request_cs2')
+        .setName('submit_playtest_request_cs')
         .setDescription('Submits a playtest request')
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS])
         .addStringOption((option) =>
