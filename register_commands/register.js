@@ -74,6 +74,8 @@ console.log(command_data);
 
 console.log(`Attempting to register ${command_data.length} commands...`);
 
+var util = require("util");
+
 axios
   .put(url, JSON.stringify(command_data), {
     headers: headers,
