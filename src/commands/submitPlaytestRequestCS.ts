@@ -64,7 +64,7 @@ module.exports = {
 
         // Send to database
 
-        const cr = new CommandResult(JSON.stringify(map), false, true);
+        const cr = new CommandResult(JSON.stringify(map), false, false);
         return cr;
     },
 } as CommandDescription;
