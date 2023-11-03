@@ -1,6 +1,5 @@
 import { S3Client } from '@aws-sdk/client-s3';
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class StaticDeclarations {
     public static s3client: S3Client;
 

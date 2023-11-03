@@ -21,12 +21,9 @@ exports.handler = async (event: any) => {
     let commandFiles: string[];
     if (body.type === 2) {
         // Load Commands (only if type 2)
-        // eslint-disable-next-line prefer-const
         commandsPath = path.resolve(__dirname, 'commands/');
-        // eslint-disable-next-line prefer-const
         commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
         for (const file of commandFiles) {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
             try {
                 const command: CommandDescription = require(`${commandsPath}/${file}`);
                 commands.push(command);
@@ -75,7 +72,6 @@ async function sendCommandResponse(interaction: Interaction, result: CommandResu
     }
 
     const util = require('util');
-
     console.log(util.inspect(body, { showHidden: false, depth: null, colors: false }));
 
     try {
