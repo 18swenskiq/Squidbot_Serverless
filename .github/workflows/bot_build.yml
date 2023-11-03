@@ -45,7 +45,7 @@ jobs:
 
       - name: Get Log
         if: always()
-        run: echo /logs/error.txt
+        run: cat /logs/error.txt
 
       - name: Change Dir
         run: cd ..
