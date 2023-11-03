@@ -7,7 +7,7 @@ import { SteamApi } from '../steam_api/steamApi';
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('playtest_request_cs')
+        .setName('submit_playtest_request_cs2')
         .setDescription('Submits a playtest request')
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS])
         .addStringOption((option) =>
@@ -42,7 +42,7 @@ module.exports = {
             option
                 .setName('request_time')
                 .setDescription(
-                    'The time of your request in HH:MM. This is in US Eastern Time. Example: 14:00 for 2:00 PM in US Eastern Time.'
+                    'The time of your request in HH:MM in US Eastern Time. Example: 14:00 for 2:00 PM in US Eastern Time.'
                 )
                 .setRequired(true)
         ),
