@@ -3,7 +3,6 @@ import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { CSGOWorkshopMapDetail } from '../steam_api/csgoWorkshopMapDetail';
 import { SteamApi } from '../steam_api/steamApi';
 
 module.exports = {
@@ -61,10 +60,9 @@ module.exports = {
         // Validate date
 
         // Validate workshop link
-        let map: CSGOWorkshopMapDetail;
-        try {
-            map = await SteamApi.GetCSGOWorkshopMapDetail(workshopId ?? '');
-        } catch (error) {
+        const map = await SteamApi.GetCSGOWorkshopMapDetail(workshopId ?? '');
+
+        if (map.result === 9) {
             return new CommandResult(
                 'Map not found. Ensure your ID is correct and that Steam is not down. If your ID is correct and Steam is up, blame Squidski.',
                 true,
