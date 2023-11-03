@@ -49,7 +49,8 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
 
-        // Validate that server has enabled CS2 playtesting
+        // Validate that guild has enabled CS2 playtesting
+        // DatabaseWrapper.
 
         const mapName = interactionData.options.find((o) => o.name === 'map_name')?.value;
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
@@ -57,12 +58,30 @@ module.exports = {
         const requestDate = interactionData.options.find((o) => o.name === 'request_date')?.value;
         const request_time = interactionData.options.find((o) => o.name === 'request_time')?.value;
 
-        // Validate date
+        // Validate date isn't in the past and actually exists
+        const currentDate = new Date();
+
+        const requestDateComponents = requestDate?.split('/');
+        if (requestDateComponents === undefined) {
+            return new CommandResult('Date appears to be malformed. Please try again', true, false);
+        }
+
+        const requestTimeComponents = request_time?.split(':');
+        if (requestTimeComponents === undefined) {
+            return new CommandResult('Time appears to be malformed. Please try again', true, false);
+        }
+
+        const composedRequestDateTime = new Date(
+            Number(requestDateComponents[2]),
+            Number(requestDateComponents[0]) - 1,
+            Number(requestDateComponents[1]),
+            Number(requestTimeComponents[0]),
+            Number(requestTimeComponents[1])
+        );
 
         // Validate workshop link
         const map = await SteamApi.GetCSGOWorkshopMapDetail(workshopId ?? '');
-
-        if (map.result === 9) {
+        if (map === null || map.result === 9) {
             return new CommandResult(
                 'Map not found. Ensure your ID is correct and that Steam is not down. If your ID is correct and Steam is up, blame Squidski.',
                 true,
@@ -72,7 +91,13 @@ module.exports = {
 
         // Send to database
 
-        const cr = new CommandResult(JSON.stringify(map).substring(0, 1999), false, false);
+        // Create embed showcasing successful request
+
+        const cr = new CommandResult(
+            `The playtest was requested for ${composedRequestDateTime.toString()}`,
+            false,
+            false
+        );
         return cr;
     },
 } as CommandDescription;
