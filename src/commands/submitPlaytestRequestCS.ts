@@ -79,6 +79,14 @@ module.exports = {
             Number(requestTimeComponents[1])
         );
 
+        if (!isFinite(composedRequestDateTime.getTime())) {
+            return new CommandResult('Date/Time appears to not exist. Please try again', true, false);
+        }
+
+        if (composedRequestDateTime < currentDate) {
+            return new CommandResult('Date and/or time appears to be in the past. Please try again', true, false);
+        }
+
         // Validate workshop link
         const map = await SteamApi.GetCSGOWorkshopMapDetail(workshopId ?? '');
         if (map === null || map.result === 9) {
