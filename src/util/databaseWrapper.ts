@@ -41,7 +41,7 @@ export abstract class DatabaseWrapper {
             obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
         } catch (err: any) {
             console.log('error getting object from db, file: ', `GuildSettings/${guildId}.bson`, err);
-            obj = { assignableRoles: [], rconServers: [], gameServers: [] };
+            obj = { assignableRoles: [], rconServers: [], gameServers: [], cs2PlaytestingEnabled: false };
         }
 
         console.log(obj.assignableRoles);
@@ -57,6 +57,12 @@ export abstract class DatabaseWrapper {
 
         await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
         return retString;
+    }
+
+    public static async EnableCS2Playtesting(guildId: Snowflake): Promise<void> {
+        const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
+        obj.cs2PlaytestingEnabled = true;
+        await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
     }
 
     public static async AddGameServer(newServer: DB_RconServer): Promise<string> {
@@ -266,7 +272,7 @@ export abstract class DatabaseWrapper {
         return true;
     }
 
-    private static async GetGuildSettings(guildId: Snowflake): Promise<DB_GuildSettings> {
+    public static async GetGuildSettings(guildId: Snowflake): Promise<DB_GuildSettings> {
         const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
         return obj;
     }

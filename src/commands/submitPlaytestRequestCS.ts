@@ -4,6 +4,7 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { SteamApi } from '../steam_api/steamApi';
+import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -50,7 +51,8 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
 
         // Validate that guild has enabled CS2 playtesting
-        // DatabaseWrapper.
+        const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+        guildSettings.
 
         const mapName = interactionData.options.find((o) => o.name === 'map_name')?.value;
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
