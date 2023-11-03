@@ -43,10 +43,6 @@ jobs:
       - name: Register Commands
         run: (cd ../register_commands && npm ci && node register.js)
 
-      - name: Get Log
-        if: always()
-        run: cat /logs/error.txt
-
       - name: Change Dir
         run: cd ..
 

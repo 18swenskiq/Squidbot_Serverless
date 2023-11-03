@@ -74,15 +74,8 @@ console.log(command_data);
 
 console.log(`Attempting to register ${command_data.length} commands...`);
 
-try {
-  let res = axios.put(url, JSON.stringify(command_data), {
+axios
+  .put(url, JSON.stringify(command_data), {
     headers: headers,
-  });
-} catch (error) {
-  const loggy = util.inspect(error.response, false, null);
-  fs.writeFile("/logs/error.txt", loggy, (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-}
+  })
+  .catch((error) => util.inspect(error.response, false, null));
