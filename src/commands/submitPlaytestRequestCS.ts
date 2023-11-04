@@ -57,6 +57,14 @@ module.exports = {
                     'The time of your request in HH:MM in US Eastern Time. Example: 14:00 for 2:00 PM in US Eastern Time.'
                 )
                 .setRequired(true)
+        )
+        .addStringOption((option) =>
+            option
+                .setName('other_creators')
+                .setDescription(
+                    "Provide other creator's ids in a comma separated list. EX: 66318815247466496,132496742246514688"
+                )
+                .setRequired(false)
         ),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
@@ -73,6 +81,7 @@ module.exports = {
         const playtestType = interactionData.options.find((o) => o.name === 'playtest_type')?.value;
         const requestDate = interactionData.options.find((o) => o.name === 'request_date')?.value;
         const request_time = interactionData.options.find((o) => o.name === 'request_time')?.value;
+        const otherCreators = interactionData.options.find((o) => o.name === 'other_creators')?.value;
 
         // Validate date isn't in the past and actually exists
         const currentDate = new Date();
@@ -124,6 +133,7 @@ module.exports = {
             image: {
                 url: map.preview_url,
             },
+            url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${workshopId}`,
             fields: [
                 {
                     name: 'Date',
@@ -132,15 +142,28 @@ module.exports = {
                 },
                 {
                     name: 'Time',
-                    value: `${composedRequestDateTime.getHours()}:${composedRequestDateTime.getMinutes()}`,
+                    value: `${composedRequestDateTime.getHours().toLocaleString('en-US', {
+                        minimumIntegerDigits: 2,
+                        useGrouping: false,
+                    })}:${composedRequestDateTime
+                        .getMinutes()
+                        .toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`,
                     inline: true,
                 },
                 {
-                    name: 'Workshop Id',
-                    value: <string>workshopId,
+                    name: 'Map Type',
+                    value: <string>gameMode,
+                    inline: true,
+                },
+                {
+                    name: 'Playtest Type',
+                    value: <string>playtestType,
                     inline: true,
                 },
             ],
+            footer: {
+                text: 'All times are in eastern US time. This is a request that may or may not be approved.',
+            },
         };
 
         const cr = new CommandResult(
