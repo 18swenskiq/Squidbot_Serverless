@@ -147,6 +147,7 @@ module.exports = {
         };
 
         // Send to database
+        await DatabaseWrapper.CreateCS2PlaytestRequest(interaction.guild_id, requestBody);
 
         // Create embed showcasing successful request
         const embed: Embed = {
