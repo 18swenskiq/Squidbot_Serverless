@@ -80,12 +80,14 @@ export abstract class DatabaseWrapper {
         competitiveChannel: Snowflake
     ): Promise<void> {
         const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
-        obj.playtesting.cs2 = {
-            enabled: true,
-            requestChannel: requestChannel,
-            announceChannel: announceChannel,
-            playtestChannel: playtestChannel,
-            competitiveChannel: competitiveChannel,
+        obj.playtesting = {
+            cs2: {
+                enabled: true,
+                requestChannel: requestChannel,
+                announceChannel: announceChannel,
+                playtestChannel: playtestChannel,
+                competitiveChannel: competitiveChannel,
+            },
         };
         await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
     }
