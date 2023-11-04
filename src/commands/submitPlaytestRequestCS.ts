@@ -1,3 +1,5 @@
+import { DB_PlaytestRequest } from '../database_models/playtestRequest';
+import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { Embed } from '../discord_api/embed';
@@ -6,6 +8,7 @@ import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { SteamApi } from '../steam_api/steamApi';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { GenerateGuid } from '../util/guid';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -122,10 +125,30 @@ module.exports = {
             );
         }
 
+        const requestBody: DB_PlaytestRequest = {
+            Id: GenerateGuid(),
+            mapName: <string>mapName,
+            mainAuthor: interaction.member.user.id,
+            otherAuthors: otherCreators?.split(',') ?? [],
+            thumbnailImage: map.preview_url,
+            requestDate: `${
+                composedRequestDateTime.getMonth() + 1
+            }/${composedRequestDateTime.getDay()}/${composedRequestDateTime.getFullYear()}`,
+            requestTime: `${composedRequestDateTime.getHours().toLocaleString('en-US', {
+                minimumIntegerDigits: 2,
+                useGrouping: false,
+            })}:${composedRequestDateTime
+                .getMinutes()
+                .toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`,
+            workshopId: <string>workshopId,
+            mapType: <string>gameMode,
+            playtestType: <string>playtestType,
+            dateSubmitted: currentDate,
+        };
+
         // Send to database
 
         // Create embed showcasing successful request
-
         const embed: Embed = {
             title: `${mapName} by ${interaction.member.user.username}`,
             description: 'New Playtest Request',
@@ -168,6 +191,18 @@ module.exports = {
                 text: 'All times are in eastern US time. This is a request that may or may not be approved.',
             },
         };
+
+        // Send the embed to the playtesting channel
+        await DiscordApiRoutes.createNewMessage(guildSettings.playtesting.cs2.playtestChannel, 'New Submission', [
+            embed,
+        ]);
+
+        // Send a message to the request channel
+        await DiscordApiRoutes.createNewMessage(
+            guildSettings.playtesting.cs2.requestChannel,
+            'New Playtest Submission',
+            [embed]
+        );
 
         const cr = new CommandResult(
             `The playtest was requested for ${composedRequestDateTime

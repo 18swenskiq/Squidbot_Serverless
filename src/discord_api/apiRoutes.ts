@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { Role } from './role';
 import { Snowflake } from './snowflake';
 import { Interaction } from './interaction';
+import { Embed } from './embed';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DiscordApiRoutes {
@@ -42,6 +43,11 @@ export abstract class DiscordApiRoutes {
     public static async deleteInitialInteractionResponse(initialInteraction: Interaction): Promise<void> {
         const url = `${DiscordApiRoutes.baseUrl}/webhooks/${process.env.APP_ID}/${initialInteraction.token}/messages/@original`;
         await DiscordApiRoutes.sendRequest('DELETE', url);
+    }
+
+    public static async createNewMessage(channelId: Snowflake, content: string, embeds?: Embed[]): Promise<void> {
+        const url = `${DiscordApiRoutes.baseUrl}/channels/${channelId}/messages`;
+        await DiscordApiRoutes.sendRequest('POST', url, { content: content, embeds: embeds });
     }
 
     private static async sendRequest(

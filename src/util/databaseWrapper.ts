@@ -17,6 +17,7 @@ import {
     HandlableComponentInteractionType,
 } from '../database_models/interactionHandler';
 import { DB_RconServer } from '../database_models/rconServer';
+import { DB_PlaytestRequest } from '../database_models/playtestRequest';
 
 const bucketName = 'squidbot';
 type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents' | 'RconServers' | 'PlaytestRequests';
@@ -213,7 +214,11 @@ export abstract class DatabaseWrapper {
         return retObj;
     }
 
-    //public static async CreateCS2PlaytestRequest(guildId: Snowflake, )
+    public static async CreateCS2PlaytestRequest(guildId: Snowflake, requestBody: DB_PlaytestRequest) {
+        const keyName = `${guildId}/${requestBody.Id}`;
+
+        await DatabaseWrapper.PutBSONObject(requestBody, 'PlaytestRequests', keyName);
+    }
 
     public static async SetInteractionHandler(
         creator: Snowflake,
