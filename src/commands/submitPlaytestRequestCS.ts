@@ -127,17 +127,20 @@ module.exports = {
         // Create embed showcasing successful request
 
         const embed: Embed = {
-            title: 'New Playtest Request',
-            description: `${mapName} by ${interaction.member.user.username}`,
+            title: `${mapName} by ${interaction.member.user.username}`,
+            description: 'New Playtest Request',
             type: 'rich',
             image: {
                 url: map.preview_url,
             },
+            color: 6730746,
             url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${workshopId}`,
             fields: [
                 {
                     name: 'Date',
-                    value: `${composedRequestDateTime.getMonth()}/${composedRequestDateTime.getDay()}/${composedRequestDateTime.getFullYear()}`,
+                    value: `${
+                        composedRequestDateTime.getMonth() + 1
+                    }/${composedRequestDateTime.getDay()}/${composedRequestDateTime.getFullYear()}`,
                     inline: true,
                 },
                 {
