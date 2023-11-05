@@ -225,6 +225,9 @@ export abstract class DatabaseWrapper {
         objects.shift();
         objects = objects.map((o) => o.split('/')[2].replace('.bson', ''));
 
+        console.log('Objects');
+        console.log(objects);
+
         const retObj: Record<Snowflake, DB_PlaytestRequest> = {};
 
         for (let i = 0; i < objects.length; i++) {
@@ -233,6 +236,7 @@ export abstract class DatabaseWrapper {
                 <ObjectDirectory>`PlaytestRequests/${guildId}`,
                 id
             );
+            console.log(res);
 
             if (Object.keys(res).length > 0) {
                 retObj[id] = res;
