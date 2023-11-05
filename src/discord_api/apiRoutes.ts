@@ -84,7 +84,7 @@ export abstract class DiscordApiRoutes {
 
         const res = await DiscordApiRoutes.sendRequest('POST', url, obj);
         console.log(res);
-        return res.response.data.id;
+        return res.data.id;
     }
 
     private static async sendRequest(

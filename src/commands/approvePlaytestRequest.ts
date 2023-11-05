@@ -35,9 +35,11 @@ module.exports = {
         const requestDay = request.requestDate.split('/')[1];
         const requestYear = request.requestDate.split('/')[2];
 
+        const easternOffset = getOffset('US/Eastern');
+
         const newDateString = `${requestYear}-${requestMonth}-${requestDay}T${request.requestTime}:00.000Z`;
-        console.log('new date string');
-        console.log(newDateString);
+        const newDate = new Date(newDateString);
+        newDate.setMinutes(newDate.getMinutes() - easternOffset);
 
         const scheduledPlaytest: DB_ScheduledPlaytest = {
             Id: GenerateGuid(),
@@ -65,26 +67,57 @@ module.exports = {
         console.log('end date?');
         console.log(endTimeDate);
 
+        const authorName = (await DiscordApiRoutes.getUser(scheduledPlaytest.mainAuthor)).username;
+
+        const description = [
+            `Game: ${scheduledPlaytest.game}`,
+            `Playtest Type: ${scheduledPlaytest.playtestType}`,
+            `Map Type: ${scheduledPlaytest.mapType}`,
+            `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${scheduledPlaytest.workshopId}`,
+            `Other Authors: ${scheduledPlaytest.otherAuthors.join(', ')}`,
+        ];
+
         const eventId = await DiscordApiRoutes.createGuildEvent(
             interaction.guild_id,
             playtestSettings.playtestChannel,
             { location: 'CS2 Level Testing Channel' },
-            `${scheduledPlaytest.mapName} by ${scheduledPlaytest.mainAuthor}`,
+            `${scheduledPlaytest.mapName} by ${authorName}`,
             startTime,
             endTimeDate.toISOString(),
             GuildEventEntityType.EXTERNAL,
-            'placeholder description'
+            description.join('\n')
         );
 
         // Post announcement in announcement channel
         await DiscordApiRoutes.createNewMessage(
             playtestSettings.announceChannel,
-            'New playtest approved blah blah blah'
+            `New Playtest Event - https://discord.com/events/${interaction.guild_id}/${eventId}`
         );
 
         // Remove request object
         await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>request.Id);
 
-        return new CommandResult('yay you did it congrats', false, false);
+        return new CommandResult('Playtest Scheduled', false, false);
     },
 } as CommandDescription;
+
+const getOffset = (timeZone: any) => {
+    const timeZoneFormat = Intl.DateTimeFormat('ia', {
+        timeZoneName: 'short',
+        timeZone,
+    });
+    const timeZoneParts = timeZoneFormat.formatToParts();
+    const timeZoneName = timeZoneParts.find((i) => i.type === 'timeZoneName')!.value;
+    const offset = timeZoneName.slice(3);
+    if (!offset) return 0;
+
+    const matchData = offset.match(/([+-])(\d+)(?::(\d+))?/);
+    if (!matchData) throw `cannot parse timezone name: ${timeZoneName}`;
+
+    const [, sign, hour, minute] = matchData;
+    let result = parseInt(hour) * 60;
+    if (sign === '+') result *= -1;
+    if (minute) result += parseInt(minute);
+
+    return result;
+};
