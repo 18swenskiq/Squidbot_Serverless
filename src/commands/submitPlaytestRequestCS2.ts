@@ -135,9 +135,12 @@ module.exports = {
             mainAuthor: interaction.member.user.id,
             otherAuthors: otherCreators?.split(',') ?? [],
             thumbnailImage: map.preview_url,
-            requestDate: `${
-                composedRequestDateTime.getMonth() + 1
-            }/${composedRequestDateTime.getDate()}/${composedRequestDateTime.getFullYear()}`,
+            requestDate: `${composedRequestDateTime.getMonth() + 1}/${composedRequestDateTime
+                .getDate()
+                .toLocaleString('en-US', {
+                    minimumIntegerDigits: 2,
+                    useGrouping: false,
+                })}/${composedRequestDateTime.getFullYear()}`,
             requestTime: `${composedRequestDateTime.getHours().toLocaleString('en-US', {
                 minimumIntegerDigits: 2,
                 useGrouping: false,
