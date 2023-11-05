@@ -20,9 +20,16 @@ import {
 } from '../database_models/interactionHandler';
 import { DB_RconServer } from '../database_models/rconServer';
 import { DB_PlaytestRequest } from '../database_models/playtestRequest';
+import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 
 const bucketName = 'squidbot';
-type ObjectDirectory = 'UserSettings' | 'GuildSettings' | 'InteractableComponents' | 'RconServers' | 'PlaytestRequests';
+type ObjectDirectory =
+    | 'UserSettings'
+    | 'GuildSettings'
+    | 'InteractableComponents'
+    | 'RconServers'
+    | 'PlaytestRequests'
+    | 'ScheduledPlaytests';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
@@ -254,6 +261,12 @@ export abstract class DatabaseWrapper {
         }
 
         return retObj;
+    }
+
+    public static async CreateScheduledPlaytest(guildId: Snowflake, requestBody: DB_ScheduledPlaytest): Promise<void> {
+        const keyName = `${guildId}/${requestBody.Id}`;
+
+        await DatabaseWrapper.PutBSONObject(requestBody, 'ScheduledPlaytests', keyName);
     }
 
     public static async SetInteractionHandler(

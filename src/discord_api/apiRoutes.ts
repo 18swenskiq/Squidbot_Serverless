@@ -5,6 +5,8 @@ import { Snowflake } from './snowflake';
 import { Interaction } from './interaction';
 import { Embed } from './embed';
 import { User } from './user';
+import { GuildEventEntityMetadata } from './guildEventEntityMetadata';
+import { GuildEventEntityType } from './guildEventEntityType';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DiscordApiRoutes {
@@ -55,6 +57,34 @@ export abstract class DiscordApiRoutes {
         const url = `${DiscordApiRoutes.baseUrl}/users/${userId}`;
         const res = await axios.get(url, DiscordApiRoutes.authHeaderConfig);
         return res.data as User;
+    }
+
+    public static async createGuildEvent(
+        guildId: Snowflake,
+        channelId: Snowflake,
+        entityMetadata: GuildEventEntityMetadata,
+        name: string,
+        scheduledStartTime: string,
+        scheduledEndTime: string,
+        entityType: GuildEventEntityType,
+        description: string
+    ): Promise<Snowflake> {
+        const url = `${DiscordApiRoutes.baseUrl}/guilds/${guildId}/scheduled-events`;
+
+        const obj = {
+            channel_id: channelId,
+            entity_metadata: entityMetadata,
+            name: name,
+            privacy_level: 2,
+            scheduled_start_time: scheduledStartTime,
+            scheduled_end_time: scheduledEndTime,
+            description: description,
+            entity_type: entityType,
+        };
+
+        const res = await DiscordApiRoutes.sendRequest('POST', url, obj);
+        console.log(res);
+        return res.response.data.id;
     }
 
     private static async sendRequest(
