@@ -226,12 +226,9 @@ export abstract class DatabaseWrapper {
         console.log(objects);
 
         objects = objects.filter((o) => o.endsWith('bson'));
-        console.log('filter 1');
-        console.log(objects);
-        objects = objects.map((o) => o.split('/')[2].replace('.bson', ''));
-        console.log('filter 2');
-        console.log(objects);
+        objects = objects.map((o) => o.replace('.bson', ''));
         objects = objects.filter((o) => o.includes(guildId));
+        objects = objects.map((o) => o.replace('PlaytestRequests', ''));
 
         console.log('Objects - filter 3');
         console.log(objects);
