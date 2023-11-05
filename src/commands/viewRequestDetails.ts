@@ -38,6 +38,7 @@ module.exports = {
 
         const coolTimeString = (playtestRequest.dateSubmitted as any)['$date'];
         const newDate = new Date(coolTimeString);
+        newDate.setMonth(newDate.getMonth() + 1);
         console.log('new date');
         console.log(newDate);
 
