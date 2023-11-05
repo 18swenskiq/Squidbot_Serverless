@@ -233,7 +233,7 @@ export abstract class DatabaseWrapper {
 
         for (let i = 0; i < objects.length; i++) {
             const id = objects[i];
-            const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(`PlaytestRequests`, `${guildId}/${id}`);
+            const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(`PlaytestRequests`, id);
             console.log(res);
 
             if (Object.keys(res).length > 0) {
