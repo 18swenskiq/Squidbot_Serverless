@@ -128,6 +128,7 @@ module.exports = {
         const requestBody: DB_PlaytestRequest = {
             Id: GenerateGuid(),
             mapName: <string>mapName,
+            game: 'cs2',
             mainAuthor: interaction.member.user.id,
             otherAuthors: otherCreators?.split(',') ?? [],
             thumbnailImage: map.preview_url,
@@ -162,9 +163,12 @@ module.exports = {
             fields: [
                 {
                     name: 'Date',
-                    value: `${
-                        composedRequestDateTime.getMonth() + 1
-                    }/${composedRequestDateTime.getDay()}/${composedRequestDateTime.getFullYear()}`,
+                    value: `${composedRequestDateTime.getMonth() + 1}/${composedRequestDateTime
+                        .getDay()
+                        .toLocaleString('en-US', {
+                            minimumIntegerDigits: 2,
+                            useGrouping: false,
+                        })}/${composedRequestDateTime.getFullYear()}`,
                     inline: true,
                 },
                 {

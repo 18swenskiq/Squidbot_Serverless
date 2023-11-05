@@ -3,6 +3,7 @@ import { Guid } from '../util/guid';
 
 export interface DB_PlaytestRequest {
     Id: Guid;
+    game: string;
     mapName: string;
     mainAuthor: Snowflake;
     otherAuthors: Snowflake[];

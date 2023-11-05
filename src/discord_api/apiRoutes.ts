@@ -4,6 +4,7 @@ import { Role } from './role';
 import { Snowflake } from './snowflake';
 import { Interaction } from './interaction';
 import { Embed } from './embed';
+import { User } from './user';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DiscordApiRoutes {
@@ -48,6 +49,12 @@ export abstract class DiscordApiRoutes {
     public static async createNewMessage(channelId: Snowflake, content: string, embeds?: Embed[]): Promise<void> {
         const url = `${DiscordApiRoutes.baseUrl}/channels/${channelId}/messages`;
         await DiscordApiRoutes.sendRequest('POST', url, { content: content, embeds: embeds });
+    }
+
+    public static async getUser(userId: Snowflake): Promise<User> {
+        const url = `${DiscordApiRoutes.baseUrl}/users/${userId}`;
+        const res = await axios.get(url, DiscordApiRoutes.authHeaderConfig);
+        return res.data as User;
     }
 
     private static async sendRequest(

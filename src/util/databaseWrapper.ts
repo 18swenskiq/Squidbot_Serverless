@@ -214,10 +214,32 @@ export abstract class DatabaseWrapper {
         return retObj;
     }
 
-    public static async CreateCS2PlaytestRequest(guildId: Snowflake, requestBody: DB_PlaytestRequest) {
+    public static async CreateCS2PlaytestRequest(guildId: Snowflake, requestBody: DB_PlaytestRequest): Promise<void> {
         const keyName = `${guildId}/${requestBody.Id}`;
 
         await DatabaseWrapper.PutBSONObject(requestBody, 'PlaytestRequests', keyName);
+    }
+
+    public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, DB_PlaytestRequest>> {
+        let objects = await DatabaseWrapper.ListObjects(<ObjectDirectory>`PlaytestRequests/${guildId}`);
+        objects.shift();
+        objects = objects.map((o) => o.split('/')[2].replace('.bson', ''));
+
+        const retObj: Record<Snowflake, DB_PlaytestRequest> = {};
+
+        for (let i = 0; i < objects.length; i++) {
+            const id = objects[i];
+            const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(
+                <ObjectDirectory>`PlaytestRequests/${guildId}`,
+                id
+            );
+
+            if (Object.keys(res).length > 0) {
+                retObj[id] = res;
+            }
+        }
+
+        return retObj;
     }
 
     public static async SetInteractionHandler(
