@@ -228,7 +228,7 @@ export abstract class DatabaseWrapper {
         objects = objects.filter((o) => o.endsWith('bson'));
         objects = objects.map((o) => o.replace('.bson', ''));
         objects = objects.filter((o) => o.includes(guildId));
-        objects = objects.map((o) => o.replace('PlaytestRequests', ''));
+        objects = objects.map((o) => o.replace('PlaytestRequests/', ''));
 
         console.log('Objects - filter 3');
         console.log(objects);
