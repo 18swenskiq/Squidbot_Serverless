@@ -22,6 +22,8 @@ module.exports = {
 
         const game = interactionData.options.find((o) => o.name === 'game')?.value;
         const playtestRequests = await DatabaseWrapper.GetPlaytestRequests(interaction.guild_id);
+        console.log('playtest requests');
+        console.log(playtestRequests);
 
         const embed: Embed = {
             title: 'Playtest Requests',
@@ -32,7 +34,13 @@ module.exports = {
         };
 
         for (const key in playtestRequests) {
+            console.log('key');
+            console.log(key);
+
             const value = playtestRequests[key];
+
+            console.log('value');
+            console.log(value);
 
             if (value.game !== game) {
                 continue;
