@@ -25,47 +25,54 @@ module.exports = {
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
         const playtestRequest = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
 
+        const mainAuthorName = (await DiscordApiRoutes.getUser(playtestRequest.mainAuthor)).username;
+        const authors: string[] = [mainAuthorName];
+
+        if (playtestRequest.otherAuthors && playtestRequest.otherAuthors.length > 0) {
+            for (let i = 0; i < playtestRequest.otherAuthors.length, i++; ) {
+                const authorId = playtestRequest.otherAuthors[i];
+                const newAuthor = (await DiscordApiRoutes.getUser(authorId)).username;
+                authors.push(newAuthor);
+            }
+        }
+
         const embed: Embed = {
-            title: `${playtestRequest.mapName} by ${playtestRequest.mainAuthor}`,
+            title: `${playtestRequest.mapName} by ${mainAuthorName}`,
+            thumbnail: { url: playtestRequest.thumbnailImage },
+            url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${playtestRequest.workshopId}`,
             type: 'rich',
             color: 6730746,
-            fields: [],
+            fields: [
+                {
+                    name: `Test Date`,
+                    value: `${playtestRequest.dateSubmitted} ${playtestRequest.requestTime}`,
+                    inline: true,
+                },
+                {
+                    name: 'Game',
+                    value: playtestRequest.game,
+                    inline: true,
+                },
+                {
+                    name: 'Map Name',
+                    value: playtestRequest.mapName,
+                    inline: true,
+                },
+                {
+                    name: 'Authors',
+                    value: authors.join(', '),
+                    inline: true,
+                },
+                {
+                    name: 'Type',
+                    value: `${playtestRequest.mapType} - ${playtestRequest.playtestType}`,
+                    inline: true,
+                },
+            ],
         };
 
-        const cr = new CommandResult('cool', true, false);
+        const cr = new CommandResult('Use <Other command for something>', true, false);
         cr.embeds = [embed];
         return cr;
-
-        /*
-        for (const key in playtestRequests) {
-            console.log('key');
-            console.log(key);
-
-            const value = playtestRequests[key];
-
-            console.log('value');
-            console.log(value);
-
-            if (value.game !== game) {
-                continue;
-            }
-
-            const user = await DiscordApiRoutes.getUser(value.mainAuthor);
-
-            embed.fields?.push({
-                name: `${value.mapName} by ${user.username} - (${value.requestDate} ${value.requestTime})`,
-                value: `Id: ${value.Id}`,
-                inline: true,
-            });
-        }
-
-        if (embed.fields!.length > 0) {
-            const cr = new CommandResult('Use <other command> to schedule', true, false);
-            cr.embeds = [embed];
-            return cr;
-        } else {
-            return new CommandResult('no playtest requests :(', false, false);
-        }
-        */
     },
 } as CommandDescription;
