@@ -221,9 +221,10 @@ export abstract class DatabaseWrapper {
     }
 
     public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, DB_PlaytestRequest>> {
-        let objects = await DatabaseWrapper.ListObjects(<ObjectDirectory>`PlaytestRequests/${guildId}`);
+        let objects = await DatabaseWrapper.ListObjects(`PlaytestRequests`);
         objects.shift();
         objects = objects.map((o) => o.split('/')[2].replace('.bson', ''));
+        objects = objects.filter((o) => o.startsWith(guildId));
 
         console.log('Objects');
         console.log(objects);
@@ -232,10 +233,7 @@ export abstract class DatabaseWrapper {
 
         for (let i = 0; i < objects.length; i++) {
             const id = objects[i];
-            const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(
-                <ObjectDirectory>`PlaytestRequests/${guildId}`,
-                id
-            );
+            const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(`PlaytestRequests`, `${guildId}/${id}`);
             console.log(res);
 
             if (Object.keys(res).length > 0) {
