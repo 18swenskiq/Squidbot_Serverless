@@ -36,6 +36,8 @@ module.exports = {
         const requestYear = request.requestDate.split('/')[2];
 
         const newDateString = `${requestYear}-${requestMonth}-${requestDay}T${request.requestTime}:00.000Z`;
+        console.log('new date string');
+        console.log(newDateString);
 
         const scheduledPlaytest: DB_ScheduledPlaytest = {
             Id: GenerateGuid(),
@@ -49,6 +51,9 @@ module.exports = {
             mapType: request.mapType,
             playtestType: request.playtestType,
         };
+
+        console.log('new scheduled playtest date');
+        console.log(scheduledPlaytest.playtestTime);
 
         await DatabaseWrapper.CreateScheduledPlaytest(interaction.guild_id, scheduledPlaytest);
 
