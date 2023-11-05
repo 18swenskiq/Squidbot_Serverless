@@ -63,7 +63,6 @@ module.exports = {
         }
 
         await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>playtestId);
-
         await DatabaseWrapper.CreateCS2PlaytestRequest(interaction.guild_id, request);
 
         return new CommandResult('Edited playtest request!', false, false);

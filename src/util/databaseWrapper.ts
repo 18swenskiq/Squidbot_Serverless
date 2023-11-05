@@ -269,6 +269,18 @@ export abstract class DatabaseWrapper {
         await DatabaseWrapper.PutBSONObject(requestBody, 'ScheduledPlaytests', keyName);
     }
 
+    public static async GetScheduledPlaytest(guildId: Snowflake, playtestId: Guid): Promise<DB_ScheduledPlaytest> {
+        const res = await DatabaseWrapper.GetBSONObject<DB_ScheduledPlaytest>(
+            'ScheduledPlaytests',
+            `${guildId}/${playtestId}`
+        );
+        return res;
+    }
+
+    public static async DeleteScheduledPlaytest(guildId: Snowflake, playtestId: Guid): Promise<void> {
+        await DatabaseWrapper.DeleteBSONObject('ScheduledPlaytests', `${guildId}/${playtestId}`);
+    }
+
     public static async SetInteractionHandler(
         creator: Snowflake,
         guildId: Snowflake,

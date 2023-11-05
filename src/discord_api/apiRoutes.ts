@@ -59,6 +59,11 @@ export abstract class DiscordApiRoutes {
         return res.data as User;
     }
 
+    public static async deleteGuildEvent(guildId: Snowflake, eventId: Snowflake): Promise<void> {
+        const url = `${DiscordApiRoutes.baseUrl}/guilds/${guildId}/scheduled-events/${eventId}`;
+        await DiscordApiRoutes.sendRequest('DELETE', url);
+    }
+
     public static async createGuildEvent(
         guildId: Snowflake,
         channelId: Snowflake,

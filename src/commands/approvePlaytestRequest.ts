@@ -41,6 +41,33 @@ module.exports = {
         const newDate = new Date(newDateString);
         newDate.setMinutes(newDate.getMinutes() + easternOffset);
 
+        // Add playtest to event calendar
+        const playtestSettings = (await DatabaseWrapper.GetGuildSettings(interaction.guild_id)).playtesting.cs2;
+        const startTime = newDate.toISOString();
+        const endTimeDate = new Date(newDate.getTime() + 90 * 60000);
+
+        const authorName = (await DiscordApiRoutes.getUser(request.mainAuthor)).username;
+
+        const description = [
+            `Game: ${request.game}`,
+            `Playtest Type: ${request.playtestType}`,
+            `Map Type: ${request.mapType}`,
+            `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${request.workshopId}`,
+            `Other Authors: ${request.otherAuthors.join(', ')}`,
+            `Moderator: ${interaction.member.user.username}`,
+        ];
+
+        const eventId = await DiscordApiRoutes.createGuildEvent(
+            interaction.guild_id,
+            playtestSettings.playtestChannel,
+            { location: 'CS2 Level Testing Channel' },
+            `${request.mapName} by ${authorName}`,
+            startTime,
+            endTimeDate.toISOString(),
+            GuildEventEntityType.EXTERNAL,
+            description.join('\n')
+        );
+
         const scheduledPlaytest: DB_ScheduledPlaytest = {
             Id: GenerateGuid(),
             game: request.game,
@@ -53,42 +80,13 @@ module.exports = {
             mapType: request.mapType,
             playtestType: request.playtestType,
             moderator: interaction.member.user.id,
+            eventId: eventId,
         };
 
         console.log('new scheduled playtest date');
         console.log(scheduledPlaytest.playtestTime);
 
         await DatabaseWrapper.CreateScheduledPlaytest(interaction.guild_id, scheduledPlaytest);
-
-        // Add playtest to event calendar
-        const playtestSettings = (await DatabaseWrapper.GetGuildSettings(interaction.guild_id)).playtesting.cs2;
-        const startTime = scheduledPlaytest.playtestTime.toISOString();
-        const endTimeDate = new Date(scheduledPlaytest.playtestTime.getTime() + 90 * 60000);
-
-        console.log('end date?');
-        console.log(endTimeDate);
-
-        const authorName = (await DiscordApiRoutes.getUser(scheduledPlaytest.mainAuthor)).username;
-
-        const description = [
-            `Game: ${scheduledPlaytest.game}`,
-            `Playtest Type: ${scheduledPlaytest.playtestType}`,
-            `Map Type: ${scheduledPlaytest.mapType}`,
-            `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${scheduledPlaytest.workshopId}`,
-            `Other Authors: ${scheduledPlaytest.otherAuthors.join(', ')}`,
-            `Moderator: ${interaction.member.user.username}`,
-        ];
-
-        const eventId = await DiscordApiRoutes.createGuildEvent(
-            interaction.guild_id,
-            playtestSettings.playtestChannel,
-            { location: 'CS2 Level Testing Channel' },
-            `${scheduledPlaytest.mapName} by ${authorName}`,
-            startTime,
-            endTimeDate.toISOString(),
-            GuildEventEntityType.EXTERNAL,
-            description.join('\n')
-        );
 
         // Post announcement in announcement channel
         await DiscordApiRoutes.createNewMessage(
