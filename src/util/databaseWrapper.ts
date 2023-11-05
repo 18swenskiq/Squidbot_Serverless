@@ -222,6 +222,9 @@ export abstract class DatabaseWrapper {
 
     public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, DB_PlaytestRequest>> {
         let objects = await DatabaseWrapper.ListObjects(`PlaytestRequests`);
+        console.log('raw objects');
+        console.log(objects);
+
         objects = objects.filter((o) => o.endsWith('bson'));
         objects = objects.map((o) => o.split('/')[2].replace('.bson', ''));
         objects = objects.filter((o) => o.includes(guildId));
