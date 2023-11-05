@@ -224,7 +224,7 @@ export abstract class DatabaseWrapper {
         let objects = await DatabaseWrapper.ListObjects(`PlaytestRequests`);
         objects = objects.filter((o) => o.endsWith('bson'));
         objects = objects.map((o) => o.split('/')[2].replace('.bson', ''));
-        objects = objects.filter((o) => o.startsWith(guildId));
+        objects = objects.filter((o) => o.includes(guildId));
 
         console.log('Objects');
         console.log(objects);
