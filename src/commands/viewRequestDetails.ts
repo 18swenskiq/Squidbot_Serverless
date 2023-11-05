@@ -35,6 +35,8 @@ module.exports = {
                 authors.push(newAuthor);
             }
         }
+        console.log('da date');
+        console.log(playtestRequest.dateSubmitted);
 
         const embed: Embed = {
             title: `${playtestRequest.mapName} by ${mainAuthorName}`,
