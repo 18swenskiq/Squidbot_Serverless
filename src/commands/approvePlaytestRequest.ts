@@ -72,7 +72,7 @@ module.exports = {
             `${scheduledPlaytest.mapName} by ${scheduledPlaytest.mainAuthor}`,
             startTime,
             endTimeDate.toISOString(),
-            GuildEventEntityType.VOICE,
+            GuildEventEntityType.EXTERNAL,
             'placeholder description'
         );
 

@@ -72,7 +72,7 @@ export abstract class DiscordApiRoutes {
         const url = `${DiscordApiRoutes.baseUrl}/guilds/${guildId}/scheduled-events`;
 
         const obj = {
-            channel_id: '603463419751956480',
+            //channel_id: '603463419751956480',
             entity_metadata: entityMetadata,
             name: name,
             privacy_level: 2,
