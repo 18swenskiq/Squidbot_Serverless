@@ -159,7 +159,7 @@ module.exports = {
         // Create embed showcasing successful request
         const embed: Embed = {
             title: `${mapName} by ${interaction.member.user.username}`,
-            description: 'New Playtest Request',
+            description: requestBody.Id,
             type: 'rich',
             image: {
                 url: map.preview_url,
@@ -204,9 +204,11 @@ module.exports = {
         };
 
         // Send the embed to the playtesting channel
-        await DiscordApiRoutes.createNewMessage(guildSettings.playtesting.cs2.playtestChannel, 'New Submission', [
-            embed,
-        ]);
+        await DiscordApiRoutes.createNewMessage(
+            guildSettings.playtesting.cs2.playtestChannel,
+            'New Playtest Submission',
+            [embed]
+        );
 
         // Send a message to the request channel
         await DiscordApiRoutes.createNewMessage(

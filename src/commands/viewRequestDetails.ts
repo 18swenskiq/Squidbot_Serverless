@@ -36,7 +36,7 @@ module.exports = {
             }
         }
 
-        const coolTimeString = (playtestRequest.dateSubmitted as any)['$date'];
+        const coolTimeString = (playtestRequest.requestDate as any)['$date'];
         const newDate = new Date(coolTimeString);
         console.log(newDate);
 
