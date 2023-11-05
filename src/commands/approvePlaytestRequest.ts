@@ -52,6 +52,7 @@ module.exports = {
             workshopId: request.workshopId,
             mapType: request.mapType,
             playtestType: request.playtestType,
+            moderator: interaction.member.user.id,
         };
 
         console.log('new scheduled playtest date');
@@ -75,6 +76,7 @@ module.exports = {
             `Map Type: ${scheduledPlaytest.mapType}`,
             `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${scheduledPlaytest.workshopId}`,
             `Other Authors: ${scheduledPlaytest.otherAuthors.join(', ')}`,
+            `Moderator: ${interaction.member.user.username}`,
         ];
 
         const eventId = await DiscordApiRoutes.createGuildEvent(

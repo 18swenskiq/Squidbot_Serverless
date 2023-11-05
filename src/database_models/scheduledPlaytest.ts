@@ -12,4 +12,5 @@ export interface DB_ScheduledPlaytest {
     workshopId: string;
     mapType: string;
     playtestType: string;
+    moderator: Snowflake;
 }
