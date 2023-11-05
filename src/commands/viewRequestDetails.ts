@@ -38,9 +38,6 @@ module.exports = {
 
         const coolTimeString = (playtestRequest.dateSubmitted as any)['$date'];
         const newDate = new Date(coolTimeString);
-        newDate.setMonth(newDate.getMonth() + 1);
-        console.log('new date');
-        console.log(newDate);
 
         const embed: Embed = {
             title: `${playtestRequest.mapName} by ${mainAuthorName}`,
@@ -51,7 +48,7 @@ module.exports = {
             fields: [
                 {
                     name: `Test Date`,
-                    value: `${newDate.getMonth()}/${newDate.getDate()}/${newDate.getFullYear()} ${
+                    value: `${newDate.getMonth() + 1}/${newDate.getDate()}/${newDate.getFullYear()} ${
                         playtestRequest.requestTime
                     }`,
                     inline: false,

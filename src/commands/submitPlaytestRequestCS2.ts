@@ -164,7 +164,7 @@ module.exports = {
                 {
                     name: 'Date',
                     value: `${composedRequestDateTime.getMonth() + 1}/${composedRequestDateTime
-                        .getDay()
+                        .getDate()
                         .toLocaleString('en-US', {
                             minimumIntegerDigits: 2,
                             useGrouping: false,

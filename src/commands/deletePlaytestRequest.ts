@@ -19,7 +19,6 @@ module.exports = {
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
 
         await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>id);
-
         return new CommandResult('Deleted the request!', false, false);
     },
 } as CommandDescription;
