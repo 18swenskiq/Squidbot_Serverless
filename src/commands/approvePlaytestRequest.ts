@@ -60,7 +60,7 @@ module.exports = {
         // Add playtest to event calendar
         const playtestSettings = (await DatabaseWrapper.GetGuildSettings(interaction.guild_id)).playtesting.cs2;
         const startTime = scheduledPlaytest.playtestTime.toISOString();
-        const endTimeDate = new Date(scheduledPlaytest.playtestTime);
+        const endTimeDate = new Date(scheduledPlaytest.playtestTime.getTime());
         endTimeDate.setTime(scheduledPlaytest.playtestTime.getMilliseconds() + 90 * 60000);
 
         console.log('end date?');
@@ -73,7 +73,7 @@ module.exports = {
             `${scheduledPlaytest.mapName} by ${scheduledPlaytest.mainAuthor}`,
             startTime,
             endTimeDate.toISOString(),
-            GuildEventEntityType.EXTERNAL,
+            GuildEventEntityType.VOICE,
             'placeholder description'
         );
 
