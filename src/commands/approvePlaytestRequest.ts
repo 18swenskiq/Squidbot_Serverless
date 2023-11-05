@@ -48,6 +48,8 @@ module.exports = {
 
         const authorName = (await DiscordApiRoutes.getUser(request.mainAuthor)).username;
 
+        const playtestId = GenerateGuid();
+
         const description = [
             `Game: ${request.game}`,
             `Playtest Type: ${request.playtestType}`,
@@ -55,6 +57,7 @@ module.exports = {
             `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${request.workshopId}`,
             `Other Authors: ${request.otherAuthors.join(', ')}`,
             `Moderator: ${interaction.member.user.username}`,
+            `Playtest Id: ${playtestId}`,
         ];
 
         const eventId = await DiscordApiRoutes.createGuildEvent(
@@ -69,7 +72,7 @@ module.exports = {
         );
 
         const scheduledPlaytest: DB_ScheduledPlaytest = {
-            Id: GenerateGuid(),
+            Id: playtestId,
             game: request.game,
             mapName: request.mapName,
             mainAuthor: request.mainAuthor,
