@@ -48,7 +48,7 @@ module.exports = {
             mainAuthor: request.mainAuthor,
             otherAuthors: request.otherAuthors,
             thumbnailImage: request.thumbnailImage,
-            playtestTime: new Date(newDateString),
+            playtestTime: newDate,
             workshopId: request.workshopId,
             mapType: request.mapType,
             playtestType: request.playtestType,
