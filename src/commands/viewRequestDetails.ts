@@ -38,6 +38,7 @@ module.exports = {
 
         const coolTimeString = (playtestRequest.dateSubmitted as any)['$date'];
         const newDate = new Date(coolTimeString);
+        console.log(newDate);
 
         const embed: Embed = {
             title: `${playtestRequest.mapName} by ${mainAuthorName}`,
