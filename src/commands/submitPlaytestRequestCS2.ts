@@ -107,6 +107,9 @@ module.exports = {
             Number(requestTimeComponents[1])
         );
 
+        console.log('COMPOSED');
+        console.log(composedRequestDateTime);
+
         if (!isFinite(composedRequestDateTime.getTime())) {
             return new CommandResult('Date/Time appears to not exist. Please try again', true, false);
         }
