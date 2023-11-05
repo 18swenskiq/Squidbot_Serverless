@@ -34,6 +34,10 @@ module.exports = {
         for (const key in playtestRequests) {
             const value = playtestRequests[key];
 
+            if (value.game !== game) {
+                continue;
+            }
+
             const user = await DiscordApiRoutes.getUser(value.mainAuthor);
 
             embed.fields?.push({
