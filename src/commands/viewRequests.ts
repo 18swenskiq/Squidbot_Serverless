@@ -55,7 +55,7 @@ module.exports = {
             });
         }
 
-        if (embed.fields?.length && embed.fields?.length > 0) {
+        if (embed.fields!.length > 0) {
             const cr = new CommandResult('Use <other command> to schedule', true, false);
             cr.embeds = [embed];
             return cr;
