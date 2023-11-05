@@ -1,4 +1,6 @@
 import {
+    DeleteObjectCommand,
+    DeleteObjectRequest,
     GetObjectCommand,
     GetObjectRequest,
     ListObjectsCommand,
@@ -228,6 +230,10 @@ export abstract class DatabaseWrapper {
         return res;
     }
 
+    public static async DeletePlaytestRequest(guildId: Snowflake, playtestId: Guid): Promise<void> {
+        await DatabaseWrapper.DeleteBSONObject('PlaytestRequests', `${guildId}/${playtestId}`);
+    }
+
     public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, DB_PlaytestRequest>> {
         let objects = await DatabaseWrapper.ListObjects(`PlaytestRequests`);
 
@@ -318,6 +324,21 @@ export abstract class DatabaseWrapper {
         const obj = JSON.parse(EJSON.stringify(doc));
 
         return obj as T;
+    }
+
+    private static async DeleteBSONObject(dir: ObjectDirectory, key: string): Promise<void> {
+        const itemKey = `${dir}/${key}.bson`;
+
+        const input: DeleteObjectRequest = {
+            Bucket: bucketName,
+            Key: itemKey,
+        };
+
+        const command = new DeleteObjectCommand(input);
+
+        const response = await StaticDeclarations.s3client.send(command);
+
+        console.log(response);
     }
 
     private static async PutBSONObject(obj: any, dir: ObjectDirectory, key: string): Promise<boolean> {

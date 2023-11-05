@@ -41,8 +41,8 @@ module.exports = {
                 .setDescription('The type of the playtest')
                 .setRequired(true)
                 .addChoices([
-                    { name: 'Casual', value: 'casual' },
-                    { name: 'Competitive', value: 'competitive' },
+                    { name: '5v5', value: '5v5' },
+                    { name: '10v10', value: '10v10' },
                 ])
         )
         .addStringOption((option) =>
@@ -134,7 +134,7 @@ module.exports = {
             thumbnailImage: map.preview_url,
             requestDate: `${
                 composedRequestDateTime.getMonth() + 1
-            }/${composedRequestDateTime.getDay()}/${composedRequestDateTime.getFullYear()}`,
+            }/${composedRequestDateTime.getDate()}/${composedRequestDateTime.getFullYear()}`,
             requestTime: `${composedRequestDateTime.getHours().toLocaleString('en-US', {
                 minimumIntegerDigits: 2,
                 useGrouping: false,

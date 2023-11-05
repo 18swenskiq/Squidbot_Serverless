@@ -50,7 +50,7 @@ module.exports = {
 
             embed.fields?.push({
                 name: `${value.mapName} by ${user.username} - (${value.requestDate} ${value.requestTime})`,
-                value: `Id: ${value.Id}`,
+                value: `${value.Id}`,
                 inline: true,
             });
         }

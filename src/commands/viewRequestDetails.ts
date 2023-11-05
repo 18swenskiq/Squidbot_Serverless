@@ -45,28 +45,30 @@ module.exports = {
             fields: [
                 {
                     name: `Test Date`,
-                    value: `${playtestRequest.dateSubmitted} ${playtestRequest.requestTime}`,
-                    inline: true,
+                    value: `${playtestRequest.dateSubmitted.getMonth()}/${playtestRequest.dateSubmitted.getDate()}/${playtestRequest.dateSubmitted.getFullYear()} ${
+                        playtestRequest.requestTime
+                    }`,
+                    inline: false,
                 },
                 {
                     name: 'Game',
                     value: playtestRequest.game,
-                    inline: true,
+                    inline: false,
                 },
                 {
                     name: 'Map Name',
                     value: playtestRequest.mapName,
-                    inline: true,
+                    inline: false,
                 },
                 {
                     name: 'Authors',
                     value: authors.join(', '),
-                    inline: true,
+                    inline: false,
                 },
                 {
                     name: 'Type',
                     value: `${playtestRequest.mapType} - ${playtestRequest.playtestType}`,
-                    inline: true,
+                    inline: false,
                 },
             ],
         };
