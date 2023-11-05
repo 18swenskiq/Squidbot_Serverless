@@ -63,10 +63,13 @@ module.exports = {
         const endTimeDate = new Date(scheduledPlaytest.playtestTime);
         endTimeDate.setTime(scheduledPlaytest.playtestTime.getMilliseconds() + 90 * 60000);
 
+        console.log('end date?');
+        console.log(endTimeDate);
+
         const eventId = await DiscordApiRoutes.createGuildEvent(
             interaction.guild_id,
             playtestSettings.playtestChannel,
-            { location: 'Discord' },
+            { location: 'CS2 Level Testing Channel' },
             `${scheduledPlaytest.mapName} by ${scheduledPlaytest.mainAuthor}`,
             startTime,
             endTimeDate.toISOString(),
