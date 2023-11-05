@@ -279,7 +279,12 @@ export abstract class DatabaseWrapper {
         };
 
         const command = new ListObjectsCommand(input);
+        console.log('List Objects command');
+        console.log(command);
+
         const response = await StaticDeclarations.s3client.send(command);
+        console.log('response');
+        console.log(response);
 
         if (response.Contents === undefined) {
             console.log('response was error!');
@@ -287,6 +292,8 @@ export abstract class DatabaseWrapper {
         }
 
         const contents = response.Contents === undefined ? [] : response.Contents;
+        console.log('contents');
+        console.log(contents);
 
         return contents.map((c) => c.Key) as string[];
     }
