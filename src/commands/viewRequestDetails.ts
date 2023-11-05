@@ -35,8 +35,9 @@ module.exports = {
                 authors.push(newAuthor);
             }
         }
-        console.log('da date');
-        console.log(playtestRequest.dateSubmitted);
+        const newDate = new Date(playtestRequest.dateSubmitted.toTimeString());
+        console.log('new date');
+        console.log(newDate);
 
         const embed: Embed = {
             title: `${playtestRequest.mapName} by ${mainAuthorName}`,
@@ -47,7 +48,7 @@ module.exports = {
             fields: [
                 {
                     name: `Test Date`,
-                    value: `${playtestRequest.dateSubmitted.getMonth()}/${playtestRequest.dateSubmitted.getDate()}/${playtestRequest.dateSubmitted.getFullYear()} ${
+                    value: `${newDate.getMonth()}/${newDate.getDate()}/${newDate.getFullYear()} ${
                         playtestRequest.requestTime
                     }`,
                     inline: false,
