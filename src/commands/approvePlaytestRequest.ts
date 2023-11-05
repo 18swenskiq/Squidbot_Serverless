@@ -39,7 +39,7 @@ module.exports = {
 
         const newDateString = `${requestYear}-${requestMonth}-${requestDay}T${request.requestTime}:00.000Z`;
         const newDate = new Date(newDateString);
-        newDate.setMinutes(newDate.getMinutes() - easternOffset);
+        newDate.setMinutes(newDate.getMinutes() + easternOffset);
 
         const scheduledPlaytest: DB_ScheduledPlaytest = {
             Id: GenerateGuid(),
