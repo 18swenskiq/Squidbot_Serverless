@@ -220,25 +220,27 @@ export abstract class DatabaseWrapper {
         await DatabaseWrapper.PutBSONObject(requestBody, 'PlaytestRequests', keyName);
     }
 
+    public static async GetPlaytestRequest(guildId: Snowflake, playtestId: Guid): Promise<DB_PlaytestRequest> {
+        const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(
+            `PlaytestRequests`,
+            `${guildId}/${playtestId}`
+        );
+        return res;
+    }
+
     public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, DB_PlaytestRequest>> {
         let objects = await DatabaseWrapper.ListObjects(`PlaytestRequests`);
-        console.log('raw objects');
-        console.log(objects);
 
         objects = objects.filter((o) => o.endsWith('bson'));
         objects = objects.map((o) => o.replace('.bson', ''));
         objects = objects.filter((o) => o.includes(guildId));
         objects = objects.map((o) => o.replace('PlaytestRequests/', ''));
 
-        console.log('Objects - filter 3');
-        console.log(objects);
-
         const retObj: Record<Snowflake, DB_PlaytestRequest> = {};
 
         for (let i = 0; i < objects.length; i++) {
             const id = objects[i];
             const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(`PlaytestRequests`, id);
-            console.log(res);
 
             if (Object.keys(res).length > 0) {
                 retObj[id] = res;
@@ -283,12 +285,7 @@ export abstract class DatabaseWrapper {
         };
 
         const command = new ListObjectsCommand(input);
-        console.log('List Objects command');
-        console.log(command);
-
         const response = await StaticDeclarations.s3client.send(command);
-        console.log('response');
-        console.log(response);
 
         if (response.Contents === undefined) {
             console.log('response was error!');
@@ -296,8 +293,6 @@ export abstract class DatabaseWrapper {
         }
 
         const contents = response.Contents === undefined ? [] : response.Contents;
-        console.log('contents');
-        console.log(contents);
 
         return contents.map((c) => c.Key) as string[];
     }

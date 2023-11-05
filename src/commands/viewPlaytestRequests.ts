@@ -27,7 +27,7 @@ module.exports = {
 
         const embed: Embed = {
             title: 'Playtest Requests',
-            description: `Game: ${interactionData.options.find((o) => o.name === 'game')?.name}`,
+            description: `Game: ${interactionData.options.find((o) => o.name === 'game')?.value}`,
             type: 'rich',
             color: 6730746,
             fields: [],
