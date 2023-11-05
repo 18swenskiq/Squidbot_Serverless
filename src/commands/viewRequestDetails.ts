@@ -35,7 +35,9 @@ module.exports = {
                 authors.push(newAuthor);
             }
         }
-        const newDate = new Date(playtestRequest.dateSubmitted.toTimeString());
+
+        const coolTimeString = (playtestRequest.dateSubmitted as any)['$date'];
+        const newDate = new Date(coolTimeString);
         console.log('new date');
         console.log(newDate);
 
