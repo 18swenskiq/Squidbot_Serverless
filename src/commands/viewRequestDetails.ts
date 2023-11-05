@@ -42,6 +42,7 @@ module.exports = {
 
         const embed: Embed = {
             title: `${playtestRequest.mapName} by ${mainAuthorName}`,
+            description: playtestRequest.Id,
             thumbnail: { url: playtestRequest.thumbnailImage },
             url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${playtestRequest.workshopId}`,
             type: 'rich',
