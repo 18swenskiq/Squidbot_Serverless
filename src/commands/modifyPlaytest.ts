@@ -111,8 +111,13 @@ module.exports = {
             ];
 
             if (newDate || newTime) {
+                console.log('start time');
                 const startTimeString = playtest.playtestTime.toISOString();
                 const endTimeDate = new Date(playtest.playtestTime.getTime() + 90 * 60000);
+                console.log(startTimeString);
+
+                console.log('end time date');
+                console.log(endTimeDate);
                 await DiscordApiRoutes.modifyGuildEvent(
                     interaction.guild_id,
                     playtest.eventId,
