@@ -62,7 +62,6 @@ module.exports = {
 
         const eventId = await DiscordApiRoutes.createGuildEvent(
             interaction.guild_id,
-            playtestSettings.playtestChannel,
             { location: 'CS2 Level Testing Channel' },
             `${request.mapName} by ${authorName}`,
             startTime,

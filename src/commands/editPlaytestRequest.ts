@@ -34,6 +34,9 @@ module.exports = {
                     { name: '10v10', value: '10v10' },
                 ])
         )
+        .addStringOption((option) =>
+            option.setName('workshop_id').setDescription('The id of the workshop map').setRequired(false)
+        )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
@@ -42,6 +45,7 @@ module.exports = {
         const newDate = interactionData.options.find((o) => o.name === 'date')?.value;
         const newTime = interactionData.options.find((o) => o.name === 'time')?.value;
         const playtestType = interactionData.options.find((o) => o.name === 'playtest_type')?.value;
+        const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
 
         const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>playtestId);
 
@@ -59,6 +63,11 @@ module.exports = {
 
         if (playtestType) {
             request.playtestType = playtestType;
+            changed = true;
+        }
+
+        if (workshopId) {
+            request.workshopId = workshopId;
             changed = true;
         }
 

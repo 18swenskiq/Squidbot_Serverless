@@ -66,7 +66,6 @@ export abstract class DiscordApiRoutes {
 
     public static async createGuildEvent(
         guildId: Snowflake,
-        channelId: Snowflake,
         entityMetadata: GuildEventEntityMetadata,
         name: string,
         scheduledStartTime: string,
@@ -77,7 +76,6 @@ export abstract class DiscordApiRoutes {
         const url = `${DiscordApiRoutes.baseUrl}/guilds/${guildId}/scheduled-events`;
 
         const obj = {
-            //channel_id: '603463419751956480',
             entity_metadata: entityMetadata,
             name: name,
             privacy_level: 2,
@@ -90,6 +88,27 @@ export abstract class DiscordApiRoutes {
         const res = await DiscordApiRoutes.sendRequest('POST', url, obj);
         console.log(res);
         return res.data.id;
+    }
+
+    public static async modifyGuildEvent(
+        guildId: Snowflake,
+        eventId: Snowflake,
+        description: string,
+        startTime?: string,
+        endTime?: string
+    ): Promise<void> {
+        const url = `${DiscordApiRoutes.baseUrl}/guilds/${guildId}/scheduled-events/${eventId}`;
+
+        let obj: any = {
+            description: description,
+        };
+
+        if (startTime && endTime) {
+            obj['scheduled_start_time'] = startTime;
+            obj['scheduled_end_time'] = endTime;
+        }
+
+        await DiscordApiRoutes.sendRequest('PATCH', url, obj);
     }
 
     private static async sendRequest(
