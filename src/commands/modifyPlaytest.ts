@@ -60,28 +60,10 @@ module.exports = {
         if (newDate || newTime) {
             const playtestDate = newDate
                 ? newDate
-                : `${playtest.playtestTime.getMonth().toLocaleString('en-US', {
-                      minimumIntegerDigits: 2,
-                      useGrouping: false,
-                  })}/${playtest.playtestTime.getDate().toLocaleString('en-US', {
-                      minimumIntegerDigits: 2,
-                      useGrouping: false,
-                  })}/${playtest.playtestTime.getFullYear()}`;
+                : `${playtest.playtestTime.getMonth()}/${playtest.playtestTime.getDate()}/${playtest.playtestTime.getFullYear()}`;
             const playtestTime = newTime
                 ? newTime
-                : `${playtest.playtestTime.getHours().toLocaleString('en-US', {
-                      minimumIntegerDigits: 2,
-                      useGrouping: false,
-                  })}:${playtest.playtestTime.getMinutes().toLocaleString('en-US', {
-                      minimumIntegerDigits: 2,
-                      useGrouping: false,
-                  })}`;
-
-            console.log('playtest date');
-            console.log(playtestDate);
-
-            console.log('playtest time');
-            console.log(playtestTime);
+                : `${playtest.playtestTime.getHours()}:${playtest.playtestTime.getMinutes()}`;
 
             const requestYear = playtestDate.split('/')[2];
             const requestDay = playtestDate.split('/')[1];
@@ -89,13 +71,16 @@ module.exports = {
             const requestHour = playtestTime.split(':')[0];
             const requestMinutes = playtestTime.split(':')[1];
 
-            const coolString = `${requestYear}-${requestMonth}-${requestDay}T${requestHour}:${requestMinutes}:00.000Z`;
-            console.log('cool string');
-            console.log(coolString);
-
-            playtest.playtestTime = new Date(
-                `${requestYear}-${requestMonth}-${requestDay}T${requestHour}:${requestMinutes}:00.000Z`
+            const date = new Date(
+                Number(requestYear),
+                Number(requestMonth) - 1,
+                Number(requestDay),
+                Number(requestHour),
+                Number(requestMinutes)
             );
+            const easternOffset = getOffset('US/Eastern');
+            date.setMinutes(date.getMinutes() + easternOffset);
+            playtest.playtestTime = date;
             changed = true;
         }
 
@@ -157,3 +142,24 @@ module.exports = {
         }
     },
 } as CommandDescription;
+
+const getOffset = (timeZone: any) => {
+    const timeZoneFormat = Intl.DateTimeFormat('ia', {
+        timeZoneName: 'short',
+        timeZone,
+    });
+    const timeZoneParts = timeZoneFormat.formatToParts();
+    const timeZoneName = timeZoneParts.find((i) => i.type === 'timeZoneName')!.value;
+    const offset = timeZoneName.slice(3);
+    if (!offset) return 0;
+
+    const matchData = offset.match(/([+-])(\d+)(?::(\d+))?/);
+    if (!matchData) throw `cannot parse timezone name: ${timeZoneName}`;
+
+    const [, sign, hour, minute] = matchData;
+    let result = parseInt(hour) * 60;
+    if (sign === '+') result *= -1;
+    if (minute) result += parseInt(minute);
+
+    return result;
+};
