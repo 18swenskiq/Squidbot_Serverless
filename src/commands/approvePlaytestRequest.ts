@@ -19,10 +19,19 @@ module.exports = {
                 .setDescription('The id of the playtest request to approve and schedule')
                 .setRequired(true)
         )
+        .addStringOption((option) =>
+            option
+                .setName('server')
+                .setDescription(
+                    'The server that the playtest will be on. This will be your IP:Port. Ex: can.sediscord.com:27015'
+                )
+                .setRequired(true)
+        )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
+        const server = interactionData.options.find((o) => o.name === 'server')?.value;
 
         // Create scheduled playtest object
         const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
@@ -52,6 +61,7 @@ module.exports = {
 
         const description = [
             `Game: ${request.game}`,
+            `Server: ${server}`,
             `Playtest Type: ${request.playtestType}`,
             `Map Type: ${request.mapType}`,
             `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${request.workshopId}`,
@@ -83,6 +93,7 @@ module.exports = {
             playtestType: request.playtestType,
             moderator: interaction.member.user.id,
             eventId: eventId,
+            server: <string>server,
         };
 
         console.log('new scheduled playtest date');

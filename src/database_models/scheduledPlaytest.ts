@@ -14,4 +14,5 @@ export interface DB_ScheduledPlaytest {
     playtestType: string;
     moderator: Snowflake;
     eventId: Snowflake;
+    server: string;
 }

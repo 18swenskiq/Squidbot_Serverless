@@ -32,8 +32,8 @@ module.exports = {
                 countryCode = `:flag_${s.countryCode.toLowerCase()}:`;
             }
 
-            const embedTitle = s.ip;
-            const embedValue = `Game: \`${gameDisplayName}\`\n${s.nickname} ${countryCode}`;
+            const embedTitle = `${s.ip}:${s.port}`;
+            const embedValue = `Game: \`${gameDisplayName}\`\n${s.nickname}`;
 
             const field: EmbedField = {
                 name: embedTitle,

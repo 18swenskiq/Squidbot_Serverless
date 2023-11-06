@@ -33,12 +33,14 @@ module.exports = {
         .addStringOption((option) =>
             option.setName('rcon_password').setDescription('The RCON password').setRequired(true)
         )
+        /*
         .addStringOption((option) =>
             option
                 .setName('flag')
                 .setDescription('The country code of the flag to show for this server')
                 .setRequired(false)
         )
+        */
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
