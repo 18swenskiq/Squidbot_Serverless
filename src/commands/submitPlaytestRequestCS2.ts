@@ -14,7 +14,6 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('submit_playtest_request_cs2')
         .setDescription('Submits a playtest request')
-        .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS])
         .addStringOption((option) =>
             option.setName('map_name').setDescription('The name of the map (example: de_dust2)').setRequired(true)
         )

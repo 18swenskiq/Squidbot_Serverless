@@ -43,7 +43,7 @@ module.exports = {
                         server.id
                     );
                     return new CommandResult(
-                        `Set the active server to \`${server.id}:${server.port}\` (${server.nickname})`,
+                        `Set the active server to \`${server.ip}:${server.port}\` (${server.nickname})`,
                         true,
                         false
                     );
