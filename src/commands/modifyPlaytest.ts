@@ -60,10 +60,22 @@ module.exports = {
         if (newDate || newTime) {
             const playtestDate = newDate
                 ? newDate
-                : `${playtest.playtestTime.getMonth()}/${playtest.playtestTime.getDate()}/${playtest.playtestTime.getFullYear()}`;
+                : `${playtest.playtestTime.getMonth().toLocaleString('en-US', {
+                      minimumIntegerDigits: 2,
+                      useGrouping: false,
+                  })}/${playtest.playtestTime.getDate().toLocaleString('en-US', {
+                      minimumIntegerDigits: 2,
+                      useGrouping: false,
+                  })}/${playtest.playtestTime.getFullYear()}`;
             const playtestTime = newTime
                 ? newTime
-                : `${playtest.playtestTime.getHours()}:${playtest.playtestTime.getMinutes()}`;
+                : `${playtest.playtestTime.getHours().toLocaleString('en-US', {
+                      minimumIntegerDigits: 2,
+                      useGrouping: false,
+                  })}:${playtest.playtestTime.getMinutes().toLocaleString('en-US', {
+                      minimumIntegerDigits: 2,
+                      useGrouping: false,
+                  })}`;
 
             console.log('playtest date');
             console.log(playtestDate);
