@@ -35,22 +35,21 @@ module.exports = {
             .on('repsonse', function (str) {
                 console.log('Rcon Response - ' + str);
                 client.disconnect();
+                return new CommandResult(str, false, false);
             })
             .on('error', function (err) {
                 console.log('Error: ' + err);
                 client.disconnect();
+                return new CommandResult(err, false, false);
             })
             .on('end', function () {
                 console.log('RCON Connection Closed');
                 client.disconnect();
+                return new CommandResult('Connection closed', false, false);
             });
 
         client.connect();
-
-        return new CommandResult(
-            'check the aws logs you dumb loser, you havent added the response here yet',
-            false,
-            false
-        );
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        return new CommandResult('Server did not respond in 10000 ms', false, false);
     },
 } as CommandDescription;
