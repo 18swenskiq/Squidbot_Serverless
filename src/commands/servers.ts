@@ -33,7 +33,7 @@ module.exports = {
             }
 
             const embedTitle = `${s.ip}:${s.port}`;
-            const embedValue = `Game: \`${gameDisplayName}\`\n${s.nickname}`;
+            const embedValue = `Game: \`${gameDisplayName}\``;
 
             const field: EmbedField = {
                 name: embedTitle,
