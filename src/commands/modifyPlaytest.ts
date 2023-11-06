@@ -112,6 +112,7 @@ module.exports = {
 
             if (newDate || newTime) {
                 console.log('start time');
+                console.log(playtest.playtestTime);
                 const startTimeString = playtest.playtestTime.toISOString();
                 const endTimeDate = new Date(playtest.playtestTime.getTime() + 90 * 60000);
                 console.log(startTimeString);
