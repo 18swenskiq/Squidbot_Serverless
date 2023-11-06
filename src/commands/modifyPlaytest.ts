@@ -65,11 +65,21 @@ module.exports = {
                 ? newTime
                 : `${playtest.playtestTime.getHours()}:${playtest.playtestTime.getMinutes()}`;
 
+            console.log('playtest date');
+            console.log(playtestDate);
+
+            console.log('playtest time');
+            console.log(playtestTime);
+
             const requestYear = playtestDate.split('/')[2];
             const requestDay = playtestDate.split('/')[1];
             const requestMonth = playtestDate.split('/')[0];
             const requestHour = playtestTime.split(':')[0];
             const requestMinutes = playtestTime.split(':')[1];
+
+            const coolString = `${requestYear}-${requestMonth}-${requestDay}T${requestHour}:${requestMinutes}:00.000Z`;
+            console.log('cool string');
+            console.log(coolString);
 
             playtest.playtestTime = new Date(
                 `${requestYear}-${requestMonth}-${requestDay}T${requestHour}:${requestMinutes}:00.000Z`
