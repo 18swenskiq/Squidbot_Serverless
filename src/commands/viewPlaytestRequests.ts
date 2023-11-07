@@ -49,8 +49,19 @@ module.exports = {
 
             const user = await DiscordApiRoutes.getUser(value.mainAuthor);
 
+            const mmddyyyy = value.requestDate.split('/');
+            const hhmm = value.requestTime.split(':');
+            const composedDate = new Date(
+                Number(mmddyyyy[2]),
+                Number(mmddyyyy[0]) - 1,
+                Number(mmddyyyy[1]),
+                Number(hhmm[0]),
+                Number(hhmm[1])
+            );
+
             embed.fields?.push({
-                name: `${value.mapName} by ${user.username} - (${value.requestDate} ${value.requestTime})`,
+                //name: `${value.mapName} by ${user.username} - (${value.requestDate} ${value.requestTime})`,
+                name: `${value.mapName} by ${user.username} - (<t:${composedDate.getTime()}:f>)`,
                 value: `${value.Id}`,
                 inline: true,
             });
