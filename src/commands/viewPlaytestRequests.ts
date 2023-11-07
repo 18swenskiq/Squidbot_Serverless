@@ -31,6 +31,7 @@ module.exports = {
             type: 'rich',
             color: 6730746,
             fields: [],
+            footer: { text: 'All requests in US Eastern Time.' },
         };
 
         for (const key in playtestRequests) {
