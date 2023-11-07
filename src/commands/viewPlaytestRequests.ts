@@ -61,7 +61,7 @@ module.exports = {
 
             embed.fields?.push({
                 //name: `${value.mapName} by ${user.username} - (${value.requestDate} ${value.requestTime})`,
-                name: `${value.mapName} by ${user.username} - (<t:${composedDate.getTime()}:f>)`,
+                name: `${value.mapName} by ${user.username} - (<t:${composedDate.getTime() / 1000}:f>)`,
                 value: `${value.Id}`,
                 inline: true,
             });
