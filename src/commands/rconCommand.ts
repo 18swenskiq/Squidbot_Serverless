@@ -1,10 +1,10 @@
-import Rcon from 'ts-rcon';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import Rcon from 'rcon-ts';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -24,32 +24,25 @@ module.exports = {
             challenge: false,
         };
 
-        const client = new Rcon(rconServer.ip, Number(rconServer.port), rconServer.rconPassword, options);
-        client
-            .on('auth', function () {
-                console.log('Authenticated');
-                console.log(`Sending RCON command - ${command}`);
+        const rcon = new Rcon({
+            host: rconServer.ip,
+            port: Number(rconServer.port),
+            password: rconServer.rconPassword,
+            timeout: 5000,
+        });
 
-                client.send(<string>command);
-            })
-            .on('repsonse', function (str) {
-                console.log('Rcon Response - ' + str);
-                client.disconnect();
-                return new CommandResult(str, false, false);
-            })
-            .on('error', function (err) {
-                console.log('Error: ' + err);
-                client.disconnect();
-                return new CommandResult(err, false, false);
-            })
-            .on('end', function () {
-                console.log('RCON Connection Closed');
-                client.disconnect();
-                return new CommandResult('Connection closed', false, false);
-            });
+        rcon.connect();
+        let response = await rcon.send(<string>command);
+        rcon.disconnect();
 
-        client.connect();
-        await new Promise((resolve) => setTimeout(resolve, 10000));
-        return new CommandResult('Server did not respond in 10000 ms', false, false);
+        const errors = rcon.errors;
+
+        if (errors.length) {
+            console.warn('Errors: ', errors);
+            return new CommandResult(errors.join(', '), false, false);
+        }
+
+        console.log('Response: ', response);
+        return new CommandResult(response, false, false);
     },
 } as CommandDescription;
