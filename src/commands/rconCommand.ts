@@ -43,6 +43,6 @@ module.exports = {
         }
 
         console.log('Response: ', response);
-        return new CommandResult(response, false, false);
+        return new CommandResult('```\n' + response + '\n```', false, false);
     },
 } as CommandDescription;
