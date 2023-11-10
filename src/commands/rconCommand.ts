@@ -19,6 +19,10 @@ module.exports = {
         // Get current RCON server
         const rconServer = await DatabaseWrapper.GetActiveRconServer(interaction.member.user.id, interaction.guild_id);
 
+        if (!rconServer) {
+            return new CommandResult('No active RCON server!', false, false);
+        }
+
         var options = {
             tcp: true,
             challenge: false,
@@ -40,6 +44,10 @@ module.exports = {
         if (errors.length) {
             console.warn('Errors: ', errors);
             return new CommandResult(errors.join(', '), false, false);
+        }
+
+        if (response === '') {
+            return new CommandResult('No response from server', false, false);
         }
 
         console.log('Response: ', response);
