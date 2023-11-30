@@ -42,10 +42,15 @@ exports.handler = async (event: any) => {
             const chosenCommand = commands.find((c) => c.data.name === bodyData.name);
 
             if (chosenCommand != null) {
-                const result = await chosenCommand.execute(body);
-                console.log('Returning result:', result);
-                await sendCommandResponse(body, result);
-                return { statusCode: 200 };
+                try {
+                    const result = await chosenCommand.execute(body);
+                    console.log('Returning result:', result);
+                    await sendCommandResponse(body, result);
+                    return { statusCode: 200 };
+                } catch (error) {
+                    await sendCommandResponse(body, new CommandResult(`ERROR: ${error}`, true, false));
+                    return { statusCode: 500 };
+                }
             } else {
                 return { statusCode: 404 };
             }
