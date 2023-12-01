@@ -89,7 +89,11 @@ module.exports = {
         const currentDate = new Date();
         const localizedDate = new Date();
         const easternOffset = getOffset('US/Eastern');
-        localizedDate.setMinutes(localizedDate.getMinutes() + easternOffset);
+
+        // Note: This is an awful way to do this. This is essentially a "reverse localized" date, where the submitted time is considered
+        // GMT but comes in as EST (i.e. it will say 14:00 GMT but mean 14:00 EST). So I am instead reversing the offset from the current
+        // time to see if it is in the past.
+        localizedDate.setMinutes(localizedDate.getMinutes() - easternOffset);
 
         const requestDateComponents = requestDate?.split('/');
         if (requestDateComponents === undefined) {
