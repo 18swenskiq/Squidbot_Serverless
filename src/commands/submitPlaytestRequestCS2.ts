@@ -87,6 +87,9 @@ module.exports = {
 
         // Validate date isn't in the past and actually exists
         const currentDate = new Date();
+        const localizedDate = new Date();
+        const easternOffset = getOffset('US/Eastern');
+        localizedDate.setMinutes(localizedDate.getMinutes() + easternOffset);
 
         const requestDateComponents = requestDate?.split('/');
         if (requestDateComponents === undefined) {
@@ -113,7 +116,7 @@ module.exports = {
             return new CommandResult('Date/Time appears to not exist. Please try again', true, false);
         }
 
-        if (composedRequestDateTime < currentDate) {
+        if (composedRequestDateTime < localizedDate) {
             return new CommandResult('Date and/or time appears to be in the past. Please try again', true, false);
         }
 
@@ -228,3 +231,24 @@ module.exports = {
         return cr;
     },
 } as CommandDescription;
+
+const getOffset = (timeZone: any) => {
+    const timeZoneFormat = Intl.DateTimeFormat('ia', {
+        timeZoneName: 'short',
+        timeZone,
+    });
+    const timeZoneParts = timeZoneFormat.formatToParts();
+    const timeZoneName = timeZoneParts.find((i) => i.type === 'timeZoneName')!.value;
+    const offset = timeZoneName.slice(3);
+    if (!offset) return 0;
+
+    const matchData = offset.match(/([+-])(\d+)(?::(\d+))?/);
+    if (!matchData) throw `cannot parse timezone name: ${timeZoneName}`;
+
+    const [, sign, hour, minute] = matchData;
+    let result = parseInt(hour) * 60;
+    if (sign === '+') result *= -1;
+    if (minute) result += parseInt(minute);
+
+    return result;
+};
