@@ -37,6 +37,9 @@ module.exports = {
         .addStringOption((option) =>
             option.setName('workshop_id').setDescription('The id of the workshop map').setRequired(false)
         )
+        .addStringOption((option) =>
+            option.setName('author_id').setDescription('The id of the author').setRequired(false)
+        )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
@@ -46,6 +49,7 @@ module.exports = {
         const newTime = interactionData.options.find((o) => o.name === 'time')?.value;
         const playtestType = interactionData.options.find((o) => o.name === 'playtest_type')?.value;
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
+        const authorId = interactionData.options.find((o) => o.name === 'author_id')?.value;
 
         const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>playtestId);
 
@@ -68,6 +72,11 @@ module.exports = {
 
         if (workshopId) {
             request.workshopId = workshopId;
+            changed = true;
+        }
+
+        if (authorId) {
+            request.mainAuthor = authorId;
             changed = true;
         }
 
