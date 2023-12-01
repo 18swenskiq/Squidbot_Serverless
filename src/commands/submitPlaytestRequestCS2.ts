@@ -117,8 +117,9 @@ module.exports = {
         }
 
         if (composedRequestDateTime < localizedDate) {
-            console.log(`Composed request date time: ${composedRequestDateTime}`);
-            console.log(`Localized Date: ${composedRequestDateTime}`);
+            console.log(`Composed request date time: ${composedRequestDateTime.toUTCString()}`);
+            console.log(`Current Date: ${currentDate.toUTCString()}`);
+            console.log(`Localized Date: ${localizedDate.toUTCString()}`);
             return new CommandResult('Date and/or time appears to be in the past. Please try again', true, false);
         }
 
