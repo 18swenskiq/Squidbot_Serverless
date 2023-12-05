@@ -28,12 +28,9 @@ module.exports = {
         if (options?.length > 0) {
             const chosenServerIp = options.find((o) => o.name === 'server')?.value;
 
-            console.log('chosen server ip:', chosenServerIp);
             // If the server input was provided
             if (chosenServerIp) {
                 const server = servers.find((s) => s.ip === chosenServerIp);
-
-                console.log('relevant server', server);
 
                 if (server) {
                     console.log('Setting the server');
@@ -58,7 +55,6 @@ module.exports = {
         }
 
         const res = await DatabaseWrapper.GetActiveRconServer(interaction.member.user.id, interaction.guild_id);
-        console.log('get active server response', res);
         if (res?.ip) {
             return new CommandResult(`Current active server is \`${res.ip}:${res.port}\``, true, false);
         }

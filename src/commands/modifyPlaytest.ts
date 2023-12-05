@@ -6,6 +6,7 @@ import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { Guid } from '../util/guid';
+import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -65,20 +66,9 @@ module.exports = {
                 ? newTime
                 : `${playtest.playtestTime.getHours()}:${playtest.playtestTime.getMinutes()}`;
 
-            const requestYear = playtestDate.split('/')[2];
-            const requestDay = playtestDate.split('/')[1];
-            const requestMonth = playtestDate.split('/')[0];
-            const requestHour = playtestTime.split(':')[0];
-            const requestMinutes = playtestTime.split(':')[1];
+            const date = TimeUtils.ComposeDateFromStringComponents(playtestDate, playtestTime);
 
-            const date = new Date(
-                Number(requestYear),
-                Number(requestMonth) - 1,
-                Number(requestDay),
-                Number(requestHour),
-                Number(requestMinutes)
-            );
-            const easternOffset = getOffset('US/Eastern');
+            const easternOffset = TimeUtils.GetOffset('US/Eastern');
             date.setMinutes(date.getMinutes() + easternOffset);
             playtest.playtestTime = date;
             changed = true;
@@ -118,14 +108,9 @@ module.exports = {
             ];
 
             if (newDate || newTime) {
-                console.log('start time');
-                console.log(playtest.playtestTime);
                 const startTimeString = playtest.playtestTime.toISOString();
-                const endTimeDate = new Date(playtest.playtestTime.getTime() + 90 * 60000);
-                console.log(startTimeString);
+                const endTimeDate = TimeUtils.GetNewDateFromAddMinutes(playtest.playtestTime, 90);
 
-                console.log('end time date');
-                console.log(endTimeDate);
                 await DiscordApiRoutes.modifyGuildEvent(
                     interaction.guild_id,
                     playtest.eventId,
@@ -142,24 +127,3 @@ module.exports = {
         }
     },
 } as CommandDescription;
-
-const getOffset = (timeZone: any) => {
-    const timeZoneFormat = Intl.DateTimeFormat('ia', {
-        timeZoneName: 'short',
-        timeZone,
-    });
-    const timeZoneParts = timeZoneFormat.formatToParts();
-    const timeZoneName = timeZoneParts.find((i) => i.type === 'timeZoneName')!.value;
-    const offset = timeZoneName.slice(3);
-    if (!offset) return 0;
-
-    const matchData = offset.match(/([+-])(\d+)(?::(\d+))?/);
-    if (!matchData) throw `cannot parse timezone name: ${timeZoneName}`;
-
-    const [, sign, hour, minute] = matchData;
-    let result = parseInt(hour) * 60;
-    if (sign === '+') result *= -1;
-    if (minute) result += parseInt(minute);
-
-    return result;
-};

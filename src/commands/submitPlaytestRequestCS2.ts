@@ -89,7 +89,7 @@ module.exports = {
         // Validate date isn't in the past and actually exists
         const currentDate = new Date();
         const localizedDate = new Date();
-        const easternOffset = TimeUtils.getOffset('US/Eastern');
+        const easternOffset = TimeUtils.GetOffset('US/Eastern');
 
         // Note: This is an awful way to do this. This is essentially a "reverse localized" date, where the submitted time is considered
         // GMT but comes in as EST (i.e. it will say 14:00 GMT but mean 14:00 EST). So I am instead reversing the offset from the current
@@ -106,25 +106,16 @@ module.exports = {
             return new CommandResult('Time appears to be malformed. Please try again', true, false);
         }
 
-        const composedRequestDateTime = new Date(
-            Number(requestDateComponents[2]),
-            Number(requestDateComponents[0]) - 1,
-            Number(requestDateComponents[1]),
-            Number(requestTimeComponents[0]),
-            Number(requestTimeComponents[1])
+        const composedRequestDateTime = TimeUtils.ComposeDateFromStringComponents(
+            <string>requestDate,
+            <string>request_time
         );
-
-        console.log('COMPOSED');
-        console.log(composedRequestDateTime);
 
         if (!isFinite(composedRequestDateTime.getTime())) {
             return new CommandResult('Date/Time appears to not exist. Please try again', true, false);
         }
 
         if (composedRequestDateTime < localizedDate) {
-            console.log(`Composed request date time: ${composedRequestDateTime.toUTCString()}`);
-            console.log(`Current Date: ${currentDate.toUTCString()}`);
-            console.log(`Localized Date: ${localizedDate.toUTCString()}`);
             return new CommandResult('Date and/or time appears to be in the past. Please try again', true, false);
         }
 
@@ -145,18 +136,8 @@ module.exports = {
             mainAuthor: interaction.member.user.id,
             otherAuthors: otherCreators?.split(',') ?? [],
             thumbnailImage: map.preview_url,
-            requestDate: `${composedRequestDateTime.getMonth() + 1}/${composedRequestDateTime
-                .getDate()
-                .toLocaleString('en-US', {
-                    minimumIntegerDigits: 2,
-                    useGrouping: false,
-                })}/${composedRequestDateTime.getFullYear()}`,
-            requestTime: `${composedRequestDateTime.getHours().toLocaleString('en-US', {
-                minimumIntegerDigits: 2,
-                useGrouping: false,
-            })}:${composedRequestDateTime
-                .getMinutes()
-                .toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`,
+            requestDate: TimeUtils.GetDBFriendlyDateString(composedRequestDateTime),
+            requestTime: TimeUtils.GetDBFriendlyTimeString(composedRequestDateTime),
             workshopId: <string>workshopId,
             mapType: <string>gameMode,
             playtestType: <string>playtestType,
@@ -169,7 +150,7 @@ module.exports = {
         // Create embed showcasing successful request
         const embed: Embed = {
             title: `${mapName} by ${interaction.member.user.username}`,
-            description: requestBody.Id,
+            description: `||${requestBody.Id}||`,
             type: 'rich',
             image: {
                 url: map.preview_url,
@@ -178,23 +159,8 @@ module.exports = {
             url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${workshopId}`,
             fields: [
                 {
-                    name: 'Date',
-                    value: `${composedRequestDateTime.getMonth() + 1}/${composedRequestDateTime
-                        .getDate()
-                        .toLocaleString('en-US', {
-                            minimumIntegerDigits: 2,
-                            useGrouping: false,
-                        })}/${composedRequestDateTime.getFullYear()}`,
-                    inline: true,
-                },
-                {
                     name: 'Time',
-                    value: `${composedRequestDateTime.getHours().toLocaleString('en-US', {
-                        minimumIntegerDigits: 2,
-                        useGrouping: false,
-                    })}:${composedRequestDateTime
-                        .getMinutes()
-                        .toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`,
+                    value: `${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
                     inline: true,
                 },
                 {
@@ -208,9 +174,6 @@ module.exports = {
                     inline: true,
                 },
             ],
-            footer: {
-                text: 'All times are in eastern US time. This is a request that may or may not be approved.',
-            },
         };
 
         // Send the embed to the playtesting channel
@@ -228,9 +191,7 @@ module.exports = {
         );
 
         const cr = new CommandResult(
-            `The playtest was requested for ${composedRequestDateTime
-                .toString()
-                .replace('GMT+0000 (Coordinated Universal Time)', '')}`,
+            `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
             false,
             false
         );

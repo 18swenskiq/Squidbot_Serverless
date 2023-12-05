@@ -45,7 +45,7 @@ module.exports = {
         const requestDay = request.requestDate.split('/')[1];
         const requestYear = request.requestDate.split('/')[2];
 
-        const easternOffset = TimeUtils.getOffset('US/Eastern');
+        const easternOffset = TimeUtils.GetOffset('US/Eastern');
 
         const newDateString = `${requestYear}-${requestMonth}-${requestDay}T${request.requestTime}:00.000Z`;
         const newDate = new Date(newDateString);
@@ -54,7 +54,7 @@ module.exports = {
         // Add playtest to event calendar
         const playtestSettings = (await DatabaseWrapper.GetGuildSettings(interaction.guild_id)).playtesting.cs2;
         const startTime = newDate.toISOString();
-        const endTimeDate = new Date(newDate.getTime() + 90 * 60000);
+        const endTimeDate = TimeUtils.GetNewDateFromAddMinutes(newDate, 90);
 
         const authorName = (await DiscordApiRoutes.getUser(request.mainAuthor)).username;
 
@@ -96,9 +96,6 @@ module.exports = {
             eventId: eventId,
             server: <string>server,
         };
-
-        console.log('new scheduled playtest date');
-        console.log(scheduledPlaytest.playtestTime);
 
         await DatabaseWrapper.CreateScheduledPlaytest(interaction.guild_id, scheduledPlaytest);
 

@@ -23,8 +23,6 @@ module.exports = {
 
         const game = interactionData.options.find((o) => o.name === 'game')?.value;
         const playtestRequests = await DatabaseWrapper.GetPlaytestRequests(interaction.guild_id);
-        console.log('playtest requests');
-        console.log(playtestRequests);
 
         const embed: Embed = {
             title: 'Playtest Requests',
@@ -35,43 +33,27 @@ module.exports = {
         };
 
         for (const key in playtestRequests) {
-            console.log('key');
-            console.log(key);
-
             const value = playtestRequests[key];
-
-            console.log('value');
-            console.log(value);
 
             if (value.game !== game) {
                 continue;
             }
 
             const user = await DiscordApiRoutes.getUser(value.mainAuthor);
+            const composedDate = TimeUtils.ComposeDateFromStringComponents(value.requestDate, value.requestTime);
 
-            const mmddyyyy = value.requestDate.split('/');
-            const hhmm = value.requestTime.split(':');
-            const composedDate = new Date(
-                Number(mmddyyyy[2]),
-                Number(mmddyyyy[0]) - 1,
-                Number(mmddyyyy[1]),
-                Number(hhmm[0]),
-                Number(hhmm[1])
-            );
-
-            const easternOffset = TimeUtils.getOffset('US/Eastern');
+            const easternOffset = TimeUtils.GetOffset('US/Eastern');
             composedDate.setMinutes(composedDate.getMinutes() + easternOffset);
 
             embed.fields?.push({
-                //name: `${value.mapName} by ${user.username} - (${value.requestDate} ${value.requestTime})`,
-                name: `${value.mapName} by ${user.username} - (<t:${composedDate.getTime() / 1000}:f>)`,
+                name: `${value.mapName} by ${user.username} - (${TimeUtils.GetDiscordTimestampFromDate(composedDate)})`,
                 value: `${value.Id}`,
                 inline: true,
             });
         }
 
         if (embed.fields!.length > 0) {
-            const cr = new CommandResult('Use <other command> to schedule', true, false);
+            const cr = new CommandResult('Use `/approve_playtest_request to schedule', true, false);
             cr.embeds = [embed];
             return cr;
         } else {
