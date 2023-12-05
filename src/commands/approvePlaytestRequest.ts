@@ -8,6 +8,7 @@ import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { GenerateGuid, Guid } from '../util/guid';
+import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -44,7 +45,7 @@ module.exports = {
         const requestDay = request.requestDate.split('/')[1];
         const requestYear = request.requestDate.split('/')[2];
 
-        const easternOffset = getOffset('US/Eastern');
+        const easternOffset = TimeUtils.getOffset('US/Eastern');
 
         const newDateString = `${requestYear}-${requestMonth}-${requestDay}T${request.requestTime}:00.000Z`;
         const newDate = new Date(newDateString);
@@ -113,24 +114,3 @@ module.exports = {
         return new CommandResult('Playtest Scheduled', false, false);
     },
 } as CommandDescription;
-
-const getOffset = (timeZone: any) => {
-    const timeZoneFormat = Intl.DateTimeFormat('ia', {
-        timeZoneName: 'short',
-        timeZone,
-    });
-    const timeZoneParts = timeZoneFormat.formatToParts();
-    const timeZoneName = timeZoneParts.find((i) => i.type === 'timeZoneName')!.value;
-    const offset = timeZoneName.slice(3);
-    if (!offset) return 0;
-
-    const matchData = offset.match(/([+-])(\d+)(?::(\d+))?/);
-    if (!matchData) throw `cannot parse timezone name: ${timeZoneName}`;
-
-    const [, sign, hour, minute] = matchData;
-    let result = parseInt(hour) * 60;
-    if (sign === '+') result *= -1;
-    if (minute) result += parseInt(minute);
-
-    return result;
-};

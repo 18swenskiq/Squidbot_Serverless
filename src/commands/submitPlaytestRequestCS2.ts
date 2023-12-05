@@ -9,6 +9,7 @@ import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { SteamApi } from '../steam_api/steamApi';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { GenerateGuid } from '../util/guid';
+import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -88,7 +89,7 @@ module.exports = {
         // Validate date isn't in the past and actually exists
         const currentDate = new Date();
         const localizedDate = new Date();
-        const easternOffset = getOffset('US/Eastern');
+        const easternOffset = TimeUtils.getOffset('US/Eastern');
 
         // Note: This is an awful way to do this. This is essentially a "reverse localized" date, where the submitted time is considered
         // GMT but comes in as EST (i.e. it will say 14:00 GMT but mean 14:00 EST). So I am instead reversing the offset from the current
@@ -238,24 +239,3 @@ module.exports = {
         return cr;
     },
 } as CommandDescription;
-
-const getOffset = (timeZone: any) => {
-    const timeZoneFormat = Intl.DateTimeFormat('ia', {
-        timeZoneName: 'short',
-        timeZone,
-    });
-    const timeZoneParts = timeZoneFormat.formatToParts();
-    const timeZoneName = timeZoneParts.find((i) => i.type === 'timeZoneName')!.value;
-    const offset = timeZoneName.slice(3);
-    if (!offset) return 0;
-
-    const matchData = offset.match(/([+-])(\d+)(?::(\d+))?/);
-    if (!matchData) throw `cannot parse timezone name: ${timeZoneName}`;
-
-    const [, sign, hour, minute] = matchData;
-    let result = parseInt(hour) * 60;
-    if (sign === '+') result *= -1;
-    if (minute) result += parseInt(minute);
-
-    return result;
-};
