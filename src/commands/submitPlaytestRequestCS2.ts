@@ -155,6 +155,9 @@ module.exports = {
         // Send to database
         await DatabaseWrapper.CreateCS2PlaytestRequest(interaction.guild_id, requestBody);
 
+        // Now that we've sent this to the DB, we can reset the offset
+        composedRequestDateTime.setMinutes(composedRequestDateTime.getMinutes() + easternOffset);
+
         // Create embed showcasing successful request
         const embed: Embed = {
             title: `${mapName} by ${interaction.member.user.username}`,
@@ -168,7 +171,7 @@ module.exports = {
             fields: [
                 {
                     name: 'Time',
-                    value: `${TimeUtils.GetDiscordTimestampFromDate(localizedDate)}`,
+                    value: `${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
                     inline: true,
                 },
                 {
@@ -202,7 +205,7 @@ module.exports = {
         );
 
         const cr = new CommandResult(
-            `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(localizedDate)}`,
+            `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
             false,
             false
         );
