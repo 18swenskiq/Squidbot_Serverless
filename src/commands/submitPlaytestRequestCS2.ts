@@ -115,8 +115,16 @@ module.exports = {
             return new CommandResult('Date/Time appears to not exist. Please try again', true, false);
         }
 
+        console.log('Composed time:');
+        console.log(composedRequestDateTime);
+        console.log('Localized date:');
+        console.log(localizedDate);
         if (composedRequestDateTime < localizedDate) {
-            return new CommandResult('Date and/or time appears to be in the past. Please try again', true, false);
+            return new CommandResult(
+                `Date and/or time appears to be in the past. Please try again. Composed Time: ${composedRequestDateTime} | Localized Date: ${localizedDate}`,
+                true,
+                false
+            );
         }
 
         // Validate workshop link
