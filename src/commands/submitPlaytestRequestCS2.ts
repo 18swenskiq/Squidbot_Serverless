@@ -101,6 +101,10 @@ module.exports = {
             return new CommandResult('Date appears to be malformed. Please try again', true, false);
         }
 
+        if (requestDateComponents[2].length < 4) {
+            return new CommandResult('Please input 4 digits for the year', true, false);
+        }
+
         const requestTimeComponents = request_time?.split(':');
         if (requestTimeComponents === undefined) {
             return new CommandResult('Time appears to be malformed. Please try again', true, false);
@@ -115,13 +119,9 @@ module.exports = {
             return new CommandResult('Date/Time appears to not exist. Please try again', true, false);
         }
 
-        console.log('Composed time:');
-        console.log(composedRequestDateTime);
-        console.log('Localized date:');
-        console.log(localizedDate);
         if (composedRequestDateTime < localizedDate) {
             return new CommandResult(
-                `Date and/or time appears to be in the past. Please try again. Composed Time: ${composedRequestDateTime} | Localized Date: ${localizedDate}`,
+                `Date and/or time appears to be in the past. Please try again. (Make sure you put the full year instead of just the last two difigs)`,
                 true,
                 false
             );
@@ -168,7 +168,7 @@ module.exports = {
             fields: [
                 {
                     name: 'Time',
-                    value: `${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
+                    value: `${TimeUtils.GetDiscordTimestampFromDate(localizedDate)}`,
                     inline: true,
                 },
                 {
@@ -199,7 +199,7 @@ module.exports = {
         );
 
         const cr = new CommandResult(
-            `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
+            `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(localizedDate)}`,
             false,
             false
         );
