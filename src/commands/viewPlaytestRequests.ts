@@ -53,7 +53,7 @@ module.exports = {
         }
 
         if (embed.fields!.length > 0) {
-            const cr = new CommandResult('Use `/approve_playtest_request to schedule', true, false);
+            const cr = new CommandResult('Use `/approve_playtest_request` to schedule', true, false);
             cr.embeds = [embed];
             return cr;
         } else {
