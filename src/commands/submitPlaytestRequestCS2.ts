@@ -184,12 +184,15 @@ module.exports = {
             ],
         };
 
-        // Send the embed to the playtesting channel
-        await DiscordApiRoutes.createNewMessage(
-            guildSettings.playtesting.cs2.playtestChannel,
-            'New Playtest Submission',
-            [embed]
-        );
+        // We don't need to send this if this is in the same channel
+        if (interaction.channel_id !== guildSettings.playtesting.cs2.playtestChannel) {
+            // Send the embed to the playtesting channel
+            await DiscordApiRoutes.createNewMessage(
+                guildSettings.playtesting.cs2.playtestChannel,
+                'New Playtest Submission',
+                [embed]
+            );
+        }
 
         // Send a message to the request channel
         await DiscordApiRoutes.createNewMessage(
