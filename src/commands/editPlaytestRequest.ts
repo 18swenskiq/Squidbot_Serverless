@@ -30,6 +30,7 @@ module.exports = {
                 .setDescription('The type of the playtest')
                 .setRequired(false)
                 .addChoices([
+                    { name: '2v2', value: '2v2' },
                     { name: '5v5', value: '5v5' },
                     { name: '10v10', value: '10v10' },
                 ])
