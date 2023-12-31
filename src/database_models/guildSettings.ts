@@ -14,6 +14,7 @@ export interface DB_GuildSettings {
             competitiveChannel: Snowflake;
         };
     };
+    activePlaytest: Guid | null;
     /**
      * @deprecated Not used anymore
      */

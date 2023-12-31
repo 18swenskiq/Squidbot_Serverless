@@ -64,6 +64,7 @@ export abstract class DatabaseWrapper {
                         competitiveChannel: '',
                     },
                 },
+                activePlaytest: null,
             };
         }
 
@@ -306,6 +307,26 @@ export abstract class DatabaseWrapper {
     ): Promise<DB_ComponentInteractionHandler> {
         const keyName = `${guildId}/${handlerId}`;
         return await DatabaseWrapper.GetBSONObject<DB_ComponentInteractionHandler>('InteractableComponents', keyName);
+    }
+
+    public static async ListScheduledPlaytests(guildId: Snowflake): Promise<string[]> {
+        const input: ListObjectsCommandInput = {
+            Bucket: bucketName,
+            MaxKeys: 1000,
+            Prefix: `ScheduledPlaytests/${guildId}`,
+        };
+
+        const command = new ListObjectsCommand(input);
+        const response = await StaticDeclarations.s3client.send(command);
+
+        if (response.Contents === undefined) {
+            console.log('response was error!');
+            return [];
+        }
+
+        const contents = response.Contents === undefined ? [] : response.Contents;
+
+        return contents.map((c) => c.Key) as string[];
     }
 
     private static async ListObjects(dir: ObjectDirectory): Promise<string[]> {

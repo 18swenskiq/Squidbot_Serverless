@@ -7,6 +7,7 @@ import { Embed } from './embed';
 import { User } from './user';
 import { GuildEventEntityMetadata } from './guildEventEntityMetadata';
 import { GuildEventEntityType } from './guildEventEntityType';
+import { GuildScheduledEvent } from './guildScheduledEvent';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DiscordApiRoutes {
@@ -109,6 +110,12 @@ export abstract class DiscordApiRoutes {
         }
 
         await DiscordApiRoutes.sendRequest('PATCH', url, obj);
+    }
+
+    public static async listGuildEvents(guildId: Snowflake) {
+        const url = `${DiscordApiRoutes.baseUrl}/guilds/${guildId}/scheduled-events`;
+        const res = await axios.get(url, DiscordApiRoutes.authHeaderConfig);
+        return res.data as GuildScheduledEvent[];
     }
 
     private static async sendRequest(
