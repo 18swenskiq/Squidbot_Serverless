@@ -31,8 +31,8 @@ export abstract class FTPUtil {
             } else {
                 returnValue = pakFile.name;
             }
-        } catch (err) {
-            console.log(err);
+        } catch (err: any) {
+            returnValue = err;
         }
         client.close();
 
