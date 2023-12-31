@@ -18,7 +18,7 @@ export abstract class FTPUtil {
                 port: Number(ftpPort),
                 user: ftpUser,
                 password: ftpPassword,
-                secure: true,
+                secure: false,
             });
 
             const files = await client.list();
