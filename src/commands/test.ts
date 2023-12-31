@@ -8,7 +8,7 @@ import { RconUtils } from '../util/rconUtil';
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('test')
+        .setName('test_cool')
         .setDescription('test description')
         .addStringOption((option) => option.setName('ftp_host').setDescription('host').setRequired(true))
         .addStringOption((option) => option.setName('ftp_port').setDescription('port').setRequired(true))
