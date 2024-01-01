@@ -64,7 +64,8 @@ export abstract class FTPUtil {
             var matchFile = files.find((f) => f.name.includes(file));
             if (matchFile) {
                 console.log(`Found match file: ${matchFile.name}`);
-                return matchFile.name;
+                const prefix = currentDir === '/' ? currentDir : `${currentDir}/`;
+                return `${prefix}${matchFile.name}`;
             }
 
             console.log(`File match not found, looking at other files in directory`);
