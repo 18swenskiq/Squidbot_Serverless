@@ -99,6 +99,7 @@ export abstract class FTPUtil {
 
             // Step 6: Set the current directory to the next item in the list of dirs to check
             currentDir = directoriesToCheck[0];
+            await client.cd(currentDir);
 
             // Step 7: Try again
             // Note: Hopefully this is never infinite
