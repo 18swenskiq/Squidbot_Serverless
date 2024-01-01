@@ -81,7 +81,9 @@ export abstract class FTPUtil {
             directories.forEach((d) => {
                 if (!directoriesToCheck.includes(d.name) && !directoriesChecked.includes(d.name)) {
                     console.log(`Adding ${d.name} to list of directories to check`);
-                    directoriesToCheck.push(d.name);
+
+                    const prefix = currentDir === '/' ? currentDir : `${currentDir}/`;
+                    directoriesToCheck.push(`${prefix}${d.name}`);
                 }
             });
 
