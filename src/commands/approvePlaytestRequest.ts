@@ -47,7 +47,9 @@ module.exports = {
 
         const easternOffset = TimeUtils.GetOffset('US/Eastern');
 
-        const newDateString = `${requestYear}-${requestMonth}-${requestDay}T${request.requestTime}:00.000Z`;
+        const newDateString = `${requestYear}-${requestMonth.padStart(2, '0')}-${requestDay.padStart(2, '0')}T${
+            request.requestTime
+        }:00.000Z`;
         const newDate = new Date(newDateString);
         newDate.setMinutes(newDate.getMinutes() + easternOffset);
 
