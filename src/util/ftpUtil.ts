@@ -9,7 +9,7 @@ export abstract class FTPUtil {
         ftpPassword: string
     ): Promise<string> {
         const client = new ftp.Client();
-        client.ftp.verbose = true;
+        client.ftp.verbose = false;
 
         let returnValue = 'none :(';
 
@@ -80,7 +80,7 @@ export abstract class FTPUtil {
             // Step 3: Add to the list of directories to check if its not there, as well as if its not already been checked
             directories.forEach((d) => {
                 if (!directoriesToCheck.includes(d.name) && !directoriesChecked.includes(d.name)) {
-                    console.log(`Adding ${d} to list of directories to check`);
+                    console.log(`Adding ${d.name} to list of directories to check`);
                     directoriesToCheck.push(d.name);
                 }
             });
