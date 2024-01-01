@@ -56,26 +56,36 @@ export abstract class FTPUtil {
 
         while (true) {
             const files = await client.list();
+            console.log(`Current Directory:`, currentDir);
+            console.log('List of files:');
+            console.log(files);
 
             // Step 1: Check to see if the file we are searching for is here
             var matchFile = files.find((f) => f.name.includes(file));
             if (matchFile) {
+                console.log(`Found match file: ${matchFile.name}`);
                 return matchFile.name;
             }
 
+            console.log(`File match not found, looking at other files in directory`);
             // Step 2: If the file is not here, make a list of all directories here
             var directories = files.filter((f) => f.isDirectory === true);
             if (directories.length === 0) {
+                console.log(`No other directories found in ${currentDir}`);
                 return null;
             }
 
+            console.log('Directories found in current working dir:');
+            console.log(directories);
             // Step 3: Add to the list of directories to check if its not there, as well as if its not already been checked
             directories.forEach((d) => {
                 if (!directoriesToCheck.includes(d.name) && !directoriesChecked.includes(d.name)) {
+                    console.log(`Adding ${d} to list of directories to check`);
                     directoriesToCheck.push(d.name);
                 }
             });
 
+            console.log('Removing the current directory from the list of dirs to check');
             // Step 4: Remove this directory from the list of directories to check
             directoriesChecked.push(currentDir);
             let idx = directoriesToCheck.indexOf(currentDir);
@@ -83,6 +93,7 @@ export abstract class FTPUtil {
 
             // Step 5: If there are no more directories to check, we didn't find it. Return null
             if (directoriesToCheck.length === 0) {
+                console.log('No directories remaining to check :(');
                 return null;
             }
 
