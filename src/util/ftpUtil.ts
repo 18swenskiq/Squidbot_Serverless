@@ -40,7 +40,9 @@ export abstract class FTPUtil {
         if (result == null) {
             returnValue = 'Unable to find game folder';
         } else {
-            returnValue = result;
+            const listOfStuff = result.split('/');
+            listOfStuff.pop();
+            returnValue = listOfStuff.join('/');
         }
 
         client.close();
