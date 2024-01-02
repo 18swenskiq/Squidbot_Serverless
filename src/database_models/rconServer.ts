@@ -12,4 +12,8 @@ export interface DB_RconServer {
     game: Game;
     rconPassword: string;
     countryCode: string;
+    ftpHost: string;
+    ftpPort: string;
+    ftpUsername: string;
+    ftpPassword: string;
 }

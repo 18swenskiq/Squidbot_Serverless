@@ -1,5 +1,4 @@
 import * as ftp from 'basic-ftp';
-import { CommandResult } from '../discord_api/commandResult';
 
 export abstract class FTPUtil {
     public static async FindGameFolder(
@@ -7,11 +6,9 @@ export abstract class FTPUtil {
         ftpPort: string,
         ftpUser: string,
         ftpPassword: string
-    ): Promise<string> {
+    ): Promise<string | null> {
         const client = new ftp.Client();
         client.ftp.verbose = false;
-
-        let returnValue = 'none :(';
 
         try {
             await client.access({
@@ -32,22 +29,19 @@ export abstract class FTPUtil {
                     secure: false,
                 });
             } catch (err: any) {
-                return 'unable to connect';
+                return null;
             }
         }
 
         var result = await this.FindFileReturnPath('pak01_238.vpk', client);
+        client.close();
         if (result == null) {
-            returnValue = 'Unable to find game folder';
+            return null;
         } else {
             const listOfStuff = result.split('/');
             listOfStuff.pop();
-            returnValue = listOfStuff.join('/');
+            return listOfStuff.join('/');
         }
-
-        client.close();
-
-        return returnValue;
     }
 
     private static async FindFileReturnPath(file: string, client: ftp.Client): Promise<string | null> {

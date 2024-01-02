@@ -33,6 +33,16 @@ module.exports = {
         .addStringOption((option) =>
             option.setName('rcon_password').setDescription('The RCON password').setRequired(true)
         )
+        .addStringOption((option) =>
+            option.setName('ftp_host').setDescription('The FTP host IP (port not included)').setRequired(true)
+        )
+        .addStringOption((option) => option.setName('ftp_port').setDescription('The FTP port').setRequired(true))
+        .addStringOption((option) =>
+            option.setName('ftp_username').setDescription('The FTP username').setRequired(true)
+        )
+        .addStringOption((option) =>
+            option.setName('ftp_password').setDescription('The FTP password').setRequired(true)
+        )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
@@ -43,6 +53,10 @@ module.exports = {
         const chosenNickname = interactionData.options.find((o) => o.name === 'nickname')?.value;
         const chosenRconPassword = interactionData.options.find((o) => o.name === 'rcon_password')?.value;
         const chosenFlag = interactionData.options.find((o) => o.name === 'flag')?.value ?? '';
+        const ftpHost = interactionData.options.find((o) => o.name === 'ftp_host')?.value;
+        const ftpPort = interactionData.options.find((o) => o.name === 'ftp_port')?.value;
+        const ftpUsername = interactionData.options.find((o) => o.name === 'ftp_username')?.value;
+        const ftpPassword = interactionData.options.find((o) => o.name === 'ftp_password')?.value;
 
         const existingGameServers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
 
@@ -68,6 +82,10 @@ module.exports = {
             guildId: interaction.guild_id,
             rconPassword: <string>chosenRconPassword,
             countryCode: chosenFlag,
+            ftpHost: <string>ftpHost,
+            ftpPort: <string>ftpPort,
+            ftpUsername: <string>ftpUsername,
+            ftpPassword: <string>ftpPassword,
         };
 
         const result = await DatabaseWrapper.AddGameServer(newGameServer);
