@@ -171,9 +171,11 @@ export abstract class DatabaseWrapper {
             let rconServers: DB_RconServer[] = [];
             for (let i = 1; i < objects.length; i++) {
                 const serverEntry = objects[i];
+                console.log('server entry');
+                console.log(serverEntry);
                 const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>(
                     'RconServers',
-                    serverEntry.split('/')[1]
+                    serverEntry.split('/')[1].split('.')[0]
                 );
                 console.log('rcon server:');
                 console.log(rconServer);
