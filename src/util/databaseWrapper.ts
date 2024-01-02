@@ -165,22 +165,14 @@ export abstract class DatabaseWrapper {
 
     public static async GetGameServers(guildId: Snowflake): Promise<DB_RconServer[]> {
         try {
-            const obj = await DatabaseWrapper.GetGuildSettings(guildId);
-            console.log('the obj', obj);
-            const rconIds = obj.rconServers;
-
-            if (!rconIds || rconIds.length === 0) {
-                console.log('rcon ids was bad');
-                return [];
-            }
-
+            const objects = await DatabaseWrapper.ListObjects('RconServers');
             let rconServers: DB_RconServer[] = [];
-
-            console.log('getting rcon servers');
-            for (let i = 0; i < rconIds.length; i++) {
-                const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>('RconServers', rconIds[i]);
-                console.log(rconServer);
-                rconServers.push(rconServer);
+            for (let i = 0; i < objects.length; i++) {
+                const serverEntry = objects[i];
+                const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>('RconServers', serverEntry);
+                if (rconServer.guildId === guildId) {
+                    rconServers.push(rconServer);
+                }
             }
 
             return rconServers ?? [];
