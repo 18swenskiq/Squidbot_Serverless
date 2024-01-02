@@ -171,7 +171,10 @@ export abstract class DatabaseWrapper {
             let rconServers: DB_RconServer[] = [];
             for (let i = 1; i < objects.length; i++) {
                 const serverEntry = objects[i];
-                const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>('RconServers', serverEntry);
+                const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>(
+                    'RconServers',
+                    serverEntry.split('/')[1]
+                );
                 console.log('rcon server:');
                 console.log(rconServer);
                 if (rconServer.guildId === guildId) {
