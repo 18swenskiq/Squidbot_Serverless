@@ -25,6 +25,6 @@ module.exports = {
 
         const result = await FTPUtil.FindGameFolder(ftpHost!, ftpPort!, ftpUsername!, ftpPassword!);
 
-        return new CommandResult(result, false, false);
+        return new CommandResult(result ? result : 'not found', false, false);
     },
 } as CommandDescription;
