@@ -71,10 +71,6 @@ export abstract class FTPUtil {
             console.log(`File match not found, looking at other files in directory`);
             // Step 2: If the file is not here, make a list of all directories here
             var directories = files.filter((f) => f.isDirectory === true);
-            if (directories.length === 0) {
-                console.log(`No other directories found in ${currentDir}`);
-                return null;
-            }
 
             console.log('Directories found in current working dir:');
             console.log(directories);
