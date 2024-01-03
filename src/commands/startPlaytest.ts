@@ -1,11 +1,13 @@
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
+import { Embed } from '../discord_api/embed';
 import { GuildEventStatus } from '../discord_api/guildEventStatus';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { FTPUtil } from '../util/ftpUtil';
 import { Guid } from '../util/guid';
 import { RconUtils } from '../util/rconUtil';
 
@@ -91,9 +93,6 @@ module.exports = {
             return new CommandResult('Could not find rcon server attached to playtest event.', false, false);
         }
 
-        // TODO: Validate that server has configs and if not, add them via FTP
-        // :(
-
         let execName;
         switch (playtest.playtestType) {
             case '2v2':
@@ -109,12 +108,55 @@ module.exports = {
                 return new CommandResult('Unexpected playtest type', false, false);
         }
 
+        // Find the server game folder
+        const serverGameFolder = await FTPUtil.FindGameFolder(
+            server.ftpHost,
+            server.ftpPort,
+            server.ftpUsername,
+            server.ftpPassword
+        );
+        if (serverGameFolder == null) {
+            return new CommandResult('Unable to FTP into server and/or find game folder', false, false);
+        }
+
+        // Grab the exec we want from S3
+        const cfgText = await DatabaseWrapper.GetPlaytestConfig(execName);
+        if (cfgText == null) {
+            return new CommandResult(`Unable to grab config \`${execName}.cfg\` from S3`, false, false);
+        }
+
+        // Upload the exec to FTP
+        const addCFGResult = await FTPUtil.AddCFGToFTP(
+            server.ftpHost,
+            server.ftpPort,
+            server.ftpUsername,
+            server.ftpPassword,
+            `${serverGameFolder}/cfg`,
+            `${execName}.cfg`,
+            cfgText
+        );
+        if (addCFGResult === false) {
+            return new CommandResult('Unable to add CFG to FTP server', false, false);
+        }
+
         // Send start exec
         await RconUtils.SendRconCommand(server.ip, server.port, server.rconPassword, `exec ${execName}`);
+
         // Send demo record
+        await RconUtils.SendRconCommand(server.ip, server.port, server.rconPassword, `tv_record ${playtest.Id}`);
 
         // Set active playtest
+        await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, playtest.Id);
 
-        return new CommandResult('nothing', false, false);
+        // Send "Starting playtest" message to level testing channel
+        const playtestChannel = settings.playtesting.cs2.playtestChannel;
+        const embed: Embed = {
+            title: `Starting Playtest of ${playtest.mapName} by <@${playtest.mainAuthor}>`,
+            type: 'rich',
+            footer: { text: `Playtest Id: ${playtest.Id}` },
+        };
+        await DiscordApiRoutes.createNewMessage(playtestChannel, '', [embed]);
+
+        return new CommandResult('Starting playtest', false, false);
     },
 } as CommandDescription;

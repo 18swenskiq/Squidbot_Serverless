@@ -21,6 +21,7 @@ import {
 import { DB_RconServer } from '../database_models/rconServer';
 import { DB_PlaytestRequest } from '../database_models/playtestRequest';
 import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
+import { promises as fs } from 'fs';
 
 const bucketName = 'squidbot';
 type ObjectDirectory =
@@ -29,7 +30,8 @@ type ObjectDirectory =
     | 'InteractableComponents'
     | 'RconServers'
     | 'PlaytestRequests'
-    | 'ScheduledPlaytests';
+    | 'ScheduledPlaytests'
+    | 'PlaytestConfigs';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
@@ -81,6 +83,16 @@ export abstract class DatabaseWrapper {
 
         await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
         return retString;
+    }
+
+    public static async SetGuildActivePlaytest(guildId: Snowflake, playtestId: Guid | null) {
+        const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
+        if (obj.activePlaytest) {
+            throw Error('Guild already has active playtest');
+        }
+
+        obj.activePlaytest = playtestId;
+        await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
     }
 
     public static async EnableCS2Playtesting(
@@ -328,6 +340,43 @@ export abstract class DatabaseWrapper {
         const contents = response.Contents === undefined ? [] : response.Contents;
 
         return contents.map((c) => c.Key) as string[];
+    }
+
+    public static async GetPlaytestConfig(configName: string): Promise<string | null> {
+        const itemKey = `PlaytestConfigs/${configName}.cfg`;
+
+        const input: GetObjectRequest = {
+            Bucket: bucketName,
+            Key: itemKey,
+        };
+
+        const command = new GetObjectCommand(input);
+
+        const response = await StaticDeclarations.s3client.send(command);
+        const respBytes = await response.Body?.transformToString('utf-8');
+
+        if (respBytes === undefined) {
+            return null;
+        }
+        return respBytes;
+    }
+
+    public static async UploadFileToS3(localFileName: string, s3Key: string): Promise<string> {
+        const data = await fs.readFile(localFileName, 'binary');
+        const buffer = Buffer.from(data);
+
+        var input: PutObjectCommandInput = {
+            Bucket: bucketName,
+            Key: s3Key,
+            Body: buffer,
+            ACL: 'public-read',
+        };
+
+        const command = new PutObjectCommand(input);
+        const response = await StaticDeclarations.s3client.send(command);
+        console.log('Upload File response');
+        console.log(response);
+        return `https://squidbot.s3.us-east-2.amazonaws.com/${s3Key}`;
     }
 
     private static async ListObjects(dir: ObjectDirectory): Promise<string[]> {

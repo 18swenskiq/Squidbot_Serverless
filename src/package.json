@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@aws-sdk/client-lambda": "^3.484.0",
     "@aws-sdk/client-s3": "^3.341.0",
     "@types/bson": "^4.2.0",
     "@vvo/tzdb": "^6.107.0",

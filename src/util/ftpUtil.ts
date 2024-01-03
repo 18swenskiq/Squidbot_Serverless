@@ -1,4 +1,5 @@
 import * as ftp from 'basic-ftp';
+import * as fs from 'fs';
 
 export abstract class FTPUtil {
     public static async FindGameFolder(
@@ -7,30 +8,9 @@ export abstract class FTPUtil {
         ftpUser: string,
         ftpPassword: string
     ): Promise<string | null> {
-        const client = new ftp.Client();
-        client.ftp.verbose = false;
-
-        try {
-            await client.access({
-                host: ftpHost,
-                port: Number(ftpPort),
-                user: ftpUser,
-                password: ftpPassword,
-                secure: true,
-            });
-        } catch (err: any) {
-            // Its possible that the server is FTP instead of SFTP. In that case just try again
-            try {
-                await client.access({
-                    host: ftpHost,
-                    port: Number(ftpPort),
-                    user: ftpUser,
-                    password: ftpPassword,
-                    secure: false,
-                });
-            } catch (err: any) {
-                return null;
-            }
+        var client = await this.GetNewConnectedClient(ftpHost, ftpPort, ftpUser, ftpPassword);
+        if (client === null) {
+            return null;
         }
 
         var result = await this.FindFileReturnPath('pak01_238.vpk', client);
@@ -99,5 +79,98 @@ export abstract class FTPUtil {
             // Step 7: Try again
             // Note: Hopefully this is never infinite
         }
+    }
+
+    public static async AddCFGToFTP(
+        ftpHost: string,
+        ftpPort: string,
+        ftpUser: string,
+        ftpPassword: string,
+        cfgFolder: string,
+        cfgName: string,
+        cfgText: string
+    ): Promise<boolean> {
+        // Connect
+        var client = await this.GetNewConnectedClient(ftpHost, ftpPort, ftpUser, ftpPassword);
+        if (client === null) {
+            return false;
+        }
+
+        // Check if CFG file already exists
+        await client.cd(cfgFolder);
+        const files = await client.list();
+        const cfgFile = files.find((f) => f.name === cfgName);
+
+        // If it exists, delete it
+        if (cfgFile) {
+            await client.remove(cfgFile.name, false);
+        }
+
+        // Upload our new CFG
+        await client.uploadFrom(cfgText, `${cfgFolder}/${cfgName}`);
+
+        // Disconnect
+        client.close();
+
+        return true;
+    }
+
+    public static async GetDemo(
+        ftpHost: string,
+        ftpPort: string,
+        ftpUser: string,
+        ftpPassword: string,
+        gameFolderPath: string,
+        demoName: string
+    ): Promise<string | null> {
+        var client = await this.GetNewConnectedClient(ftpHost, ftpPort, ftpUser, ftpPassword);
+        if (client === null) {
+            return null;
+        }
+
+        await client.cd(gameFolderPath);
+        const filePath = `/tmp/${demoName}.dem`;
+        const dest = fs.createWriteStream(filePath);
+
+        await client.downloadTo(dest, `${gameFolderPath}/${demoName}.dem`);
+
+        dest.close();
+
+        return filePath;
+    }
+
+    private static async GetNewConnectedClient(
+        ftpHost: string,
+        ftpPort: string,
+        ftpUser: string,
+        ftpPassword: string
+    ): Promise<ftp.Client | null> {
+        const client = new ftp.Client();
+        client.ftp.verbose = false;
+
+        try {
+            await client.access({
+                host: ftpHost,
+                port: Number(ftpPort),
+                user: ftpUser,
+                password: ftpPassword,
+                secure: true,
+            });
+        } catch (err: any) {
+            // Its possible that the server is FTP instead of SFTP. In that case just try again
+            try {
+                await client.access({
+                    host: ftpHost,
+                    port: Number(ftpPort),
+                    user: ftpUser,
+                    password: ftpPassword,
+                    secure: false,
+                });
+            } catch (err: any) {
+                return null;
+            }
+        }
+
+        return client;
     }
 }
