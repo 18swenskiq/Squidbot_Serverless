@@ -43,6 +43,9 @@ module.exports = {
                 .setDescription('Set the id of the moderator of the submission')
                 .setRequired(false)
         )
+        .addStringOption((option) =>
+            option.setName('server').setDescription('The playtest server (with port)').setRequired(false)
+        )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
@@ -53,6 +56,7 @@ module.exports = {
         const playtestType = interactionData.options.find((o) => o.name === 'playtest_type')?.value;
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
         const moderator = interactionData.options.find((o) => o.name === 'moderator')?.value;
+        const server = interactionData.options.find((o) => o.name === 'server')?.value;
 
         const playtest = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, <Guid>playtestId);
 
@@ -89,6 +93,17 @@ module.exports = {
             changed = true;
         }
 
+        if (server) {
+            const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
+            const inputArray = server.split(':');
+            const matchServer = servers.find((s) => s.ip === inputArray[0] && s.port === inputArray[1]);
+            if (matchServer === undefined) {
+                return new CommandResult('Invalid playtest server, no changes were made', false, false);
+            }
+            playtest.server = `${matchServer.ip}:${matchServer.port}`;
+            changed = true;
+        }
+
         if (changed) {
             // Edit playtest in database
             await DatabaseWrapper.DeleteScheduledPlaytest(interaction.guild_id, <Guid>playtest.Id);
@@ -99,6 +114,7 @@ module.exports = {
 
             const description = [
                 `Game: ${playtest.game}`,
+                `Server: ${playtest.server}`,
                 `Playtest Type: ${playtest.playtestType}`,
                 `Map Type: ${playtest.mapType}`,
                 `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${playtest.workshopId}`,
