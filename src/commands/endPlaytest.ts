@@ -76,6 +76,14 @@ module.exports = {
             return new CommandResult('Unable to add CFG over FTP', false, false);
         }
 
+        // Exec postgame
+        await RconUtils.SendRconCommand(
+            playtestRconServer.ip,
+            playtestRconServer.port,
+            playtestRconServer.rconPassword,
+            'exec postgame'
+        );
+
         // Set active playtest to null
         await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, null);
 
@@ -118,7 +126,7 @@ module.exports = {
 
         const lambdaParams: InvokeCommandInput = {
             FunctionName: 'squidbot_demo_parser',
-            InvocationType: 'Event',
+            InvocationType: 'RequestResponse',
             LogType: 'Tail',
             Payload: JSON.stringify(lambdaParameters),
         };
@@ -128,6 +136,10 @@ module.exports = {
         const asciiDecoder = new TextDecoder('utf-8');
 
         const response = await client.send(fetchCommand);
+        console.log('lambda response:');
+        console.log(response);
+
+        // TODO: Move "ScheduledPlaytest" event to a bucket for completed playtests
 
         // Done :)
         return new CommandResult('Playtest successfully ended and all steps completed successfully', false, false);
