@@ -24,7 +24,9 @@ module.exports = {
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
-        let playtestId = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
+        let playtestId = interactionData.options
+            ? interactionData.options.find((o) => o.name === 'playtest_id')?.value
+            : undefined;
 
         // Check if guild has an active playtest
         const settings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
@@ -36,7 +38,7 @@ module.exports = {
         const databaseScheduledEventIds = databaseScheduledEventList.map((d) => d.split('.')[0]);
 
         // If no parameter was provided, get the current/next event from the Guild
-        if (playtestId == null) {
+        if (playtestId == undefined) {
             const events = await DiscordApiRoutes.listGuildEvents(interaction.guild_id);
             let eventDates = events.map((e) => ({
                 id: e.id,
