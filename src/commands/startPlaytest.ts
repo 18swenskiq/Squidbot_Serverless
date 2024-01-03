@@ -70,6 +70,7 @@ module.exports = {
                 console.log('Looping through ids from database');
                 for (let j = 0; j < databaseScheduledEventIds.length; j++) {
                     const id = databaseScheduledEventIds[j];
+                    console.log(id);
                     if (event.description.includes(id)) {
                         // Match found
                         playtestId = id;
