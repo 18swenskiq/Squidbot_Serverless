@@ -87,9 +87,11 @@ module.exports = {
         // Set active playtest to null
         await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, null);
 
+        const user = await DiscordApiRoutes.getUser(playtest.mainAuthor);
+
         // Send message in playtest channel that playtest is ending
         const embed: Embed = {
-            title: `Ending playtest of ${playtest.mapName} by <@${playtest.mainAuthor}>`,
+            title: `Ending playtest of ${playtest.mapName} by ${user.username}>`,
             type: 'rich',
             description: `Demo will be retrieved from the server and posted in the announcements channel shortly`,
             footer: { text: `Playtest Id: ${playtest.Id}` },
@@ -133,7 +135,6 @@ module.exports = {
 
         const client = new LambdaClient();
         const fetchCommand = new InvokeCommand(lambdaParams);
-        const asciiDecoder = new TextDecoder('utf-8');
 
         const response = await client.send(fetchCommand);
         console.log('lambda response:');

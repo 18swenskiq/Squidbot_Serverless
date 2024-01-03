@@ -160,10 +160,12 @@ module.exports = {
         // Set active playtest
         await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, playtest.Id);
 
+        const user = await DiscordApiRoutes.getUser(playtest.mainAuthor);
+
         // Send "Starting playtest" message to level testing channel
         const playtestChannel = settings.playtesting.cs2.playtestChannel;
         const embed: Embed = {
-            title: `Starting Playtest of ${playtest.mapName} by <@${playtest.mainAuthor}>`,
+            title: `Starting Playtest of ${playtest.mapName} by ${user.username}`,
             type: 'rich',
             footer: { text: `Playtest Id: ${playtest.Id}` },
         };
