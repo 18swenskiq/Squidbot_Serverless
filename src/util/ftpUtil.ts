@@ -106,8 +106,12 @@ export abstract class FTPUtil {
             await client.remove(cfgFile.name, false);
         }
 
+        const Readable = require('stream').Readable;
+        var textStream = new Readable();
+        textStream.push(cfgText);
+        textStream.push(null);
         // Upload our new CFG
-        await client.uploadFrom(cfgText, `${cfgFolder}/${cfgName}`);
+        await client.uploadFrom(textStream, `${cfgFolder}/${cfgName}`);
 
         // Disconnect
         client.close();
