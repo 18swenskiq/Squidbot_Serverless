@@ -363,7 +363,7 @@ export abstract class DatabaseWrapper {
 
     public static async UploadFileToS3(localFileName: string, s3Key: string): Promise<string> {
         const data = await fs.readFile(localFileName, { encoding: 'binary' });
-        const buffer = Buffer.from(data);
+        const buffer = Buffer.from(data, 'binary');
 
         var input: PutObjectCommandInput = {
             Bucket: bucketName,

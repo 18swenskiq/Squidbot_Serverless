@@ -134,8 +134,8 @@ export abstract class FTPUtil {
 
         await client.cd(gameFolderPath);
         const filePath = `/tmp/${demoName}.dem`;
-        const dest = fs.createWriteStream(filePath, { encoding: 'binary' });
 
+        const dest = fs.createWriteStream(filePath, { encoding: 'binary' });
         await client.downloadTo(dest, `${gameFolderPath}/${demoName}.dem`);
 
         dest.close();
