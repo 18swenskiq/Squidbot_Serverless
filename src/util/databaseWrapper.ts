@@ -87,7 +87,7 @@ export abstract class DatabaseWrapper {
 
     public static async SetGuildActivePlaytest(guildId: Snowflake, playtestId: Guid | null) {
         const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
-        if (obj.activePlaytest) {
+        if (obj.activePlaytest && playtestId != null) {
             throw Error('Guild already has active playtest');
         }
 
