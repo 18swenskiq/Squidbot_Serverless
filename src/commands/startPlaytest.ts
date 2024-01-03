@@ -35,7 +35,10 @@ module.exports = {
         }
 
         const databaseScheduledEventList = await DatabaseWrapper.ListScheduledPlaytests(interaction.guild_id);
-        const databaseScheduledEventIds = databaseScheduledEventList.map((d) => d.split('.')[0]);
+        const databaseScheduledEventIds = databaseScheduledEventList
+            .map((d) => d.split('/'))
+            .map((e) => e[2])
+            .map((f) => f.split('.')[0]);
 
         console.log('Database scheduled event list:');
         console.log(databaseScheduledEventList);
