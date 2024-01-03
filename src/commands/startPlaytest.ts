@@ -37,6 +37,9 @@ module.exports = {
         const databaseScheduledEventList = await DatabaseWrapper.ListScheduledPlaytests(interaction.guild_id);
         const databaseScheduledEventIds = databaseScheduledEventList.map((d) => d.split('.')[0]);
 
+        console.log('Database scheduled event list:');
+        console.log(databaseScheduledEventList);
+
         // If no parameter was provided, get the current/next event from the Guild
         if (playtestId == undefined) {
             const events = await DiscordApiRoutes.listGuildEvents(interaction.guild_id);
@@ -48,8 +51,10 @@ module.exports = {
             eventDates.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
             // Iterate through the events and find the first one that matches a playtest event
+            console.log('Looping through events');
             for (let i = 0; i < eventDates.length; i++) {
                 const event = events.find((e) => e.id === eventDates[i].id);
+                console.log(event);
                 if (event!.status === GuildEventStatus.COMPLETED || event!.status === GuildEventStatus.CANCELED) {
                     continue;
                 }
@@ -59,6 +64,7 @@ module.exports = {
                     continue;
                 }
 
+                console.log('Looping through ids from database');
                 for (let j = 0; j < databaseScheduledEventIds.length; j++) {
                     const id = databaseScheduledEventIds[j];
                     if (event.description.includes(id)) {
