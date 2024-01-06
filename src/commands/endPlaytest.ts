@@ -140,7 +140,8 @@ module.exports = {
         console.log('lambda response:');
         console.log(response);
 
-        // TODO: Move "ScheduledPlaytest" event to a bucket for completed playtests
+        // Move "ScheduledPlaytest" event to a bucket for completed playtests
+        await DatabaseWrapper.MoveScheduledPlaytestToCompleted(interaction.guild_id, playtest.Id);
 
         // Done :)
         return new CommandResult('Playtest successfully ended and all steps completed successfully', false, false);

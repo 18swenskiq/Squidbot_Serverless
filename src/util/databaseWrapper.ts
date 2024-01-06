@@ -1,5 +1,8 @@
 import {
+    CopyObjectCommand,
+    CopyObjectCommandInput,
     DeleteObjectCommand,
+    DeleteObjectCommandInput,
     DeleteObjectRequest,
     GetObjectCommand,
     GetObjectRequest,
@@ -377,6 +380,25 @@ export abstract class DatabaseWrapper {
         console.log('Upload File response');
         console.log(response);
         return `https://squidbot.s3.us-east-2.amazonaws.com/${s3Key}`;
+    }
+
+    public static async MoveScheduledPlaytestToCompleted(guildId: string, playtestName: string) {
+        // Copy Source
+        const copyInput: CopyObjectCommandInput = {
+            Bucket: bucketName,
+            CopySource: `ScheduledPlaytests/${guildId}/${playtestName}.bson`,
+            Key: `CompletedPlaytests/${guildId}/${playtestName}.bson`,
+        };
+        const copyCommand = new CopyObjectCommand(copyInput);
+        const copyResponse = await StaticDeclarations.s3client.send(copyCommand);
+
+        // Delete source (it has been copied)
+        const deleteInput: DeleteObjectCommandInput = {
+            Bucket: bucketName,
+            Key: `ScheduledPlaytests/${guildId}/${playtestName}.bson`,
+        };
+        const deleteCommand = new DeleteObjectCommand(deleteInput);
+        const deleteResponse = await StaticDeclarations.s3client.send(deleteCommand);
     }
 
     private static async ListObjects(dir: ObjectDirectory): Promise<string[]> {
