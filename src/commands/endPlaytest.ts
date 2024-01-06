@@ -91,7 +91,7 @@ module.exports = {
 
         // Send message in playtest channel that playtest is ending
         const embed: Embed = {
-            title: `Ending playtest of ${playtest.mapName} by ${user.username}>`,
+            title: `Ending playtest of ${playtest.mapName} by ${user.username}`,
             type: 'rich',
             description: `Demo will be retrieved from the server and posted in the announcements channel shortly`,
             footer: { text: `Playtest Id: ${playtest.Id}` },

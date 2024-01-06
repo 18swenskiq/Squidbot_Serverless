@@ -165,7 +165,7 @@ module.exports = {
         // Send "Starting playtest" message to level testing channel
         const playtestChannel = settings.playtesting.cs2.playtestChannel;
         const embed: Embed = {
-            title: `Starting Playtest of ${playtest.mapName} by ${user.username}`,
+            title: `Starting playtest of ${playtest.mapName} by ${user.username}`,
             type: 'rich',
             footer: { text: `Playtest Id: ${playtest.Id}` },
         };
