@@ -141,7 +141,15 @@ module.exports = {
         console.log(response);
 
         // Move "ScheduledPlaytest" event to a bucket for completed playtests
-        await DatabaseWrapper.MoveScheduledPlaytestToCompleted(interaction.guild_id, playtest.Id);
+        try {
+            await DatabaseWrapper.MoveScheduledPlaytestToCompleted(interaction.guild_id, playtest.Id);
+        } catch (err: any) {
+            return new CommandResult(
+                "Playtest successfully ended. All tasks completed except moving ScheduledPlaytests S3 object to the CompletedPlaytests folder (This shouldn't affect anything)",
+                false,
+                false
+            );
+        }
 
         // Done :)
         return new CommandResult('Playtest successfully ended and all steps completed successfully', false, false);
