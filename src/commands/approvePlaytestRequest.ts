@@ -34,6 +34,10 @@ module.exports = {
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
         const server = interactionData.options.find((o) => o.name === 'server')?.value;
 
+        if (!server?.includes(':')) {
+            return new CommandResult('Server is not formatted as IP:Port', false, false);
+        }
+
         // Create scheduled playtest object
         const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
 
@@ -62,9 +66,18 @@ module.exports = {
 
         const playtestId = GenerateGuid();
 
+        // Validate server
+        const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
+        const inputServerArray = server.split(':');
+        const selectedServer = servers.find((s) => s.ip === inputServerArray[0] && s.port === inputServerArray[1]);
+
+        if (selectedServer == null) {
+            return new CommandResult('Provided playtest server was not found, could not approve', false, false);
+        }
+
         const description = [
             `Game: ${request.game}`,
-            `Server: ${server}`,
+            `Server: ${selectedServer.ip}:${selectedServer.port}`,
             `Playtest Type: ${request.playtestType}`,
             `Map Type: ${request.mapType}`,
             `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${request.workshopId}`,
