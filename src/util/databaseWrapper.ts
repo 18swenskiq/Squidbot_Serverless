@@ -391,6 +391,8 @@ export abstract class DatabaseWrapper {
         };
         const copyCommand = new CopyObjectCommand(copyInput);
         const copyResponse = await StaticDeclarations.s3client.send(copyCommand);
+        console.log('Copy response:');
+        console.log(copyResponse);
 
         // Delete source (it has been copied)
         const deleteInput: DeleteObjectCommandInput = {
@@ -399,6 +401,8 @@ export abstract class DatabaseWrapper {
         };
         const deleteCommand = new DeleteObjectCommand(deleteInput);
         const deleteResponse = await StaticDeclarations.s3client.send(deleteCommand);
+        console.log('Delete response');
+        console.log(deleteResponse);
     }
 
     private static async ListObjects(dir: ObjectDirectory): Promise<string[]> {
