@@ -120,16 +120,16 @@ module.exports = {
             `Demo for ${playtest.mapName} by <@${playtest.mainAuthor}>\n${s3ObjectPath}`
         );
 
-        let lambdaPlaytestType: 'TwoVersusTwo' | 'FiveVersusFive' | 'TenVersusTen';
+        let lambdaPlaytestType: number;
         switch (playtest.playtestType) {
             case '2v2':
-                lambdaPlaytestType = 'TwoVersusTwo';
+                lambdaPlaytestType = 0;
                 break;
             case '5v5':
-                lambdaPlaytestType = 'FiveVersusFive';
+                lambdaPlaytestType = 1;
                 break;
             case '10v10':
-                lambdaPlaytestType = 'TenVersusTen';
+                lambdaPlaytestType = 2;
                 break;
             default:
                 throw new Error('Unexpected playtest type');
