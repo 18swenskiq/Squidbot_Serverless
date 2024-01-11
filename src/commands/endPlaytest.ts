@@ -120,10 +120,27 @@ module.exports = {
             `Demo for ${playtest.mapName} by <@${playtest.mainAuthor}>\n${s3ObjectPath}`
         );
 
+        let lambdaPlaytestType: 'TwoVersusTwo' | 'FiveVersusFive' | 'TenVersusTen';
+        switch (playtest.playtestType) {
+            case '2v2':
+                lambdaPlaytestType = 'TwoVersusTwo';
+                break;
+            case '5v5':
+                lambdaPlaytestType = 'FiveVersusFive';
+                break;
+            case '10v10':
+                lambdaPlaytestType = 'TenVersusTen';
+                break;
+            default:
+                throw new Error('Unexpected playtest type');
+        }
+
         // Call demo parsing lambda
         const lambdaParameters = {
             DemoName: playtest.Id,
             GuildId: interaction.guild_id,
+            DemoContext: 0,
+            PlaytestType: lambdaPlaytestType,
         };
 
         const lambdaParams: InvokeCommandInput = {
