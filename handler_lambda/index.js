@@ -5,6 +5,9 @@ exports.handler = async (event) => {
   const strBody = event.body; // should be string, for successful sign
   const body = typeof strBody === "string" ? JSON.parse(strBody) : strBody;
 
+  console.log("RUNNING IT WITH THIS BODY");
+  console.log(body);
+
   const testing = "testing" in body;
 
   if (!testing) {
@@ -62,7 +65,7 @@ exports.handler = async (event) => {
 
       console.log(reuslt);
 
-      if (body.type === 2) {
+      if (body.type === 2 || body.type === 4) {
         return { type: 5 };
       }
       return { type: 5, data: { flags: 64 } };
