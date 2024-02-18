@@ -44,12 +44,23 @@ export class InteractionData {
     type: number;
     name: string;
     id: Snowflake;
+    guild_id: Snowflake | null;
+    target_id: Snowflake | null;
 
-    constructor(options: InteractionDataOptions[], type: number, name: string, id: string) {
+    constructor(
+        options: InteractionDataOptions[],
+        type: number,
+        name: string,
+        id: string,
+        guild_id = null,
+        target_id = null
+    ) {
         this.options = options;
         this.type = type;
         this.name = name;
         this.id = id;
+        this.guild_id = guild_id;
+        this.target_id = target_id;
     }
 }
 
