@@ -67,10 +67,10 @@ exports.handler = async (event: any) => {
             }
 
             const coolBodyData = <InteractionData>body.data;
-            const coolChosenCommand = commands.find((c) => c.data.name === bodyData.name);
+            const coolChosenCommand = commands.find((c) => c.data.name === coolBodyData.name);
 
-            if (chosenCommand != null) {
-                const result = await chosenCommand.autocomplete(body);
+            if (coolChosenCommand != null) {
+                const result = await coolChosenCommand.autocomplete(body);
                 return { data: JSON.stringify(result) };
             } else {
                 return { data: null };
