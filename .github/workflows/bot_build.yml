@@ -10,7 +10,43 @@ on:
     branches: ["master"]
 
 jobs:
-  build:
+  build_handler:
+    environment: Build
+    env:
+      APP_ID: ${{ secrets.APP_ID }}
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: "handler_lambda"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-verison: "16.x"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: NPM Install
+        run: npm ci
+
+      - name: Create Zip
+        run: zip -r ../handler_lambda.zip .
+
+      - name: Deploy to AWS
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-east-2
+          function_name: SquidBotLambda-Delegator
+          zip_file: ../handler_lambda.zip
+
+  build_core:
     environment: Build
     env:
       APP_ID: ${{ secrets.APP_ID }}
