@@ -1,6 +1,6 @@
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
-import { InteractionData, type Interaction } from '../discord_api/interaction';
+import { InteractionData, InteractionDataOptions, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
@@ -10,7 +10,11 @@ module.exports = {
         .setName('active_rcon_server')
         .setDescription('Sets or gets the active rcon server')
         .addStringOption((option) =>
-            option.setName('server').setDescription('The IP of the Game Server to set as active').setRequired(false)
+            option
+                .setName('server')
+                .setDescription('The IP of the Game Server to set as active')
+                .setRequired(false)
+                .enableAutocomplete()
         )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
@@ -60,5 +64,20 @@ module.exports = {
         }
 
         return new CommandResult('Currently no RCON server registered', true, false);
+    },
+    async autocomplete(interaction: Interaction): Promise<InteractionDataOptions[] | null> {
+        const data = <InteractionData>interaction.data;
+        if (data.options.find((o) => o.name === 'server')) {
+            const value = data.options.find((o) => o.name === 'server')?.value;
+            if (value) {
+                const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
+                const match = servers.filter((s) => s.ip.toLowerCase().startsWith(value));
+
+                if (match) {
+                    return match.map((m) => new InteractionDataOptions(3, 'server', m.ip));
+                }
+            }
+        }
+        return null;
     },
 } as CommandDescription;

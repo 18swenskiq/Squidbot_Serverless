@@ -26,4 +26,9 @@ export class SlashCommandStringOption extends ApplicationCommandOptionBase {
         Reflect.set(this, 'min_length', min);
         return this;
     }
+
+    public enableAutocomplete(): SlashCommandStringOption {
+        Reflect.set(this, 'autocomplete', true);
+        return this;
+    }
 }

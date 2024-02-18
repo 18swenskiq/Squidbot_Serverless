@@ -38,6 +38,7 @@ for (var command of commands) {
         description: option.description,
         type: option.type,
         required: option.required,
+        autocomplete: option.autocomplete,
       };
 
       if (option["choices"]) {

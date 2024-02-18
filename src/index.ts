@@ -40,16 +40,8 @@ exports.handler = async (event: any) => {
         case 2:
         case 4:
             // Case 2: Submitting command for result
-            // Case 4: Getting autocomplete results for command
             const bodyData = <InteractionData>body.data;
             const chosenCommand = commands.find((c) => c.data.name === bodyData.name);
-
-            if (body.type === 4) {
-                console.log(body);
-                console.log(bodyData);
-                console.log('Completing early');
-                return { statusCode: 200 };
-            }
 
             if (chosenCommand != null) {
                 try {
@@ -65,10 +57,17 @@ exports.handler = async (event: any) => {
                 return { statusCode: 404 };
             }
         case 3:
-            // Handle interaction
+            // Case 3: Handle component interaction
             await HandleComponentInteraction.Handle(body);
             await DiscordApiRoutes.createFollowupMessage(body, { content: 'Successfully modified roles!' });
             return { statusCode: 200 };
+        case 4:
+            // Case 4: Getting autocomplete results for command
+            if (body.type === 4) {
+                console.log(body.data);
+                console.log('Completing early');
+                return { statusCode: 200 };
+            }
     }
 };
 
