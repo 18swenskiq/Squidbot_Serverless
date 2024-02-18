@@ -38,7 +38,6 @@ exports.handler = async (event: any) => {
 
     switch (body.type) {
         case 2:
-        case 4:
             // Case 2: Submitting command for result
             const bodyData = <InteractionData>body.data;
             const chosenCommand = commands.find((c) => c.data.name === bodyData.name);
@@ -65,8 +64,16 @@ exports.handler = async (event: any) => {
             // Case 4: Getting autocomplete results for command
             if (body.type === 4) {
                 console.log(body.data);
-                console.log('Completing early');
-                return { statusCode: 200 };
+            }
+
+            const coolBodyData = <InteractionData>body.data;
+            const coolChosenCommand = commands.find((c) => c.data.name === bodyData.name);
+
+            if (chosenCommand != null) {
+                const result = await chosenCommand.autocomplete(body);
+                return { data: JSON.stringify(result) };
+            } else {
+                return { data: null };
             }
     }
 };

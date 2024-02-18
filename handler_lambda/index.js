@@ -43,7 +43,6 @@ exports.handler = async (event) => {
       };
     case 2:
     case 3:
-    case 4:
       if (testing) {
         console.log(
           "Attempted to flow into Lambda during testing, this is an invalid case. Quitting."
@@ -65,10 +64,32 @@ exports.handler = async (event) => {
 
       console.log(reuslt);
 
-      if (body.type === 2 || body.type === 4) {
+      if (body.type === 2) {
         return { type: 5 };
       }
       return { type: 5, data: { flags: 64 } };
+    case 4:
+      const autocompletelambdaParams = {
+        FunctionName: "SquidBotLambda",
+        InvocationType: "RequestResponse",
+        LogType: "Tail",
+        Payload: JSON.stringify(strBody),
+      };
+
+      const autocompleteLambda = new aws.Lambda({ region: "us-east-2" });
+      const autocompleteResult = await autocompleteLambda
+        .invoke(autocompletelambdaParams)
+        .promise();
+
+      console.log("Autocomplete result:");
+      console.log(autocompleteResult);
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          type: 4,
+          data: { choices: autocompleteResult.data },
+        }),
+      };
     case 1000:
       // testing
       return { statusCode: 200 };
