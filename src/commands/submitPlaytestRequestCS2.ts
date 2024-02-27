@@ -1,3 +1,4 @@
+import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DB_PlaytestRequest } from '../database_models/playtestRequest';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
@@ -74,7 +75,15 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
 
         // Validate that guild has enabled CS2 playtesting
-        const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+        //const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+        const guildSettings = await new DatabaseQuery()
+            .GetObject<DB_GuildSettings>(interaction.guild_id)
+            .Execute(DB_GuildSettings);
+
+        if (guildSettings === null) {
+            throw new Error('Could not find guild settings');
+        }
+
         if (!guildSettings.playtesting.cs2.enabled) {
             return new CommandResult('CS2 Playtesting is not enabled on this server!', true, false);
         }

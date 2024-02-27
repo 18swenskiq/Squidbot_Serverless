@@ -1,4 +1,5 @@
 import { DB_GuildSettings } from '../database_models/guildSettings';
+import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -31,7 +32,15 @@ module.exports = {
             : undefined;
 
         // Check if guild has an active playtest
-        const settings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+        // const settings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+        const settings = await new DatabaseQuery()
+            .GetObject<DB_GuildSettings>(interaction.guild_id)
+            .Execute(DB_GuildSettings);
+
+        if (settings === null) {
+            throw new Error('Guild settings not found');
+        }
+
         if (settings.activePlaytest != null) {
             return new CommandResult('There is currently an active playtest.', false, false);
         }
@@ -97,7 +106,15 @@ module.exports = {
             }
         }
 
-        const playtest = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, <Guid>playtestId);
+        // const playtest = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, <Guid>playtestId);
+        const playtest = await new DatabaseQuery()
+            .GetObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
+            .Execute(DB_ScheduledPlaytest);
+
+        if (playtest === null) {
+            throw new Error('Scheduled playtest not found');
+        }
+
         const serverName = playtest.server;
 
         const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);

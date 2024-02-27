@@ -51,7 +51,7 @@ export abstract class DatabaseWrapper {
     */
 
     public static async ToggleGuildRoleAssignable(guildId: Snowflake, roleId: Snowflake): Promise<string> {
-        let obj: DB_GuildSettings;
+        let obj: any;
         try {
             obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
         } catch (err: any) {
@@ -77,7 +77,7 @@ export abstract class DatabaseWrapper {
 
         let retString = '';
         if (obj.assignableRoles.includes(roleId)) {
-            obj.assignableRoles = obj.assignableRoles.filter((r) => r !== roleId);
+            obj.assignableRoles = obj.assignableRoles.filter((r: string) => r !== roleId);
             retString = 'Role set to be unassignable';
         } else {
             obj.assignableRoles.push(roleId);
@@ -130,6 +130,7 @@ export abstract class DatabaseWrapper {
     }
     */
 
+    /*
     public static async AddGameServer(newServer: DB_RconServer): Promise<string> {
         let obj: DB_GuildSettings;
         try {
@@ -149,6 +150,7 @@ export abstract class DatabaseWrapper {
             return 'Failed to add game server';
         }
     }
+    */
 
     /*
     public static async GetGuildRolesAssignable(guildId: Snowflake): Promise<Snowflake[]> {
@@ -181,7 +183,6 @@ export abstract class DatabaseWrapper {
         return <DB_RconServer>{};
     }
 
-    /*
     public static async SetActiveRconServer(userId: Snowflake, guildId: Snowflake, rconServerId: Guid): Promise<void> {
         try {
             const obj = await DatabaseWrapper.GetUserSettings_Single(userId);
@@ -192,7 +193,6 @@ export abstract class DatabaseWrapper {
             return;
         }
     }
-    */
 
     public static async GetGameServers(guildId: Snowflake): Promise<DB_RconServer[]> {
         try {
