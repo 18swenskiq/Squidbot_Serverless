@@ -86,14 +86,6 @@ module.exports = {
             updatePlaytestDate = date;
         }
 
-        await new DatabaseQuery()
-            .ModifyObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
-            .SetPropertyIfValueNotUndefined('playtestType', playtestType)
-            .SetPropertyIfValueNotUndefined('workshopId', workshopId)
-            .SetPropertyIfValueNotUndefined('moderator', moderator)
-            .SetProperty('playtestTime', updatePlaytestDate)
-            .Execute(DB_ScheduledPlaytest);
-
         /*
         if (playtestType) {
             playtest.playtestType = playtestType;
@@ -111,6 +103,7 @@ module.exports = {
         }
         */
 
+        let updateServer = undefined;
         if (server) {
             const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
             const inputArray = server.split(':');
@@ -118,46 +111,56 @@ module.exports = {
             if (matchServer === undefined) {
                 return new CommandResult('Invalid playtest server, no changes were made', false, false);
             }
-            playtest.server = `${matchServer.ip}:${matchServer.port}`;
-            changed = true;
+            //playtest.server = `${matchServer.ip}:${matchServer.port}`;
+            updateServer = `${matchServer.ip}:${matchServer.port}`;
+            // changed = true;
         }
 
-        if (changed) {
-            // Edit playtest in database
-            await DatabaseWrapper.DeleteScheduledPlaytest(interaction.guild_id, <Guid>playtest.Id);
-            await DatabaseWrapper.CreateScheduledPlaytest(interaction.guild_id, playtest);
+        await new DatabaseQuery()
+            .ModifyObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
+            .SetPropertyIfValueNotUndefined('playtestType', playtestType)
+            .SetPropertyIfValueNotUndefined('workshopId', workshopId)
+            .SetPropertyIfValueNotUndefined('moderator', moderator)
+            .SetPropertyIfValueNotUndefined('server', updateServer)
+            .SetProperty('playtestTime', updatePlaytestDate)
+            .Execute(DB_ScheduledPlaytest);
 
-            // Edit calendar item
-            const moderatorUser = await DiscordApiRoutes.getUser(playtest.moderator);
+        // if (changed) {
+        // Edit playtest in database
+        //await DatabaseWrapper.DeleteScheduledPlaytest(interaction.guild_id, <Guid>playtest.Id);
+        // await DatabaseWrapper.CreateScheduledPlaytest(interaction.guild_id, playtest);
 
-            const description = [
-                `Game: ${playtest.game}`,
-                `Server: ${playtest.server}`,
-                `Playtest Type: ${playtest.playtestType}`,
-                `Map Type: ${playtest.mapType}`,
-                `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${playtest.workshopId}`,
-                `Other Authors: ${playtest.otherAuthors.join(', ')}`,
-                `Moderator: ${moderatorUser.username}`,
-                `Playtest Id: ${playtestId}`,
-            ];
+        // Edit calendar item
+        const moderatorUser = await DiscordApiRoutes.getUser(playtest.moderator);
 
-            if (newDate || newTime) {
-                const startTimeString = playtest.playtestTime.toISOString();
-                const endTimeDate = TimeUtils.GetNewDateFromAddMinutes(playtest.playtestTime, 90);
+        const description = [
+            `Game: ${playtest.game}`,
+            `Server: ${playtest.server}`,
+            `Playtest Type: ${playtest.playtestType}`,
+            `Map Type: ${playtest.mapType}`,
+            `Workshop Link: https://steamcommunity.com/sharedfiles/filedetails/?id=${playtest.workshopId}`,
+            `Other Authors: ${playtest.otherAuthors.join(', ')}`,
+            `Moderator: ${moderatorUser.username}`,
+            `Playtest Id: ${playtestId}`,
+        ];
 
-                await DiscordApiRoutes.modifyGuildEvent(
-                    interaction.guild_id,
-                    playtest.eventId,
-                    description.join('\n'),
-                    startTimeString,
-                    endTimeDate.toISOString()
-                );
-            } else {
-                await DiscordApiRoutes.modifyGuildEvent(interaction.guild_id, playtest.eventId, description.join('\n'));
-            }
-            return new CommandResult('Updated playtest event', false, false);
+        if (newDate || newTime) {
+            const startTimeString = playtest.playtestTime.toISOString();
+            const endTimeDate = TimeUtils.GetNewDateFromAddMinutes(playtest.playtestTime, 90);
+
+            await DiscordApiRoutes.modifyGuildEvent(
+                interaction.guild_id,
+                playtest.eventId,
+                description.join('\n'),
+                startTimeString,
+                endTimeDate.toISOString()
+            );
         } else {
-            return new CommandResult('No changes were detected', false, false);
+            await DiscordApiRoutes.modifyGuildEvent(interaction.guild_id, playtest.eventId, description.join('\n'));
         }
+        return new CommandResult('Updated playtest event', false, false);
+        // } else {
+        //    return new CommandResult('No changes were detected', false, false);
+        //}
     },
 } as CommandDescription;
