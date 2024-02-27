@@ -8,6 +8,7 @@ import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { SteamApi } from '../steam_api/steamApi';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid } from '../util/guid';
 import { TimeUtils } from '../util/timeUtils';
 
@@ -137,6 +138,7 @@ module.exports = {
             );
         }
 
+        /*
         const requestBody: DB_PlaytestRequest = {
             Id: GenerateGuid(),
             mapName: <string>mapName,
@@ -154,6 +156,42 @@ module.exports = {
 
         // Send to database
         await DatabaseWrapper.CreateCS2PlaytestRequest(interaction.guild_id, requestBody);
+        const requestBody = new DB_PlaytestRequest();
+        requestBody.Id = GenerateGuid();
+        requestBody.mapName = <string>mapName;
+        requestBody.game = 'cs2';
+        requestBody.mainAuthor = interaction.member.user.id;
+        requestBody.otherAuthors = otherCreators?.split(',') ?? [];
+        requestBody.thumbnailImage = map.preview_url;
+        (requestBody.requestDate = TimeUtils.GetDBFriendlyDateString(composedRequestDateTime)),
+            (requestBody.requestTime = TimeUtils.GetDBFriendlyTimeString(composedRequestDateTime)),
+            (requestBody.workshopId = <string>workshopId);
+        requestBody.mapType = <string>gameMode;
+        requestBody.playtestType = <string>playtestType;
+        requestBody.dateSubmitted = currentDate;
+
+        await new DatabaseQuery()
+            .PutObject<DB_PlaytestRequest>(`${interaction.guild_id}/${requestBody.Id}`, requestBody)
+            .ErrorIfObjectExists()
+            .Execute(DB_PlaytestRequest);
+            */
+
+        const playtestId = GenerateGuid();
+        await new DatabaseQuery()
+            .CreateNewObject<DB_PlaytestRequest>(`${interaction.guild_id}/${playtestId}`)
+            .SetProperty('Id', playtestId)
+            .SetProperty('mapName', <string>mapName)
+            .SetProperty('game', 'cs2')
+            .SetProperty('mainAuthor', interaction.member.user.id)
+            .SetProperty('otherAuthors', otherCreators?.split(',') ?? [])
+            .SetProperty('thumbnailImage', map.preview_url)
+            .SetProperty('requestDate', TimeUtils.GetDBFriendlyDateString(composedRequestDateTime))
+            .SetProperty('requestTime', TimeUtils.GetDBFriendlyTimeString(composedRequestDateTime))
+            .SetProperty('workshopId', <string>workshopId)
+            .SetProperty('mapType', <string>gameMode)
+            .SetProperty('playtestType', <string>playtestType)
+            .SetProperty('dateSubmitted', currentDate)
+            .Execute(DB_PlaytestRequest);
 
         // Now that we've sent this to the DB, we can reset the offset
         composedRequestDateTime.setMinutes(composedRequestDateTime.getMinutes() + easternOffset);
@@ -161,7 +199,7 @@ module.exports = {
         // Create embed showcasing successful request
         const embed: Embed = {
             title: `${mapName} by ${interaction.member.user.username}`,
-            description: `||${requestBody.Id}||`,
+            description: `||${playtestId}||`,
             type: 'rich',
             image: {
                 url: map.preview_url,

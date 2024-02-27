@@ -1,3 +1,5 @@
+import { DB_GuildSettings } from '../database_models/guildSettings';
+import { DB_PlaytestRequest } from '../database_models/playtestRequest';
 import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
@@ -7,7 +9,8 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { GenerateGuid, Guid } from '../util/guid';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
+import { GenerateGuid } from '../util/guid';
 import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
@@ -39,7 +42,14 @@ module.exports = {
         }
 
         // Create scheduled playtest object
-        const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
+        // const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
+        const request = await new DatabaseQuery()
+            .GetObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
+            .Execute(DB_PlaytestRequest);
+
+        if (request === null) {
+            throw new Error('Scheduled playtest not found');
+        }
 
         if (request.game !== 'cs2') {
             return new CommandResult('unsupported game :(', false, false);
@@ -58,7 +68,8 @@ module.exports = {
         newDate.setMinutes(newDate.getMinutes() + easternOffset);
 
         // Add playtest to event calendar
-        const playtestSettings = (await DatabaseWrapper.GetGuildSettings(interaction.guild_id)).playtesting.cs2;
+        // const playtestSettings = (await DatabaseWrapper.GetGuildSettings(interaction.guild_id)).playtesting.cs2;
+
         const startTime = newDate.toISOString();
         const endTimeDate = TimeUtils.GetNewDateFromAddMinutes(newDate, 90);
 
@@ -96,6 +107,7 @@ module.exports = {
             description.join('\n')
         );
 
+        /*
         const scheduledPlaytest: DB_ScheduledPlaytest = {
             Id: playtestId,
             game: request.game,
@@ -113,15 +125,44 @@ module.exports = {
         };
 
         await DatabaseWrapper.CreateScheduledPlaytest(interaction.guild_id, scheduledPlaytest);
+        */
+
+        await new DatabaseQuery()
+            .CreateNewObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
+            .SetProperty('Id', playtestId)
+            .SetProperty('game', request.game)
+            .SetProperty('mapName', request.mapName)
+            .SetProperty('mainAuthor', request.mainAuthor)
+            .SetProperty('otherAuthors', request.otherAuthors)
+            .SetProperty('thumbnailImage', request.thumbnailImage)
+            .SetProperty('playtestTime', newDate)
+            .SetProperty('workshopId', request.workshopId)
+            .SetProperty('mapType', request.mapType)
+            .SetProperty('playtestType', request.playtestType)
+            .SetProperty('moderator', interaction.member.user.id)
+            .SetProperty('eventId', eventId)
+            .SetProperty('server', <string>server)
+            .Execute(DB_ScheduledPlaytest);
 
         // Post announcement in announcement channel
+        const guildSettings = await new DatabaseQuery()
+            .GetObject<DB_GuildSettings>(interaction.guild_id)
+            .Execute(DB_GuildSettings);
+
+        if (guildSettings === null) {
+            throw new Error('Unable to find guild settings in database');
+        }
+
         await DiscordApiRoutes.createNewMessage(
-            playtestSettings.announceChannel,
+            guildSettings.playtesting.cs2.announceChannel,
             `New Playtest Event - https://discord.com/events/${interaction.guild_id}/${eventId}`
         );
 
         // Remove request object
-        await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>request.Id);
+        // await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>request.Id);
+        await new DatabaseQuery()
+            .DeleteObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
+            .Execute(DB_PlaytestRequest);
 
         return new CommandResult('Playtest Scheduled', false, false);
     },

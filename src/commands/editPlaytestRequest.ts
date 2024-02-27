@@ -1,9 +1,11 @@
+import { DB_PlaytestRequest } from '../database_models/playtestRequest';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { Guid } from '../util/guid';
 
 module.exports = {
@@ -52,6 +54,17 @@ module.exports = {
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
         const authorId = interactionData.options.find((o) => o.name === 'author_id')?.value;
 
+        await new DatabaseQuery()
+            .ModifyObject<DB_PlaytestRequest>(`${interaction.guild_id}/${playtestId}`)
+            .ThrowIfNotExists()
+            .SetPropertyIfValueNotUndefined('requestDate', newDate)
+            .SetPropertyIfValueNotUndefined('requestTime', newTime)
+            .SetPropertyIfValueNotUndefined('playtestType', playtestType)
+            .SetPropertyIfValueNotUndefined('workshopId', workshopId)
+            .SetPropertyIfValueNotUndefined('mainAuthor', authorId)
+            .Execute(DB_PlaytestRequest);
+
+        /*
         const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>playtestId);
 
         let changed = false;
@@ -84,6 +97,7 @@ module.exports = {
         await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>playtestId);
         await DatabaseWrapper.CreateCS2PlaytestRequest(interaction.guild_id, request);
 
+        */
         return new CommandResult('Edited playtest request!', false, false);
     },
 } as CommandDescription;

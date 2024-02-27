@@ -4,6 +4,8 @@ import { Interaction, InteractionData } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { CommandResult } from '../discord_api/commandResult';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
+import { DB_UserSettings } from '../database_models/userSettings';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -33,7 +35,11 @@ module.exports = {
         }
 
         const userId = interaction.member.user.id;
-        await DatabaseWrapper.SetUserTimeString(userId, requestedZone.name);
+        // await DatabaseWrapper.SetUserTimeString(userId, requestedZone.name);
+        await new DatabaseQuery()
+            .ModifyObject<DB_UserSettings>(userId)
+            .SetProperty('timeZoneName', requestedZone.name)
+            .Execute(DB_UserSettings);
 
         // If we're here, the city name was valid and we can go forward with writing the information
         const currentOffset = requestedZone.currentTimeOffsetInMinutes;

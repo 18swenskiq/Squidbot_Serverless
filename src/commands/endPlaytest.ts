@@ -11,6 +11,9 @@ import { FTPUtil } from '../util/ftpUtil';
 import { RconUtils } from '../util/rconUtil';
 import { StaticDeclarations } from '../util/staticDeclarations';
 import { InvokeCommand, InvokeCommandInput, LambdaClient } from '@aws-sdk/client-lambda';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
+import { DB_GuildSettings } from '../database_models/guildSettings';
+import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -19,13 +22,28 @@ module.exports = {
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
         // Get guild settings and verify there is currently a playtest
-        const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+        // const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+        const guildSettings = await new DatabaseQuery()
+            .GetObject<DB_GuildSettings>(interaction.guild_id)
+            .Execute(DB_GuildSettings);
+
+        if (guildSettings === null) {
+            throw new Error('Unable to find guildsettings in database');
+        }
+
         if (guildSettings.activePlaytest == null) {
             return new CommandResult('There is currently no active playtest', false, false);
         }
 
         // Retrieve the active playtest object
-        const playtest = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, guildSettings.activePlaytest);
+        // const playtest = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, guildSettings.activePlaytest);
+        const playtest = await new DatabaseQuery()
+            .GetObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${guildSettings.activePlaytest}`)
+            .Execute(DB_ScheduledPlaytest);
+
+        if (playtest === null) {
+            throw new Error('Unable to find guild active playtest in ScheduledPlaytests bucket');
+        }
 
         // Retrieve the server object that the playtest is on
         const serverName = playtest.server;
@@ -85,7 +103,11 @@ module.exports = {
         );
 
         // Set active playtest to null
-        await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, null);
+        // await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, null);
+        await new DatabaseQuery()
+            .ModifyObject<DB_GuildSettings>(interaction.guild_id)
+            .SetProperty('activePlaytest', null)
+            .Execute(DB_GuildSettings);
 
         const user = await DiscordApiRoutes.getUser(playtest.mainAuthor);
 

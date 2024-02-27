@@ -1,7 +1,8 @@
 import { Snowflake } from '../discord_api/snowflake';
-import { Guid } from '../util/guid';
+import { GenerateGuid, Guid } from '../util/guid';
+import { iDatabaseModel } from './iDatabaseModel';
 
-export interface DB_PlaytestRequest {
+export class DB_PlaytestRequest implements iDatabaseModel {
     Id: Guid;
     game: string;
     mapName: string;
@@ -14,4 +15,23 @@ export interface DB_PlaytestRequest {
     mapType: string;
     playtestType: string;
     dateSubmitted: Date;
+
+    constructor() {
+        this.Id = GenerateGuid();
+        this.game = '';
+        this.mapName = '';
+        this.mainAuthor = '';
+        this.otherAuthors = [];
+        this.thumbnailImage = '';
+        this.requestDate = '';
+        this.requestTime = '';
+        this.workshopId = '';
+        this.mapType = '';
+        this.playtestType = '';
+        this.dateSubmitted = new Date();
+    }
+
+    public BuildKey(id: string): string {
+        return `PlaytestRequests/${id}.bson`;
+    }
 }

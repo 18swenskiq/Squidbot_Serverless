@@ -1,3 +1,4 @@
+import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -5,6 +6,7 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { Guid } from '../util/guid';
 import { TimeUtils } from '../util/timeUtils';
 
@@ -58,10 +60,15 @@ module.exports = {
         const moderator = interactionData.options.find((o) => o.name === 'moderator')?.value;
         const server = interactionData.options.find((o) => o.name === 'server')?.value;
 
-        const playtest = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, <Guid>playtestId);
+        // const playtest = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, <Guid>playtestId);
+        const playtest = await new DatabaseQuery()
+            .GetObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
+            .Execute(DB_ScheduledPlaytest);
+        if (playtest === null) {
+            throw new Error('Unable to find scheduled playtest');
+        }
 
-        let changed = false;
-
+        let updatePlaytestDate: Date = playtest.playtestTime;
         if (newDate || newTime) {
             const playtestDate = newDate
                 ? newDate
@@ -74,10 +81,20 @@ module.exports = {
 
             const easternOffset = TimeUtils.GetOffset('US/Eastern');
             date.setMinutes(date.getMinutes() + easternOffset);
-            playtest.playtestTime = date;
-            changed = true;
+            // playtest.playtestTime = date;
+            // changed = true;
+            updatePlaytestDate = date;
         }
 
+        await new DatabaseQuery()
+            .ModifyObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
+            .SetPropertyIfValueNotUndefined('playtestType', playtestType)
+            .SetPropertyIfValueNotUndefined('workshopId', workshopId)
+            .SetPropertyIfValueNotUndefined('moderator', moderator)
+            .SetProperty('playtestTime', updatePlaytestDate)
+            .Execute(DB_ScheduledPlaytest);
+
+        /*
         if (playtestType) {
             playtest.playtestType = playtestType;
             changed = true;
@@ -92,6 +109,7 @@ module.exports = {
             playtest.moderator = moderator;
             changed = true;
         }
+        */
 
         if (server) {
             const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);

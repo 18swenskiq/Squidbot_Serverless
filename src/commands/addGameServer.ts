@@ -1,3 +1,4 @@
+import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DB_RconServer, Game } from '../database_models/rconServer';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -5,6 +6,7 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid, Guid } from '../util/guid';
 
 module.exports = {
@@ -73,6 +75,7 @@ module.exports = {
             }
         }
 
+        /*
         const newGameServer: DB_RconServer = {
             id: GenerateGuid(),
             nickname: <string>chosenNickname,
@@ -89,7 +92,30 @@ module.exports = {
         };
 
         const result = await DatabaseWrapper.AddGameServer(newGameServer);
+        */
 
-        return new CommandResult(result, true, true, '', true);
+        const serverId = GenerateGuid();
+        await new DatabaseQuery()
+            .CreateNewObject<DB_RconServer>(serverId)
+            .SetProperty('id', serverId)
+            .SetProperty('nickname', <string>chosenNickname)
+            .SetProperty('ip', <string>chosenIp)
+            .SetProperty('port', <string>chosenPort)
+            .SetProperty('game', <Game>chosenGame)
+            .SetProperty('guildId', interaction.guild_id)
+            .SetProperty('rconPassword', <string>chosenRconPassword)
+            .SetProperty('countryCode', chosenFlag)
+            .SetProperty('ftpHost', <string>ftpHost)
+            .SetProperty('ftpPort', <string>ftpUsername)
+            .SetProperty('ftpPassword', <string>ftpPassword)
+            .Execute(DB_RconServer);
+
+        // Need to do "add to array" property
+        const modifyServerResult = await new DatabaseQuery()
+            .ModifyObject<DB_GuildSettings>(interaction.guild_id)
+            .AddToPropertyArray('rconServers', serverId)
+            .Execute(DB_GuildSettings);
+
+        return new CommandResult(`Added Game Server \`${<string>chosenNickname}\``, true, true, '', true);
     },
 } as CommandDescription;

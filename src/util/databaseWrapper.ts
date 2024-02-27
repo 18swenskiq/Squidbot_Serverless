@@ -3,7 +3,6 @@ import {
     CopyObjectCommandInput,
     DeleteObjectCommand,
     DeleteObjectCommandInput,
-    DeleteObjectRequest,
     GetObjectCommand,
     GetObjectRequest,
     ListObjectsCommand,
@@ -23,7 +22,6 @@ import {
 } from '../database_models/interactionHandler';
 import { DB_RconServer } from '../database_models/rconServer';
 import { DB_PlaytestRequest } from '../database_models/playtestRequest';
-import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { promises as fs } from 'fs';
 
 const bucketName = 'squidbot';
@@ -38,6 +36,7 @@ type ObjectDirectory =
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
+    /*
     public static async SetUserTimeString(userId: Snowflake, timeString: string): Promise<void> {
         let obj: DB_UserSettings;
         try {
@@ -49,6 +48,7 @@ export abstract class DatabaseWrapper {
 
         await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
     }
+    */
 
     public static async ToggleGuildRoleAssignable(guildId: Snowflake, roleId: Snowflake): Promise<string> {
         let obj: DB_GuildSettings;
@@ -59,7 +59,6 @@ export abstract class DatabaseWrapper {
             obj = {
                 assignableRoles: [],
                 rconServers: [],
-                gameServers: [],
                 playtesting: {
                     cs2: {
                         playtestChannel: '',
@@ -70,6 +69,7 @@ export abstract class DatabaseWrapper {
                     },
                 },
                 activePlaytest: null,
+                pugging_cs2_enabled: false,
             };
         }
 
@@ -88,6 +88,7 @@ export abstract class DatabaseWrapper {
         return retString;
     }
 
+    /*
     public static async SetGuildActivePlaytest(guildId: Snowflake, playtestId: Guid | null) {
         const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
         if (obj.activePlaytest && playtestId != null) {
@@ -97,7 +98,9 @@ export abstract class DatabaseWrapper {
         obj.activePlaytest = playtestId;
         await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
     }
+    */
 
+    /*
     public static async EnableCS2Playtesting(
         guildId: Snowflake,
         requestChannel: Snowflake,
@@ -117,6 +120,15 @@ export abstract class DatabaseWrapper {
         };
         await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
     }
+    */
+
+    /*
+    public static async EnableCS2Pugging(guildId: Snowflake) {
+        const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
+        obj.pugging_cs2_enabled = true;
+        await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
+    }
+    */
 
     public static async AddGameServer(newServer: DB_RconServer): Promise<string> {
         let obj: DB_GuildSettings;
@@ -138,6 +150,7 @@ export abstract class DatabaseWrapper {
         }
     }
 
+    /*
     public static async GetGuildRolesAssignable(guildId: Snowflake): Promise<Snowflake[]> {
         try {
             const obj = await DatabaseWrapper.GetGuildSettings(guildId);
@@ -146,6 +159,7 @@ export abstract class DatabaseWrapper {
             return [];
         }
     }
+    */
 
     public static async GetActiveRconServer(userId: Snowflake, guildId: Snowflake): Promise<DB_RconServer> {
         const user = await DatabaseWrapper.GetUserSettings_Single(userId);
@@ -167,6 +181,7 @@ export abstract class DatabaseWrapper {
         return <DB_RconServer>{};
     }
 
+    /*
     public static async SetActiveRconServer(userId: Snowflake, guildId: Snowflake, rconServerId: Guid): Promise<void> {
         try {
             const obj = await DatabaseWrapper.GetUserSettings_Single(userId);
@@ -177,23 +192,21 @@ export abstract class DatabaseWrapper {
             return;
         }
     }
+    */
 
     public static async GetGameServers(guildId: Snowflake): Promise<DB_RconServer[]> {
         try {
             const objects = await DatabaseWrapper.ListObjects('RconServers');
-            console.log('the objects');
-            console.log(objects);
+
             let rconServers: DB_RconServer[] = [];
             for (let i = 1; i < objects.length; i++) {
                 const serverEntry = objects[i];
-                console.log('server entry');
-                console.log(serverEntry);
+
                 const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>(
                     'RconServers',
                     serverEntry.split('/')[1].split('.')[0]
                 );
-                console.log('rcon server:');
-                console.log(rconServer);
+
                 if (rconServer.guildId === guildId) {
                     rconServers.push(rconServer);
                 }
@@ -240,12 +253,15 @@ export abstract class DatabaseWrapper {
         return retObj;
     }
 
+    /*
     public static async CreateCS2PlaytestRequest(guildId: Snowflake, requestBody: DB_PlaytestRequest): Promise<void> {
         const keyName = `${guildId}/${requestBody.Id}`;
 
         await DatabaseWrapper.PutBSONObject(requestBody, 'PlaytestRequests', keyName);
     }
+    */
 
+    /*
     public static async GetPlaytestRequest(guildId: Snowflake, playtestId: Guid): Promise<DB_PlaytestRequest> {
         const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(
             `PlaytestRequests`,
@@ -253,10 +269,13 @@ export abstract class DatabaseWrapper {
         );
         return res;
     }
+    */
 
+    /*
     public static async DeletePlaytestRequest(guildId: Snowflake, playtestId: Guid): Promise<void> {
         await DatabaseWrapper.DeleteBSONObject('PlaytestRequests', `${guildId}/${playtestId}`);
     }
+    */
 
     public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, DB_PlaytestRequest>> {
         let objects = await DatabaseWrapper.ListObjects(`PlaytestRequests`);
@@ -280,12 +299,15 @@ export abstract class DatabaseWrapper {
         return retObj;
     }
 
+    /*
     public static async CreateScheduledPlaytest(guildId: Snowflake, requestBody: DB_ScheduledPlaytest): Promise<void> {
         const keyName = `${guildId}/${requestBody.Id}`;
 
         await DatabaseWrapper.PutBSONObject(requestBody, 'ScheduledPlaytests', keyName);
     }
+    */
 
+    /*
     public static async GetScheduledPlaytest(guildId: Snowflake, playtestId: Guid): Promise<DB_ScheduledPlaytest> {
         const res = await DatabaseWrapper.GetBSONObject<DB_ScheduledPlaytest>(
             'ScheduledPlaytests',
@@ -293,10 +315,13 @@ export abstract class DatabaseWrapper {
         );
         return res;
     }
+    */
 
+    /*
     public static async DeleteScheduledPlaytest(guildId: Snowflake, playtestId: Guid): Promise<void> {
         await DatabaseWrapper.DeleteBSONObject('ScheduledPlaytests', `${guildId}/${playtestId}`);
     }
+    */
 
     public static async SetInteractionHandler(
         creator: Snowflake,
@@ -317,6 +342,7 @@ export abstract class DatabaseWrapper {
         await DatabaseWrapper.PutBSONObject(obj, 'InteractableComponents', keyName);
     }
 
+    /*
     public static async GetInteractionHandler(
         guildId: Snowflake,
         handlerId: Guid
@@ -324,6 +350,7 @@ export abstract class DatabaseWrapper {
         const keyName = `${guildId}/${handlerId}`;
         return await DatabaseWrapper.GetBSONObject<DB_ComponentInteractionHandler>('InteractableComponents', keyName);
     }
+    */
 
     public static async ListScheduledPlaytests(guildId: Snowflake): Promise<string[]> {
         const input: ListObjectsCommandInput = {
@@ -448,6 +475,7 @@ export abstract class DatabaseWrapper {
         return obj as T;
     }
 
+    /*
     private static async DeleteBSONObject(dir: ObjectDirectory, key: string): Promise<void> {
         const itemKey = `${dir}/${key}.bson`;
 
@@ -462,6 +490,7 @@ export abstract class DatabaseWrapper {
 
         console.log(response);
     }
+    */
 
     private static async PutBSONObject(obj: any, dir: ObjectDirectory, key: string): Promise<boolean> {
         const itemKey = `${dir}/${key}.bson`;
@@ -479,8 +508,10 @@ export abstract class DatabaseWrapper {
         return true;
     }
 
+    /*
     public static async GetGuildSettings(guildId: Snowflake): Promise<DB_GuildSettings> {
         const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
         return obj;
     }
+    */
 }

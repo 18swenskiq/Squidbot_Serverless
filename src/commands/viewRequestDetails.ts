@@ -1,3 +1,4 @@
+import { DB_PlaytestRequest } from '../database_models/playtestRequest';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -5,8 +6,7 @@ import { Embed } from '../discord_api/embed';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseWrapper } from '../util/databaseWrapper';
-import { Guid } from '../util/guid';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,7 +23,15 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
 
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
-        const playtestRequest = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
+        // const playtestRequest = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
+
+        const playtestRequest = await new DatabaseQuery()
+            .GetObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
+            .Execute(DB_PlaytestRequest);
+
+        if (playtestRequest === null) {
+            throw new Error('Could not find playtest request');
+        }
 
         const mainAuthorName = (await DiscordApiRoutes.getUser(playtestRequest.mainAuthor)).username;
         const authors: string[] = [mainAuthorName];

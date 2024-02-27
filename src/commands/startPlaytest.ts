@@ -1,3 +1,4 @@
+import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -7,6 +8,7 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { FTPUtil } from '../util/ftpUtil';
 import { Guid } from '../util/guid';
 import { RconUtils } from '../util/rconUtil';
@@ -158,7 +160,11 @@ module.exports = {
         await RconUtils.SendRconCommand(server.ip, server.port, server.rconPassword, `tv_record ${playtest.Id}`);
 
         // Set active playtest
-        await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, playtest.Id);
+        // await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, playtest.Id);
+        await new DatabaseQuery()
+            .ModifyObject<DB_GuildSettings>(interaction.guild_id)
+            .SetProperty('activePlaytest', playtest.Id)
+            .Execute(DB_GuildSettings);
 
         const user = await DiscordApiRoutes.getUser(playtest.mainAuthor);
 

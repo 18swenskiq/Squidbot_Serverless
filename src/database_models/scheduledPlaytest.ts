@@ -1,7 +1,8 @@
 import { Snowflake } from '../discord_api/snowflake';
-import { Guid } from '../util/guid';
+import { GenerateGuid, Guid } from '../util/guid';
+import { iDatabaseModel } from './iDatabaseModel';
 
-export interface DB_ScheduledPlaytest {
+export class DB_ScheduledPlaytest implements iDatabaseModel {
     Id: Guid;
     game: string;
     mapName: string;
@@ -15,4 +16,24 @@ export interface DB_ScheduledPlaytest {
     moderator: Snowflake;
     eventId: Snowflake;
     server: string;
+
+    constructor() {
+        this.Id = GenerateGuid();
+        this.game = '';
+        this.mapName = '';
+        this.mainAuthor = '';
+        this.otherAuthors = [];
+        this.thumbnailImage = '';
+        this.playtestTime = new Date();
+        this.workshopId = '';
+        this.mapType = '';
+        this.playtestType = '';
+        this.moderator = '';
+        this.eventId = '';
+        this.server = '';
+    }
+
+    public BuildKey(id: string): string {
+        return `ScheduledPlaytests/${id}.bson`;
+    }
 }

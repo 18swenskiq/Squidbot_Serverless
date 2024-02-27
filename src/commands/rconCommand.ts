@@ -23,11 +23,6 @@ module.exports = {
             return new CommandResult('No active RCON server!', false, false);
         }
 
-        var options = {
-            tcp: true,
-            challenge: false,
-        };
-
         const rcon = new Rcon({
             host: rconServer.ip,
             port: Number(rconServer.port),

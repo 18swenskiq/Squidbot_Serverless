@@ -4,16 +4,28 @@ import { Interaction } from '../discord_api/interaction';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { Guid } from '../util/guid';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
+import { DB_GuildSettings } from '../database_models/guildSettings';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class HandleComponentInteraction {
     public static async Handle(interaction: Interaction): Promise<void> {
         const data = <ComponentInteractionData>interaction.data;
 
+        /*
         const interactionHandler = await DatabaseWrapper.GetInteractionHandler(
             interaction.guild_id,
             data.custom_id as Guid
         );
+        */
+
+        const interactionHandler = await new DatabaseQuery()
+            .GetObject<DB_ComponentInteractionHandler>(`${interaction.guild_id}/${data.custom_id}`)
+            .Execute(DB_ComponentInteractionHandler);
+
+        if (interactionHandler === null) {
+            throw new Error('Interaction handler not found');
+        }
 
         switch (interactionHandler.type) {
             case 'AssignRoles':
@@ -30,7 +42,17 @@ export abstract class HandleComponentInteraction {
         data: ComponentInteractionData,
         interactionHandler: DB_ComponentInteractionHandler
     ): Promise<void> {
-        const assignableRoles = await DatabaseWrapper.GetGuildRolesAssignable(interaction.guild_id);
+        // const assignableRoles = await DatabaseWrapper.GetGuildRolesAssignable(interaction.guild_id);
+        const guildSettings = await new DatabaseQuery()
+            .GetObject<DB_GuildSettings>(interaction.guild_id)
+            .Execute(DB_GuildSettings);
+
+        if (guildSettings === null) {
+            throw new Error('Guild not found when attempting to retrieve roles from database');
+        }
+
+        const assignableRoles = guildSettings.assignableRoles;
+
         const memberRoles = interaction.member.roles;
         const selectedRoles = data.values;
 

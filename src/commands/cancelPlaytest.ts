@@ -1,3 +1,5 @@
+import { DB_PlaytestRequest } from '../database_models/playtestRequest';
+import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -5,6 +7,7 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { Guid } from '../util/guid';
 
 module.exports = {
@@ -19,13 +22,23 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
 
-        const playtestDetails = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, <Guid>id);
+        // const playtestDetails = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, <Guid>id);
+        const playtestDetails = await new DatabaseQuery()
+            .GetObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${id}`)
+            .Execute(DB_ScheduledPlaytest);
+
+        if (playtestDetails === null) {
+            throw new Error('Could not find scheduled playtest in database');
+        }
 
         // Delete calendar event
         await DiscordApiRoutes.deleteGuildEvent(interaction.guild_id, playtestDetails.eventId);
 
         // Delete from DB
-        await DatabaseWrapper.DeleteScheduledPlaytest(interaction.guild_id, <Guid>id);
+        // await DatabaseWrapper.DeleteScheduledPlaytest(interaction.guild_id, <Guid>id);
+        await new DatabaseQuery()
+            .DeleteObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${id}`)
+            .Execute(DB_ScheduledPlaytest);
 
         return new CommandResult('Cancelled playtest', false, false);
     },

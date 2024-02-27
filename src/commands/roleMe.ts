@@ -1,3 +1,4 @@
+import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -5,12 +6,22 @@ import { Interaction } from '../discord_api/interaction';
 import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid, Guid } from '../util/guid';
 
 module.exports = {
     data: new SlashCommandBuilder().setName('roleme').setDescription('Assign roles to yourself!'),
     async execute(interaction: Interaction): Promise<CommandResult> {
-        const assignableRoles = await DatabaseWrapper.GetGuildRolesAssignable(interaction.guild_id);
+        // const assignableRoles = await DatabaseWrapper.GetGuildRolesAssignable(interaction.guild_id);
+        const guildSettings = await new DatabaseQuery()
+            .GetObject<DB_GuildSettings>(interaction.guild_id)
+            .Execute(DB_GuildSettings);
+
+        if (guildSettings === null) {
+            throw new Error('Could not retrieve guild settings. Not found in database');
+        }
+
+        const assignableRoles = guildSettings.assignableRoles;
 
         // We need to get the server roles for the names for the dropdown
         const allRoles = await DiscordApiRoutes.getGuildRoles(interaction.guild_id);

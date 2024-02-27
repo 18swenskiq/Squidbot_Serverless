@@ -1,9 +1,11 @@
+import { DB_PlaytestRequest } from '../database_models/playtestRequest';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
+import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { Guid } from '../util/guid';
 
 module.exports = {
@@ -18,7 +20,11 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
 
-        await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>id);
+        // await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>id);
+        await new DatabaseQuery()
+            .DeleteObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
+            .Execute(DB_PlaytestRequest);
+
         return new CommandResult('Deleted the request!', false, false);
     },
 } as CommandDescription;
