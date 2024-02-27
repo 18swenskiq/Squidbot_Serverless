@@ -14,10 +14,8 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
 
-        // await DatabaseWrapper.EnableCS2Pugging(interaction.guild_id);
-
         await new DatabaseQuery()
-            .ModifyObject<DB_GuildSettings>(`GuildSettings/${interaction.guild_id}.bson`)
+            .ModifyObject<DB_GuildSettings>(interaction.guild_id)
             .SetProperty('pugging_cs2_enabled', true)
             .Execute(DB_GuildSettings);
 
