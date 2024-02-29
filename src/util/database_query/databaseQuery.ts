@@ -2,12 +2,22 @@ import { iDatabaseModel } from '../../database_models/iDatabaseModel';
 import { CreateNewDatabaseObjectQueryBuilder } from './query_builders/createNewDatabaseObjectQueryBuilder';
 import { DeleteDatabaseObjectQueryBuilder } from './query_builders/deleteDatabaseObjectQueryBuilder';
 import { GetDatabaseObjectQueryBuilder } from './query_builders/getDatabaseObjectQueryBuilder';
+import { GetDatabaseObjectsQueryBuilder } from './query_builders/getDatabaseObjectsQueryBuilder';
+import { ListDatabaseObjectsQueryBuilder } from './query_builders/listDatabaseObjectsQueryBuilder';
 import { ModifyDatabaseObjectQueryBuilder } from './query_builders/modifyDatabaseObjectQueryBuilder';
 import { PutDatabaseObjectQueryBuilder } from './query_builders/putDatabaseObjectQueryBuilder';
 
 export class DatabaseQuery {
+    public ListObjects<T extends iDatabaseModel>(): ListDatabaseObjectsQueryBuilder<T> {
+        return new ListDatabaseObjectsQueryBuilder<T>();
+    }
+
     public GetObject<T extends iDatabaseModel>(key: string): GetDatabaseObjectQueryBuilder<T> {
         return new GetDatabaseObjectQueryBuilder<T>(key);
+    }
+
+    public GetObjects<T extends iDatabaseModel>(): GetDatabaseObjectsQueryBuilder<T> {
+        return new GetDatabaseObjectsQueryBuilder<T>();
     }
 
     public ModifyObject<T extends iDatabaseModel>(key: string): ModifyDatabaseObjectQueryBuilder<T> {

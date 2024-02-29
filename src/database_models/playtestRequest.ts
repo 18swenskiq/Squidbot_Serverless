@@ -31,7 +31,11 @@ export class DB_PlaytestRequest implements iDatabaseModel {
         this.dateSubmitted = new Date();
     }
 
+    public GetTopLevelKey(): string {
+        return `PlaytestRequests`;
+    }
+
     public BuildKey(id: string): string {
-        return `PlaytestRequests/${id}.bson`;
+        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

@@ -33,7 +33,11 @@ export class DB_RconServer implements iDatabaseModel {
         this.ftpPassword = '';
     }
 
+    public GetTopLevelKey(): string {
+        return `RconServers`;
+    }
+
     public BuildKey(id: string): string {
-        return `RconServers/${id}.bson`;
+        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

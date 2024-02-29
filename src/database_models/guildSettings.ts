@@ -33,7 +33,11 @@ export class DB_GuildSettings implements iDatabaseModel {
         this.pugging_cs2_enabled = false;
     }
 
+    public GetTopLevelKey(): string {
+        return `GuildSettings`;
+    }
+
     public BuildKey(id: string): string {
-        return `GuildSettings/${id}.bson`;
+        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

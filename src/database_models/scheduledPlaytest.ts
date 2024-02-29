@@ -33,7 +33,11 @@ export class DB_ScheduledPlaytest implements iDatabaseModel {
         this.server = '';
     }
 
+    public GetTopLevelKey(): string {
+        return `ScheduledPlaytests`;
+    }
+
     public BuildKey(id: string): string {
-        return `ScheduledPlaytests/${id}.bson`;
+        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

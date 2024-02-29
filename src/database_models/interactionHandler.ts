@@ -16,7 +16,11 @@ export class DB_ComponentInteractionHandler implements iDatabaseModel {
         this.timesHandled = -1;
     }
 
+    public GetTopLevelKey(): string {
+        return `InteractableComponents`;
+    }
+
     public BuildKey(id: string): string {
-        return `InteractableComponents/${id}.bson`;
+        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

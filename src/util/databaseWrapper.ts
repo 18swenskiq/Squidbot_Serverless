@@ -36,20 +36,6 @@ type ObjectDirectory =
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DatabaseWrapper {
-    /*
-    public static async SetUserTimeString(userId: Snowflake, timeString: string): Promise<void> {
-        let obj: DB_UserSettings;
-        try {
-            obj = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', userId);
-        } catch (error) {
-            console.log("user wasn't found in DB, creating...");
-            obj = { timeZoneName: timeString, activeRconServer: {} };
-        }
-
-        await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
-    }
-    */
-
     public static async ToggleGuildRoleAssignable(guildId: Snowflake, roleId: Snowflake): Promise<string> {
         let obj: any;
         try {
@@ -87,81 +73,6 @@ export abstract class DatabaseWrapper {
         await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
         return retString;
     }
-
-    /*
-    public static async SetGuildActivePlaytest(guildId: Snowflake, playtestId: Guid | null) {
-        const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
-        if (obj.activePlaytest && playtestId != null) {
-            throw Error('Guild already has active playtest');
-        }
-
-        obj.activePlaytest = playtestId;
-        await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
-    }
-    */
-
-    /*
-    public static async EnableCS2Playtesting(
-        guildId: Snowflake,
-        requestChannel: Snowflake,
-        announceChannel: Snowflake,
-        playtestChannel: Snowflake,
-        competitiveChannel: Snowflake
-    ): Promise<void> {
-        const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
-        obj.playtesting = {
-            cs2: {
-                enabled: true,
-                requestChannel: requestChannel,
-                announceChannel: announceChannel,
-                playtestChannel: playtestChannel,
-                competitiveChannel: competitiveChannel,
-            },
-        };
-        await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
-    }
-    */
-
-    /*
-    public static async EnableCS2Pugging(guildId: Snowflake) {
-        const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
-        obj.pugging_cs2_enabled = true;
-        await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', guildId);
-    }
-    */
-
-    /*
-    public static async AddGameServer(newServer: DB_RconServer): Promise<string> {
-        let obj: DB_GuildSettings;
-        try {
-            await DatabaseWrapper.PutBSONObject(newServer, 'RconServers', newServer.id);
-
-            obj = await DatabaseWrapper.GetGuildSettings(newServer.guildId);
-
-            if (!obj.rconServers) {
-                obj.rconServers = [];
-            }
-
-            obj.rconServers.push(newServer.id);
-            await DatabaseWrapper.PutBSONObject(obj, 'GuildSettings', newServer.guildId);
-            return `Added Game Server \`${newServer.nickname}\``;
-        } catch (err: any) {
-            console.log('error adding game server to guild', err);
-            return 'Failed to add game server';
-        }
-    }
-    */
-
-    /*
-    public static async GetGuildRolesAssignable(guildId: Snowflake): Promise<Snowflake[]> {
-        try {
-            const obj = await DatabaseWrapper.GetGuildSettings(guildId);
-            return obj.assignableRoles;
-        } catch (err: any) {
-            return [];
-        }
-    }
-    */
 
     public static async GetActiveRconServer(userId: Snowflake, guildId: Snowflake): Promise<DB_RconServer> {
         const user = await DatabaseWrapper.GetUserSettings_Single(userId);
@@ -253,30 +164,6 @@ export abstract class DatabaseWrapper {
         return retObj;
     }
 
-    /*
-    public static async CreateCS2PlaytestRequest(guildId: Snowflake, requestBody: DB_PlaytestRequest): Promise<void> {
-        const keyName = `${guildId}/${requestBody.Id}`;
-
-        await DatabaseWrapper.PutBSONObject(requestBody, 'PlaytestRequests', keyName);
-    }
-    */
-
-    /*
-    public static async GetPlaytestRequest(guildId: Snowflake, playtestId: Guid): Promise<DB_PlaytestRequest> {
-        const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(
-            `PlaytestRequests`,
-            `${guildId}/${playtestId}`
-        );
-        return res;
-    }
-    */
-
-    /*
-    public static async DeletePlaytestRequest(guildId: Snowflake, playtestId: Guid): Promise<void> {
-        await DatabaseWrapper.DeleteBSONObject('PlaytestRequests', `${guildId}/${playtestId}`);
-    }
-    */
-
     public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, DB_PlaytestRequest>> {
         let objects = await DatabaseWrapper.ListObjects(`PlaytestRequests`);
 
@@ -299,30 +186,6 @@ export abstract class DatabaseWrapper {
         return retObj;
     }
 
-    /*
-    public static async CreateScheduledPlaytest(guildId: Snowflake, requestBody: DB_ScheduledPlaytest): Promise<void> {
-        const keyName = `${guildId}/${requestBody.Id}`;
-
-        await DatabaseWrapper.PutBSONObject(requestBody, 'ScheduledPlaytests', keyName);
-    }
-    */
-
-    /*
-    public static async GetScheduledPlaytest(guildId: Snowflake, playtestId: Guid): Promise<DB_ScheduledPlaytest> {
-        const res = await DatabaseWrapper.GetBSONObject<DB_ScheduledPlaytest>(
-            'ScheduledPlaytests',
-            `${guildId}/${playtestId}`
-        );
-        return res;
-    }
-    */
-
-    /*
-    public static async DeleteScheduledPlaytest(guildId: Snowflake, playtestId: Guid): Promise<void> {
-        await DatabaseWrapper.DeleteBSONObject('ScheduledPlaytests', `${guildId}/${playtestId}`);
-    }
-    */
-
     public static async SetInteractionHandler(
         creator: Snowflake,
         guildId: Snowflake,
@@ -341,16 +204,6 @@ export abstract class DatabaseWrapper {
 
         await DatabaseWrapper.PutBSONObject(obj, 'InteractableComponents', keyName);
     }
-
-    /*
-    public static async GetInteractionHandler(
-        guildId: Snowflake,
-        handlerId: Guid
-    ): Promise<DB_ComponentInteractionHandler> {
-        const keyName = `${guildId}/${handlerId}`;
-        return await DatabaseWrapper.GetBSONObject<DB_ComponentInteractionHandler>('InteractableComponents', keyName);
-    }
-    */
 
     public static async ListScheduledPlaytests(guildId: Snowflake): Promise<string[]> {
         const input: ListObjectsCommandInput = {
@@ -475,23 +328,6 @@ export abstract class DatabaseWrapper {
         return obj as T;
     }
 
-    /*
-    private static async DeleteBSONObject(dir: ObjectDirectory, key: string): Promise<void> {
-        const itemKey = `${dir}/${key}.bson`;
-
-        const input: DeleteObjectRequest = {
-            Bucket: bucketName,
-            Key: itemKey,
-        };
-
-        const command = new DeleteObjectCommand(input);
-
-        const response = await StaticDeclarations.s3client.send(command);
-
-        console.log(response);
-    }
-    */
-
     private static async PutBSONObject(obj: any, dir: ObjectDirectory, key: string): Promise<boolean> {
         const itemKey = `${dir}/${key}.bson`;
 
@@ -507,11 +343,4 @@ export abstract class DatabaseWrapper {
         await StaticDeclarations.s3client.send(command);
         return true;
     }
-
-    /*
-    public static async GetGuildSettings(guildId: Snowflake): Promise<DB_GuildSettings> {
-        const obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
-        return obj;
-    }
-    */
 }
