@@ -53,7 +53,10 @@ exports.handler = async (event: any) => {
                     aux.splice(0, 2);
                     aux = aux.join('\n"');
 
-                    await sendCommandResponse(body, new CommandResult(`[${aux}] ERROR: ${error}`, true, false));
+                    await sendCommandResponse(
+                        body,
+                        new CommandResult(`\`\`\`\n${aux}\n\`\`\`\n ERROR: ${error}`, true, false)
+                    );
                     return { statusCode: 500 };
                 }
             } else {

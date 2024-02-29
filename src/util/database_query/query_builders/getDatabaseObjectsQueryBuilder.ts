@@ -12,10 +12,13 @@ export class GetDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
     public async Execute(type: { new (): T }): Promise<T[]> {
         // List objects
         const list = await new DatabaseQuery().ListObjects<T>().Execute(type);
+        console.log('list');
+        console.log(list);
 
         // Get each object
         let awsObjects: T[] = [];
         for (const s3itemKey in list) {
+            console.log(s3itemKey);
             const s3Item = await new DatabaseQuery()
                 .GetObject<T>(s3itemKey.split('/').splice(0, 1).join('/').replace('.bson', ''))
                 .Execute(type);

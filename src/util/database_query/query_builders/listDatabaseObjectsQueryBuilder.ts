@@ -6,6 +6,8 @@ export class ListDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
     public async Execute(type: { new (): T }): Promise<string[]> {
         let prefix = new type().GetTopLevelKey();
 
+        console.log('listing with prefix');
+        console.log(prefix);
         // TODO: This can only return 1000 objects, consider chunking?
         const input: ListObjectsCommandInput = {
             Bucket: 'squidbot',
