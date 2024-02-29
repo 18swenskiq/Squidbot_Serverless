@@ -147,44 +147,6 @@ module.exports = {
             );
         }
 
-        /*
-        const requestBody: DB_PlaytestRequest = {
-            Id: GenerateGuid(),
-            mapName: <string>mapName,
-            game: 'cs2',
-            mainAuthor: interaction.member.user.id,
-            otherAuthors: otherCreators?.split(',') ?? [],
-            thumbnailImage: map.preview_url,
-            requestDate: TimeUtils.GetDBFriendlyDateString(composedRequestDateTime),
-            requestTime: TimeUtils.GetDBFriendlyTimeString(composedRequestDateTime),
-            workshopId: <string>workshopId,
-            mapType: <string>gameMode,
-            playtestType: <string>playtestType,
-            dateSubmitted: currentDate,
-        };
-
-        // Send to database
-        await DatabaseWrapper.CreateCS2PlaytestRequest(interaction.guild_id, requestBody);
-        const requestBody = new DB_PlaytestRequest();
-        requestBody.Id = GenerateGuid();
-        requestBody.mapName = <string>mapName;
-        requestBody.game = 'cs2';
-        requestBody.mainAuthor = interaction.member.user.id;
-        requestBody.otherAuthors = otherCreators?.split(',') ?? [];
-        requestBody.thumbnailImage = map.preview_url;
-        (requestBody.requestDate = TimeUtils.GetDBFriendlyDateString(composedRequestDateTime)),
-            (requestBody.requestTime = TimeUtils.GetDBFriendlyTimeString(composedRequestDateTime)),
-            (requestBody.workshopId = <string>workshopId);
-        requestBody.mapType = <string>gameMode;
-        requestBody.playtestType = <string>playtestType;
-        requestBody.dateSubmitted = currentDate;
-
-        await new DatabaseQuery()
-            .PutObject<DB_PlaytestRequest>(`${interaction.guild_id}/${requestBody.Id}`, requestBody)
-            .ErrorIfObjectExists()
-            .Execute(DB_PlaytestRequest);
-            */
-
         const playtestId = GenerateGuid();
         await new DatabaseQuery()
             .CreateNewObject<DB_PlaytestRequest>(`${interaction.guild_id}/${playtestId}`)

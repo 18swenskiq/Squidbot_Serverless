@@ -21,6 +21,11 @@ exports.handler = async (event: any) => {
     let commandFiles: string[];
     if (body.type === 2) {
         // Load Commands (only if type 2)
+        console.log('Submitted body:');
+        console.log(body);
+
+        console.log('Submitted Interaction Data:');
+        console.log(body.data);
         commandsPath = path.resolve(__dirname, 'commands/');
         commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
         for (const file of commandFiles) {
@@ -49,14 +54,19 @@ exports.handler = async (event: any) => {
                     await sendCommandResponse(body, result);
                     return { statusCode: 200 };
                 } catch (error: any) {
-                    let aux = error.stack.split('\n');
-                    aux.splice(0, 2);
-                    aux = aux.join('\n"');
+                    let stackTrace = error.stack.split('\n');
+                    stackTrace.splice(0, 2);
+                    stackTrace = stackTrace.join('\n"');
 
-                    await sendCommandResponse(
-                        body,
-                        new CommandResult(`\`\`\`\n${aux}\n\`\`\`\n ERROR: ${error}`, true, false)
-                    );
+                    // Only send a stack trace if I used the comamnd
+                    if (body.member.user.id === '66318815247466496') {
+                        await sendCommandResponse(
+                            body,
+                            new CommandResult(`\`\`\`\n${stackTrace}\n\`\`\`\n ERROR: ${error}`, true, false)
+                        );
+                    } else {
+                        await sendCommandResponse(body, new CommandResult(`ERROR: ${error}`, true, false));
+                    }
                     return { statusCode: 500 };
                 }
             } else {
