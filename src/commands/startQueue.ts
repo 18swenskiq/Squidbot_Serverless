@@ -1,8 +1,10 @@
 import { DB_CS2PugQueue } from '../database_models/cs2PugQueue';
 import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DB_UserSettings } from '../database_models/userSettings';
+import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
+import { Embed } from '../discord_api/embed';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
@@ -87,13 +89,32 @@ module.exports = {
 
         // Create object
         const queueId = GenerateGuid();
-        await new DatabaseQuery()
+        const queueObject = await new DatabaseQuery()
             .CreateNewObject<DB_CS2PugQueue>(`${interaction.guild_id}/${queueId}`)
             .SetProperty('id', queueId)
             .SetProperty('activeChannel', interaction.channel_id)
             .SetProperty('gameType', gameMode)
             .Execute(DB_CS2PugQueue);
 
-        return new CommandResult('Enabled CS2 pugging on this server!', true, false);
+        // Create embed showing queue
+        const queueStarter = await DiscordApiRoutes.getUser(interaction.member.user.id);
+        const embed: Embed = {
+            title: `${queueStarter.username} started a ${gameMode} queue!`,
+            description: 'Use `/queue` in this channel to join!',
+            type: 'rich',
+            color: 6730746,
+            fields: [
+                {
+                    name: 'Queue ends:',
+                    value: `<t:${queueObject.queueExpirationTime.getTime()}:R>`,
+                    inline: true,
+                },
+            ],
+        };
+
+        const cr = new CommandResult('', true, false);
+        cr.embeds = [];
+        cr.embeds.push(embed);
+        return cr;
     },
 } as CommandDescription;

@@ -15,6 +15,7 @@ module.exports = {
         // const assignableRoles = await DatabaseWrapper.GetGuildRolesAssignable(interaction.guild_id);
         const guildSettings = await new DatabaseQuery()
             .GetObject<DB_GuildSettings>(interaction.guild_id)
+            .CreateIfNotExist()
             .Execute(DB_GuildSettings);
 
         if (guildSettings === null) {
