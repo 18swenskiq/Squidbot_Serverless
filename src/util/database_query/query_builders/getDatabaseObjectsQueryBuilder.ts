@@ -17,11 +17,16 @@ export class GetDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
 
         // Get each object
         let awsObjects: T[] = [];
-        for (const s3itemKey in list) {
-            console.log(s3itemKey);
-            const s3Item = await new DatabaseQuery()
+
+        // The first object is always the folder
+        for (let i = 1; i < list.length; i++) {
+            console.log('List index ' + i);
+            console.log(list[i]);
+            let s3itemKey = list[i];
+            let s3Item = await new DatabaseQuery()
                 .GetObject<T>(s3itemKey.split('/').splice(0, 1).join('/').replace('.bson', ''))
                 .Execute(type);
+
             if (s3Item === null) {
                 throw new Error(`Could not get object from database that appeared in list. [${s3itemKey} not `);
             }
