@@ -3,12 +3,20 @@ import { iDatabaseModel } from '../../../database_models/iDatabaseModel';
 import { StaticDeclarations } from '../../staticDeclarations';
 
 import { BSON, EJSON, Document } from 'bson';
+import { DatabaseQuery } from '../databaseQuery';
 
 export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
     private object_id: string;
+    private createIfNotExist: boolean;
 
     constructor(object_id: string) {
         this.object_id = object_id;
+        this.createIfNotExist = false;
+    }
+
+    public CreateIfNotExist(): GetDatabaseObjectQueryBuilder<T> {
+        this.createIfNotExist = true;
+        return this;
     }
 
     public async Execute(type: { new (): T }): Promise<T | null> {
@@ -25,19 +33,31 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
             Key: key,
         };
 
-        const command = new GetObjectCommand(input);
+        try {
+            const command = new GetObjectCommand(input);
+            const response = await StaticDeclarations.s3client.send(command);
+            const respBytes = await response.Body?.transformToByteArray();
 
-        const response = await StaticDeclarations.s3client.send(command);
-        const respBytes = await response.Body?.transformToByteArray();
+            if (respBytes === undefined) {
+                throw new Error('Found object but it had no bytes :(');
+            }
 
-        if (respBytes === undefined) {
-            console.log(`Object with key ${key} was not found in database for type ${typeof blank_obj}`);
+            const doc: Document = BSON.deserialize(respBytes);
+            const obj = JSON.parse(EJSON.stringify(doc));
+
+            return obj as T;
+        } catch {
+            if (this.createIfNotExist) {
+                console.log(
+                    `Object with key ${key} was not found in database for type ${typeof blank_obj}. It will be newly created.`
+                );
+                return await new DatabaseQuery().CreateNewObject<T>(key).Execute(type);
+            }
+
+            console.log(
+                `Object with key ${key} was not found in database for type ${typeof blank_obj}. It will not be created`
+            );
             return null;
         }
-
-        const doc: Document = BSON.deserialize(respBytes);
-        const obj = JSON.parse(EJSON.stringify(doc));
-
-        return obj as T;
     }
 }
