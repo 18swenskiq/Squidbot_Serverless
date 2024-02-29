@@ -10,6 +10,8 @@ export class GetDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
     }
 
     public async Execute(type: { new (): T }): Promise<T[]> {
+        let typeInstance = new type();
+
         // List objects
         const list = await new DatabaseQuery().ListObjects<T>().Execute(type);
         console.log('list');
@@ -22,13 +24,13 @@ export class GetDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
         for (let i = 1; i < list.length; i++) {
             console.log('List index ' + i);
             console.log(list[i]);
-            let s3itemKey = list[i];
-            let s3Item = await new DatabaseQuery()
-                .GetObject<T>(s3itemKey.split('/').splice(0, 1).join('/').replace('.bson', ''))
-                .Execute(type);
+            let s3itemKey = list[i].replace(`${typeInstance.GetTopLevelKey()}/`, '').replace('.bson', '');
+            let s3Item = await new DatabaseQuery().GetObject<T>(s3itemKey).Execute(type);
 
             if (s3Item === null) {
-                throw new Error(`Could not get object from database that appeared in list. [${s3itemKey} not `);
+                throw new Error(
+                    `Could not get object from database that appeared in list. [${s3itemKey} not in ${list}]`
+                );
             }
 
             awsObjects.push(s3Item);
