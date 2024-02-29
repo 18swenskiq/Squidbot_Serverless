@@ -16,9 +16,11 @@ export class GetDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
         // Get each object
         let awsObjects: T[] = [];
         for (const s3itemKey in list) {
-            const s3Item = await new DatabaseQuery().GetObject<T>(s3itemKey).Execute(type);
+            const s3Item = await new DatabaseQuery()
+                .GetObject<T>(s3itemKey.split('/').splice(0, 1).join('/').replace('.bson', ''))
+                .Execute(type);
             if (s3Item === null) {
-                throw new Error('Could not get object from database that appeared in list');
+                throw new Error(`Could not get object from database that appeared in list. [${s3itemKey} not `);
             }
 
             awsObjects.push(s3Item);
