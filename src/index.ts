@@ -48,8 +48,12 @@ exports.handler = async (event: any) => {
                     console.log('Returning result:', result);
                     await sendCommandResponse(body, result);
                     return { statusCode: 200 };
-                } catch (error) {
-                    await sendCommandResponse(body, new CommandResult(`ERROR: ${error}`, true, false));
+                } catch (error: any) {
+                    let aux = error.stack.split('\n');
+                    aux.splice(0, 2);
+                    aux = aux.join('\n"');
+
+                    await sendCommandResponse(body, new CommandResult(`[${aux}] ERROR: ${error}`, true, false));
                     return { statusCode: 500 };
                 }
             } else {
