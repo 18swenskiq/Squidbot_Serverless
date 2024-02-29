@@ -97,24 +97,28 @@ module.exports = {
             .Execute(DB_CS2PugQueue);
 
         // Create embed showing queue
-        const queueStarter = await DiscordApiRoutes.getUser(interaction.member.user.id);
-        const embed: Embed = {
-            title: `${queueStarter.username} started a ${gameMode} queue!`,
-            description: 'Use `/queue` in this channel to join!',
-            type: 'rich',
-            color: 6730746,
-            fields: [
-                {
-                    name: 'Queue ends:',
-                    value: `<t:${new Date(queueObject.queueExpirationTime).getTime()}:R>`,
-                    inline: true,
-                },
-            ],
-        };
+        try {
+            const queueStarter = await DiscordApiRoutes.getUser(interaction.member.user.id);
+            const embed: Embed = {
+                title: `${queueStarter.username} started a ${gameMode} queue!`,
+                description: 'Use `/queue` in this channel to join!',
+                type: 'rich',
+                color: 6730746,
+                fields: [
+                    {
+                        name: 'Queue ends:',
+                        value: `<t:${new Date(queueObject.queueExpirationTime).getTime()}:R>`,
+                        inline: true,
+                    },
+                ],
+            };
 
-        const cr = new CommandResult('', true, false);
-        cr.embeds = [];
-        cr.embeds.push(embed);
-        return cr;
+            const cr = new CommandResult('', true, false);
+            cr.embeds = [];
+            cr.embeds.push(embed);
+            return cr;
+        } catch {
+            return new CommandResult(`Failed: Time: ${queueObject.queueExpirationTime}`, false, false);
+        }
     },
 } as CommandDescription;
