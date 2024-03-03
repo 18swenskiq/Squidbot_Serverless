@@ -54,11 +54,14 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
                 // Fix up all date objects
                 for (const castKey in castedObj) {
                     console.log('Object key iteration');
-                    console.log(castKey);
-                    if ('$date' in (castedObj[castKey] as any)) {
-                        const dateStringVal = (castedObj[castKey] as any)['$date'];
-                        const newDate = new Date(dateStringVal);
-                        (castedObj[castKey] as any) = newDate;
+                    if (typeof castedObj[castKey] === 'object') {
+                        console.log('Found key of type object');
+                        console.log(`Key: ${castKey}`);
+                        if ('$date' in (castedObj[castKey] as any)) {
+                            const dateStringVal = (castedObj[castKey] as any)['$date'];
+                            const newDate = new Date(dateStringVal);
+                            (castedObj[castKey] as any) = newDate;
+                        }
                     }
                 }
 
