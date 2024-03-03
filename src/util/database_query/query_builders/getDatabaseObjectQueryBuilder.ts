@@ -51,11 +51,11 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
             console.log(castedObj);
 
             // Fix up all date objects
-            for (const key in castedObj) {
-                if ('$date' in (castedObj[key] as any)) {
-                    const dateStringVal = (castedObj[key] as any)['$date'];
+            for (const castKey in castedObj) {
+                if ('$date' in (castedObj[castKey] as any)) {
+                    const dateStringVal = (castedObj[castKey] as any)['$date'];
                     const newDate = new Date(dateStringVal);
-                    (castedObj[key] as any) = newDate;
+                    (castedObj[castKey] as any) = newDate;
                 }
             }
 
@@ -68,7 +68,9 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
                 console.log(
                     `Object with key ${key} was not found in database for type ${typeof blank_obj}. It will be newly created.`
                 );
-                return await new DatabaseQuery().CreateNewObject<T>(key).Execute(type);
+                return await new DatabaseQuery()
+                    .CreateNewObject<T>(key.split('/').splice(0, 1).join('/').replace('.bson', ''))
+                    .Execute(type);
             }
 
             console.log(

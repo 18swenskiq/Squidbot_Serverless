@@ -42,7 +42,7 @@ module.exports = {
         }
 
         if (!guildSettings.pugging_cs2_enabled) {
-            return new CommandResult('CS2 pugging is not enabled on this server!', false, true);
+            return new CommandResult('CS2 pugging is not enabled on this server!', false, false);
         }
 
         // Ensure player has been linked to steam
