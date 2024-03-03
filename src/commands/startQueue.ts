@@ -72,6 +72,8 @@ module.exports = {
             console.log(`Loop ${i}`);
             console.log(queue);
             console.log(currentTime);
+            console.log('cool test');
+            console.log(new Date(queue.queueExpirationTime).getTime());
 
             if (currentTime.getTime() > new Date(queue.queueExpirationTime).getTime()) {
                 // In this case, the queue is expired so we can delete it
