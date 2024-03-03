@@ -50,26 +50,34 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
             console.log('Casted object');
             console.log(castedObj);
 
-            // Fix up all date objects
-            for (const castKey in castedObj) {
-                if ('$date' in (castedObj[castKey] as any)) {
-                    const dateStringVal = (castedObj[castKey] as any)['$date'];
-                    const newDate = new Date(dateStringVal);
-                    (castedObj[castKey] as any) = newDate;
+            try {
+                // Fix up all date objects
+                for (const castKey in castedObj) {
+                    console.log('Object key iteration');
+                    console.log(castKey);
+                    if ('$date' in (castedObj[castKey] as any)) {
+                        const dateStringVal = (castedObj[castKey] as any)['$date'];
+                        const newDate = new Date(dateStringVal);
+                        (castedObj[castKey] as any) = newDate;
+                    }
                 }
+
+                console.log('post fixup object');
+                console.log(castedObj);
+
+                return castedObj;
+            } catch (err: any) {
+                console.log('Error when fixing up object');
+                console.log(err);
+                return castedObj;
             }
-
-            console.log('post fixup object');
-            console.log(castedObj);
-
-            return castedObj;
         } catch {
             if (this.createIfNotExist) {
                 console.log(
                     `Object with key ${key} was not found in database for type ${typeof blank_obj}. It will be newly created.`
                 );
                 return await new DatabaseQuery()
-                    .CreateNewObject<T>(key.split('/').splice(0, 1).join('/').replace('.bson', ''))
+                    .CreateNewObject<T>(key.replace(`${new type().GetTopLevelKey()}/`, '').replace('.bson', ''))
                     .Execute(type);
             }
 
