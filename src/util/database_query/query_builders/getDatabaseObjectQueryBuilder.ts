@@ -47,6 +47,9 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
 
             const castedObj = obj as T;
 
+            console.log('Casted object');
+            console.log(castedObj);
+
             // Fix up all date objects
             for (const key in castedObj) {
                 if ('$date' in (castedObj[key] as any)) {
@@ -55,6 +58,9 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
                     (castedObj[key] as any) = newDate;
                 }
             }
+
+            console.log('post fixup object');
+            console.log(castedObj);
 
             return castedObj;
         } catch {
