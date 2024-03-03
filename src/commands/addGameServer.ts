@@ -113,7 +113,7 @@ module.exports = {
         // Need to do "add to array" property
         const modifyServerResult = await new DatabaseQuery()
             .ModifyObject<DB_GuildSettings>(interaction.guild_id)
-            .AddToPropertyArray('rconServers', serverId)
+            .AddToPropertyArray('rconServers', [serverId])
             .Execute(DB_GuildSettings);
 
         return new CommandResult(`Added Game Server \`${<string>chosenNickname}\``, true, true, '', true);

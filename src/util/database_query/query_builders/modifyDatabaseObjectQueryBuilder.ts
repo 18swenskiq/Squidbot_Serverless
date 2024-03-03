@@ -6,7 +6,9 @@ import { DatabaseQuery } from '../databaseQuery';
 
 export class ModifyDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
     private modify_obj = <T>{};
-    private modify_obj_array_values: { [property: string]: string | number } = {};
+    private modify_obj_array_values: { [property: string]: string[] | number[] } = {};
+
+    private remove_obj_array_values: { [property: string]: string[] | number[] } = {};
 
     private object_id: string;
     private throw_if_not_exists: boolean;
@@ -38,7 +40,7 @@ export class ModifyDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
 
     public AddToPropertyArray<K extends keyof T>(
         property: K,
-        value: string | number
+        value: string[] | number[]
     ): ModifyDatabaseObjectQueryBuilder<T> {
         if (Array.isArray(this.modify_obj[property])) {
             let cool = <string>property;
@@ -49,6 +51,19 @@ export class ModifyDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
         }
     }
 
+    public RemoveFromPropertyArray<K extends keyof T>(
+        property: K,
+        value: string[] | number[]
+    ): ModifyDatabaseObjectQueryBuilder<T> {
+        if (Array.isArray(this.modify_obj[property])) {
+            let cool = <string>property;
+            this.remove_obj_array_values[cool] = value;
+            return this;
+        } else {
+            throw new Error('Attempted to remove from property array when property was not seen as array');
+        }
+    }
+
     public async Execute(type: { new (): T }): Promise<T> {
         // Get old or empty object if doesn't exist
         let obj = await this.GetNewOrExistingObject(type);
@@ -56,6 +71,25 @@ export class ModifyDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
         // Modify object
         for (const key in this.modify_obj) {
             obj[key] = this.modify_obj[key];
+        }
+
+        // Append List stuff
+        for (const key in this.modify_obj_array_values) {
+            (obj[key as keyof T] as Array<string | number>).concat(this.modify_obj_array_values[key]);
+        }
+
+        // Remove values where necessary
+        for (const key in this.remove_obj_array_values) {
+            for (const removal in this.remove_obj_array_values[key]) {
+                const idx = (obj[key as keyof T] as Array<string | number>).indexOf(
+                    this.remove_obj_array_values[key][removal]
+                );
+                if (idx < 0) {
+                    throw new Error('Unexpected array index');
+                }
+
+                (obj[key as keyof T] as Array<string | number>).splice(idx, 1);
+            }
         }
 
         // Set object
