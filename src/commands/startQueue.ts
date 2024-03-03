@@ -73,9 +73,9 @@ module.exports = {
             console.log(queue);
             console.log(currentTime);
             console.log('cool test');
-            console.log(new Date(queue.queueExpirationTime).getTime());
+            console.log(queue.queueExpirationTime.getTime());
 
-            if (currentTime.getTime() > new Date(queue.queueExpirationTime).getTime()) {
+            if (currentTime.getTime() > queue.queueExpirationTime.getTime()) {
                 // In this case, the queue is expired so we can delete it
                 await new DatabaseQuery()
                     .DeleteObject<DB_CS2PugQueue>(`${interaction.guild_id}/${queue.id}`)
