@@ -61,10 +61,17 @@ module.exports = {
         // Get current queues
         const queues = await new DatabaseQuery().GetObjects<DB_CS2PugQueue>().Execute(DB_CS2PugQueue);
 
+        console.log('queues');
+        console.log(queues);
+
         // Delete any stale queues
         for (let i = 0; i < queues.length; i++) {
             const queue = queues[i];
             const currentTime = new Date();
+
+            console.log(`Loop ${i}`);
+            console.log(queue);
+            console.log(currentTime);
 
             if (currentTime.getTime() > new Date(queue.queueExpirationTime).getTime()) {
                 // In this case, the queue is expired so we can delete it
