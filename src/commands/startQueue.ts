@@ -116,7 +116,7 @@ module.exports = {
                 fields: [
                     {
                         name: 'Queue ends:',
-                        value: `<t:${Math.round(new Date(queueObject.queueExpirationTime).getTime() / 1000)}:R>`,
+                        value: `<t:${Math.round(queueObject.queueExpirationTime.getTime() / 1000)}:R>`,
                         inline: true,
                     },
                 ],

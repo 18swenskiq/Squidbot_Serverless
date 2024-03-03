@@ -45,7 +45,18 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
             const doc: Document = BSON.deserialize(respBytes);
             const obj = JSON.parse(EJSON.stringify(doc));
 
-            return obj as T;
+            const castedObj = obj as T;
+
+            // Fix up all date objects
+            for (const key in castedObj) {
+                if ('$date' in (castedObj[key] as any)) {
+                    const dateStringVal = (castedObj[key] as any)['$date'];
+                    const newDate = new Date(dateStringVal);
+                    (castedObj[key] as any) = newDate;
+                }
+            }
+
+            return castedObj;
         } catch {
             if (this.createIfNotExist) {
                 console.log(
