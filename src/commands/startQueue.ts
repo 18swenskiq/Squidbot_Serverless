@@ -144,7 +144,11 @@ module.exports = {
             cr.embeds.push(embed);
 
             cr.components = [];
-            cr.components.push(stopQueueButton);
+
+            const componentWrapper: any = { type: 1, components: [] };
+            componentWrapper.components.push(<any>stopQueueButton);
+
+            cr.components.push(componentWrapper);
             return cr;
         } catch {
             return new CommandResult(`Failed: Time: ${queueObject.queueExpirationTime}`, false, false);
