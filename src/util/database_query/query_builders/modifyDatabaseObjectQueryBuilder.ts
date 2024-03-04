@@ -73,7 +73,9 @@ export class ModifyDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
 
         // Append List stuff
         for (const key in this.modify_obj_array_values) {
-            (obj[key as keyof T] as Array<string | number>).concat(this.modify_obj_array_values[key]);
+            (obj[key as keyof T] as any) = (obj[key as keyof T] as Array<string | number>).concat(
+                this.modify_obj_array_values[key]
+            );
         }
 
         // Remove values where necessary
