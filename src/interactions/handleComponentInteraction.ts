@@ -111,6 +111,7 @@ export abstract class HandleComponentInteraction {
         }
 
         const activeQueue = queues[0];
+        console.log(activeQueue);
 
         if (activeQueue.usersInQueue[0] !== interaction.member.user.id) {
             await DiscordApiRoutes.createFollowupMessage(interaction, {
