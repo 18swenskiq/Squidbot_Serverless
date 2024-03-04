@@ -10,6 +10,7 @@ export class DB_CS2PugQueue implements iDatabaseModel {
     usersInQueue: Snowflake[];
     gameType: CS2PUGGameMode;
     activeChannel: Snowflake;
+    stopQueueButtonId: Guid;
 
     constructor() {
         this.id = GenerateGuid();
@@ -21,6 +22,7 @@ export class DB_CS2PugQueue implements iDatabaseModel {
         this.usersInQueue = [];
         this.gameType = CS2PUGGameMode.undefined;
         this.activeChannel = '';
+        this.stopQueueButtonId = GenerateGuid();
     }
 
     GetTopLevelKey(): string {

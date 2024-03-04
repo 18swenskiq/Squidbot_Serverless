@@ -6,8 +6,10 @@ import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { Embed } from '../discord_api/embed';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
+import { ButtonComponent } from '../discord_api/messageComponent';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
+import { DatabaseWrapper } from '../util/databaseWrapper';
 import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid } from '../util/guid';
 
@@ -97,12 +99,15 @@ module.exports = {
         }
 
         // Create object
+        const buttonId = GenerateGuid();
+
         const queueId = GenerateGuid();
         const queueObject = await new DatabaseQuery()
             .CreateNewObject<DB_CS2PugQueue>(`${interaction.guild_id}/${queueId}`)
             .SetProperty('id', queueId)
             .SetProperty('activeChannel', interaction.channel_id)
             .SetProperty('gameType', gameMode)
+            .SetProperty('stopQueueButtonId', buttonId)
             .Execute(DB_CS2PugQueue);
 
         // Create embed showing queue
@@ -115,16 +120,31 @@ module.exports = {
                 color: 6730746,
                 fields: [
                     {
-                        name: 'Queue ends:',
+                        name: 'Queue end time:',
                         value: `<t:${Math.round(queueObject.queueExpirationTime.getTime() / 1000)}:R>`,
                         inline: true,
                     },
                 ],
             };
 
+            const stopQueueButton = new ButtonComponent();
+            stopQueueButton.custom_id = buttonId;
+            stopQueueButton.label = 'Stop Queue';
+            stopQueueButton.style = 4;
+
+            await DatabaseWrapper.SetInteractionHandler(
+                interaction.member.user.id,
+                interaction.guild_id,
+                buttonId,
+                'StopPUG'
+            );
+
             const cr = new CommandResult('', true, false);
             cr.embeds = [];
             cr.embeds.push(embed);
+
+            cr.components = [];
+            cr.components.push(stopQueueButton);
             return cr;
         } catch {
             return new CommandResult(`Failed: Time: ${queueObject.queueExpirationTime}`, false, false);

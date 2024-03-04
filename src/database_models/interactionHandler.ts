@@ -1,7 +1,7 @@
 import { Snowflake } from '../discord_api/snowflake';
 import { iDatabaseModel } from './iDatabaseModel';
 
-export type HandlableComponentInteractionType = 'AssignRoles';
+export type HandlableComponentInteractionType = 'AssignRoles' | 'StopPUG';
 
 export class DB_ComponentInteractionHandler implements iDatabaseModel {
     type: HandlableComponentInteractionType;

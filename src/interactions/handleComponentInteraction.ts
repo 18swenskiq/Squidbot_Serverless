@@ -6,6 +6,7 @@ import { Guid } from '../util/guid';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { DB_GuildSettings } from '../database_models/guildSettings';
+import { DB_CS2PugQueue } from '../database_models/cs2PugQueue';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class HandleComponentInteraction {
@@ -30,6 +31,9 @@ export abstract class HandleComponentInteraction {
         switch (interactionHandler.type) {
             case 'AssignRoles':
                 await HandleComponentInteraction.AssignRoles(interaction, data, interactionHandler);
+                break;
+            case 'StopPUG':
+                await HandleComponentInteraction.StopPUG(interaction, data, interactionHandler);
                 break;
             default:
                 console.log('Unexpected component interaction, aborting');
@@ -90,5 +94,35 @@ export abstract class HandleComponentInteraction {
             'AssignRoles',
             interactionHandler.timesHandled++
         );
+    }
+
+    private static async StopPUG(
+        interaction: Interaction,
+        data: ComponentInteractionData,
+        interactionHandler: DB_ComponentInteractionHandler
+    ): Promise<void> {
+        const queues = await new DatabaseQuery()
+            .GetObjects<DB_CS2PugQueue>()
+            .WherePropertyEquals('stopQueueButtonId', <Guid>data.custom_id)
+            .Execute(DB_CS2PugQueue);
+
+        if (!queues || queues.length < 1) {
+            throw new Error('Queue with this button not found');
+        }
+
+        const activeQueue = queues[0];
+
+        if (activeQueue.usersInQueue[0] !== interaction.member.user.id) {
+            await DiscordApiRoutes.createFollowupMessage(interaction, {
+                content: 'Only the queue owner can stop the queue!',
+                flags: 64,
+            });
+            return;
+        }
+
+        await new DatabaseQuery()
+            .DeleteObject<DB_CS2PugQueue>(`${interaction.guild_id}/${activeQueue.id}`)
+            .Execute(DB_CS2PugQueue);
+        await DiscordApiRoutes.createFollowupMessage(interaction, { content: 'Queue Ended' });
     }
 }

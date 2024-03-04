@@ -28,6 +28,10 @@ export class ActionRowComponent extends MessageComponent {
 
 export class ButtonComponent extends MessageComponent {
     type = 2;
+
+    style: 1 | 2 | 3 | 4 | 5 = 1;
+    label: string = '';
+    custom_id: string = '';
 }
 
 export class StringSelectComponent extends SelectMenuComponent {
