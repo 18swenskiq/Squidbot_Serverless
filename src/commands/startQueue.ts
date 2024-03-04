@@ -108,6 +108,7 @@ module.exports = {
             .SetProperty('activeChannel', interaction.channel_id)
             .SetProperty('gameType', gameMode)
             .SetProperty('stopQueueButtonId', buttonId)
+            .SetProperty('usersInQueue', [interaction.member.user.id])
             .Execute(DB_CS2PugQueue);
 
         // Create embed showing queue
