@@ -42,12 +42,11 @@ export class ModifyDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
         property: K,
         value: string[] | number[]
     ): ModifyDatabaseObjectQueryBuilder<T> {
-        if (Array.isArray(this.modify_obj[property])) {
+        if (true) {
             let cool = <string>property;
             this.modify_obj_array_values[cool] = value;
             return this;
         } else {
-            throw new Error('Attempted to add to array property that was not seen as an array');
         }
     }
 
@@ -55,12 +54,11 @@ export class ModifyDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
         property: K,
         value: string[] | number[]
     ): ModifyDatabaseObjectQueryBuilder<T> {
-        if (Array.isArray(this.modify_obj[property])) {
+        if (true) {
             let cool = <string>property;
             this.remove_obj_array_values[cool] = value;
             return this;
         } else {
-            throw new Error('Attempted to remove from property array when property was not seen as array');
         }
     }
 
