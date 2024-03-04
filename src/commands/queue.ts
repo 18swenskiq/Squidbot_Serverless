@@ -14,6 +14,10 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         // Get all queues
         const queues = await new DatabaseQuery().GetObjects<DB_CS2PugQueue>().Execute(DB_CS2PugQueue);
+        console.log('print all queues');
+        for (const printQueue in queues) {
+            console.log(printQueue);
+        }
 
         // Get time to determine if queue is timed out
         const curTime = new Date();
