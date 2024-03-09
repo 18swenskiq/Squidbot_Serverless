@@ -123,6 +123,10 @@ export abstract class HandleComponentInteraction {
             .DeleteObject<DB_CS2PugQueue>(`${interaction.guild_id}/${activeQueue.id}`)
             .Execute(DB_CS2PugQueue);
         await DiscordApiRoutes.createFollowupMessage(interaction, { content: 'Queue Ended' });
+        await DiscordApiRoutes.createNewMessage(
+            interaction.channel_id,
+            'The active queue has been ended by the leader'
+        );
     }
 
     private static async JoinPUG(
@@ -188,10 +192,16 @@ export abstract class HandleComponentInteraction {
             .AddToPropertyArray('usersInQueue', [interaction.member.user.id])
             .Execute(DB_CS2PugQueue);
 
-        await DiscordApiRoutes.createFollowupMessage(interaction, {
-            content: 'Added you to queue, more to come later',
-            flags: 64,
-        });
+        //await DiscordApiRoutes.createFollowupMessage(interaction, {
+        //    content: 'Added you to queue, more to come later',
+        //    flags: 64,
+        //});
+
+        const user = await DiscordApiRoutes.getUser(interaction.member.user.id);
+        await DiscordApiRoutes.createNewMessage(
+            interaction.channel_id,
+            `${user.username} has joined the queue. x players needed.`
+        );
         return;
 
         // If queue is full, continue process
@@ -237,10 +247,16 @@ export abstract class HandleComponentInteraction {
                 .RemoveFromPropertyArray('usersInQueue', [interaction.member.user.id])
                 .Execute(DB_CS2PugQueue);
 
-            await DiscordApiRoutes.createFollowupMessage(interaction, {
-                content: 'Removed from queue!',
-                flags: 64,
-            });
+            //await DiscordApiRoutes.createFollowupMessage(interaction, {
+            //    content: 'Removed from queue!',
+            //    flags: 64,
+            //});
+
+            const user = await DiscordApiRoutes.getUser(interaction.member.user.id);
+            await DiscordApiRoutes.createNewMessage(
+                interaction.channel_id,
+                `${user.username} has left the queue. x players needed.`
+            );
             return;
         } else {
             await DiscordApiRoutes.createFollowupMessage(interaction, {
