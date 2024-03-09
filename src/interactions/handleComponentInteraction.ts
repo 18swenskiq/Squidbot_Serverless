@@ -155,13 +155,8 @@ export abstract class HandleComponentInteraction {
         if (queues.find((q) => q.usersInQueue.includes(interaction.member.user.id))) {
             // If the player is already in the active queue, remove them and quit
             if (activeQueue.usersInQueue.includes(interaction.member.user.id)) {
-                await new DatabaseQuery()
-                    .ModifyObject<DB_CS2PugQueue>(`${interaction.guild_id}/${activeQueue.id}`)
-                    .RemoveFromPropertyArray('usersInQueue', [interaction.member.user.id])
-                    .Execute(DB_CS2PugQueue);
-
                 await DiscordApiRoutes.createFollowupMessage(interaction, {
-                    content: 'Removed from queue!',
+                    content: 'You are already in this queue!',
                     flags: 64,
                 });
                 return;
@@ -229,6 +224,14 @@ export abstract class HandleComponentInteraction {
 
         // If the player is already in the active queue, remove them and quit
         if (activeQueue.usersInQueue.includes(interaction.member.user.id)) {
+            if (activeQueue.usersInQueue[0] === interaction.member.user.id) {
+                await DiscordApiRoutes.createFollowupMessage(interaction, {
+                    content:
+                        'The queue leader cannot leave the queue. If you would like to leave, please end the queue',
+                });
+                return;
+            }
+
             await new DatabaseQuery()
                 .ModifyObject<DB_CS2PugQueue>(`${interaction.guild_id}/${activeQueue.id}`)
                 .RemoveFromPropertyArray('usersInQueue', [interaction.member.user.id])
