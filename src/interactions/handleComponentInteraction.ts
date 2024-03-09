@@ -122,7 +122,6 @@ export abstract class HandleComponentInteraction {
         await new DatabaseQuery()
             .DeleteObject<DB_CS2PugQueue>(`${interaction.guild_id}/${activeQueue.id}`)
             .Execute(DB_CS2PugQueue);
-        await DiscordApiRoutes.createFollowupMessage(interaction, { content: 'Queue Ended' });
         await DiscordApiRoutes.createNewMessage(
             interaction.channel_id,
             'The active queue has been ended by the leader'
@@ -192,11 +191,6 @@ export abstract class HandleComponentInteraction {
             .AddToPropertyArray('usersInQueue', [interaction.member.user.id])
             .Execute(DB_CS2PugQueue);
 
-        //await DiscordApiRoutes.createFollowupMessage(interaction, {
-        //    content: 'Added you to queue, more to come later',
-        //    flags: 64,
-        //});
-
         const user = await DiscordApiRoutes.getUser(interaction.member.user.id);
         await DiscordApiRoutes.createNewMessage(
             interaction.channel_id,
@@ -246,11 +240,6 @@ export abstract class HandleComponentInteraction {
                 .ModifyObject<DB_CS2PugQueue>(`${interaction.guild_id}/${activeQueue.id}`)
                 .RemoveFromPropertyArray('usersInQueue', [interaction.member.user.id])
                 .Execute(DB_CS2PugQueue);
-
-            //await DiscordApiRoutes.createFollowupMessage(interaction, {
-            //    content: 'Removed from queue!',
-            //    flags: 64,
-            //});
 
             const user = await DiscordApiRoutes.getUser(interaction.member.user.id);
             await DiscordApiRoutes.createNewMessage(
