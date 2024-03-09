@@ -149,12 +149,12 @@ module.exports = {
             const joinQueueButton = new ButtonComponent();
             joinQueueButton.custom_id = joinButtonId;
             joinQueueButton.label = 'Join Queue';
-            joinQueueButton.style = 1;
+            joinQueueButton.style = 2;
 
             await DatabaseWrapper.SetInteractionHandler(
                 interaction.member.user.id,
                 interaction.guild_id,
-                stopButtonId,
+                joinButtonId,
                 'JoinPUG'
             );
 
