@@ -99,7 +99,9 @@ module.exports = {
         }
 
         // Create object
-        const buttonId = GenerateGuid();
+        const stopButtonId = GenerateGuid();
+        const joinButtonId = GenerateGuid();
+        const leaveButtonId = GenerateGuid();
 
         const queueId = GenerateGuid();
         const queueObject = await new DatabaseQuery()
@@ -107,7 +109,9 @@ module.exports = {
             .SetProperty('id', queueId)
             .SetProperty('activeChannel', interaction.channel_id)
             .SetProperty('gameType', gameMode)
-            .SetProperty('stopQueueButtonId', buttonId)
+            .SetProperty('stopQueueButtonId', stopButtonId)
+            .SetProperty('joinQueueButtonId', joinButtonId)
+            .SetProperty('leaveQueueButtonId', leaveButtonId)
             .SetProperty('usersInQueue', [interaction.member.user.id])
             .Execute(DB_CS2PugQueue);
 
@@ -128,16 +132,43 @@ module.exports = {
                 ],
             };
 
+            // Stop button
             const stopQueueButton = new ButtonComponent();
-            stopQueueButton.custom_id = buttonId;
+            stopQueueButton.custom_id = stopButtonId;
             stopQueueButton.label = 'Stop Queue';
             stopQueueButton.style = 4;
 
             await DatabaseWrapper.SetInteractionHandler(
                 interaction.member.user.id,
                 interaction.guild_id,
-                buttonId,
+                stopButtonId,
                 'StopPUG'
+            );
+
+            // Join button
+            const joinQueueButton = new ButtonComponent();
+            joinQueueButton.custom_id = joinButtonId;
+            joinQueueButton.label = 'Join Queue';
+            joinQueueButton.style = 1;
+
+            await DatabaseWrapper.SetInteractionHandler(
+                interaction.member.user.id,
+                interaction.guild_id,
+                stopButtonId,
+                'JoinPUG'
+            );
+
+            // Leave button
+            const leaveQueueButton = new ButtonComponent();
+            leaveQueueButton.custom_id = leaveButtonId;
+            leaveQueueButton.label = 'Leave Queue';
+            leaveQueueButton.style = 4;
+
+            await DatabaseWrapper.SetInteractionHandler(
+                interaction.member.user.id,
+                interaction.guild_id,
+                leaveButtonId,
+                'LeavePUG'
             );
 
             const cr = new CommandResult('', true, false);
@@ -147,6 +178,8 @@ module.exports = {
             cr.components = [];
 
             const componentWrapper: any = { type: 1, components: [] };
+            componentWrapper.components.push(<any>joinQueueButton);
+            componentWrapper.components.push(<any>leaveQueueButton);
             componentWrapper.components.push(<any>stopQueueButton);
 
             cr.components.push(componentWrapper);

@@ -75,7 +75,7 @@ exports.handler = async (event: any) => {
         case 3:
             // Case 3: Handle component interaction
             await HandleComponentInteraction.Handle(body);
-            await DiscordApiRoutes.createFollowupMessage(body, { content: 'Successfully modified roles!' });
+            // await DiscordApiRoutes.createFollowupMessage(body, { content: 'Successfully modified roles!' });
             return { statusCode: 200 };
         case 4:
             // Case 4: Getting autocomplete results for command
