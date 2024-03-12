@@ -33,7 +33,7 @@ export class PutDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
         }
 
         const blank_obj = new type();
-        const key = blank_obj.BuildKey(this.object_id);
+        const key = blank_obj.BuildKey(this.object_id, '');
 
         const binObj = BSON.serialize(this.object_to_put);
 

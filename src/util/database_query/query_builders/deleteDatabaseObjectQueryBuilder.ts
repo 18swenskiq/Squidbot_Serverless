@@ -12,7 +12,7 @@ export class DeleteDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
 
     public async Execute(type: { new (): T }): Promise<void> {
         let obj = new type();
-        const itemKey = obj.BuildKey(this.object_id);
+        const itemKey = obj.BuildKey(this.object_id, '');
 
         const input: DeleteObjectRequest = {
             Bucket: 'squidbot',

@@ -1,11 +1,9 @@
 import { InvokeCommand, InvokeCommandInput, LambdaClient } from '@aws-sdk/client-lambda';
 import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
-import { DB_UserSettings } from '../database_models/userSettings';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { SteamApi } from '../steam_api/steamApi';
 import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 
