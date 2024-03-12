@@ -20,8 +20,18 @@ module.exports = {
             .ModifyTopLevelKey('CompletedPlaytests')
             .Execute(DB_ScheduledPlaytest);
 
+        await DiscordApiRoutes.createNewMessage(
+            interaction.channel_id,
+            `Found ${completedPlaytests.length} CompletedPlaytest objects`
+        );
+
         // Throw out all garbage things (folders)
         completedPlaytests = completedPlaytests.filter((c) => c.endsWith('.bson'));
+
+        await DiscordApiRoutes.createNewMessage(
+            interaction.channel_id,
+            `Removed garbage and left with ${completedPlaytests.length} playtest objects`
+        );
 
         const allPlaytestObjects: DB_ScheduledPlaytest[] = [];
 
