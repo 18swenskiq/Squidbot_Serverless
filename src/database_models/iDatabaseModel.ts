@@ -1,4 +1,4 @@
 export interface iDatabaseModel {
     GetTopLevelKey: () => string;
-    BuildKey: (id: string) => string;
+    BuildKey: (id: string, modifiedRoot: string) => string;
 }

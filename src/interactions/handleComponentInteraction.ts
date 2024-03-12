@@ -2,12 +2,17 @@ import { DB_ComponentInteractionHandler } from '../database_models/interactionHa
 import { ComponentInteractionData } from '../discord_api/componentInteraction';
 import { Interaction } from '../discord_api/interaction';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { Guid } from '../util/guid';
+import { GenerateGuid, Guid } from '../util/guid';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DB_CS2PugQueue } from '../database_models/cs2PugQueue';
 import { DB_UserSettings } from '../database_models/userSettings';
+import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
+import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
+import { StaticDeclarations } from '../util/staticDeclarations';
+import { SteamApi } from '../steam_api/steamApi';
+import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class HandleComponentInteraction {
@@ -154,6 +159,28 @@ export abstract class HandleComponentInteraction {
             return;
         }
 
+        const maxPlayersForGamemode = (() => {
+            switch (activeQueue.gameType) {
+                case CS2PUGGameMode.wingman:
+                    return 4;
+                case CS2PUGGameMode.threesome:
+                    return 6;
+                case CS2PUGGameMode.classic:
+                    return 10;
+                default:
+                    throw Error('Invalid gamemode');
+            }
+        })();
+
+        // Ensure queue isn't already full/started
+        if (activeQueue.usersInQueue.length === maxPlayersForGamemode) {
+            await DiscordApiRoutes.createFollowupMessage(interaction, {
+                content: 'This queue is already full',
+                flags: 64,
+            });
+            return;
+        }
+
         // Ensure the player isn't in another queue already
         if (queues.find((q) => q.usersInQueue.includes(interaction.member.user.id))) {
             // If the player is already in the active queue, remove them and quit
@@ -191,14 +218,63 @@ export abstract class HandleComponentInteraction {
             .AddToPropertyArray('usersInQueue', [interaction.member.user.id])
             .Execute(DB_CS2PugQueue);
 
-        const user = await DiscordApiRoutes.getUser(interaction.member.user.id);
-        await DiscordApiRoutes.createNewMessage(
-            interaction.channel_id,
-            `${user.username} has joined the queue. x players needed.`
-        );
-        return;
+        const currentPlayerCount = activeQueue.usersInQueue.length + 1;
+
+        if (currentPlayerCount !== maxPlayersForGamemode) {
+            const user = await DiscordApiRoutes.getUser(interaction.member.user.id);
+            await DiscordApiRoutes.createNewMessage(
+                interaction.channel_id,
+                `${user.username} has joined the queue. ${maxPlayersForGamemode - currentPlayerCount} players needed.`
+            );
+            return;
+        }
 
         // If queue is full, continue process
+        await DiscordApiRoutes.createNewMessage(interaction.channel_id, `Queue is full! Starting...`);
+
+        // Map Selection process
+        const collectionId = StaticDeclarations.CollectionIdForGamemode(activeQueue.gameType);
+        const maps = await SteamApi.GetCSGOWorkshopMapsInCollection(collectionId);
+
+        // Random Map
+        if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.random) {
+            const randomMap = maps[Math.floor(Math.random() * maps.length)];
+        }
+        // All pick map
+        else if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.allpick) {
+            // Create map dropdown component
+            // TODO: Support multiple dropdowns for the same collection if size exceeds 25
+            const dropdownComponent = new StringSelectComponent();
+
+            const interactionGuid: Guid = GenerateGuid();
+
+            dropdownComponent.min_values = 0;
+            dropdownComponent.max_values = 1;
+            dropdownComponent.placeholder = 'Vote for a map!';
+            dropdownComponent.custom_id = interactionGuid;
+            dropdownComponent.options = maps.map((map) => {
+                const label = map.title;
+                const value = map.publishedfileid;
+
+                return <SelectOption>{ label, value, default: false };
+            });
+
+            const componentWrapper: any = { type: 1, components: [] };
+            componentWrapper.components.push(<any>dropdownComponent);
+
+            // TODO: Finish this
+            //cr.components = [];
+            //cr.components.push(componentWrapper);
+
+            await DatabaseWrapper.SetInteractionHandler(
+                interaction.member.user.id,
+                interaction.guild_id,
+                interactionGuid,
+                'AssignRoles'
+            );
+        } else {
+            throw Error('Undefined map selection mode, aborting...');
+        }
     }
 
     private static async LeavePUG(

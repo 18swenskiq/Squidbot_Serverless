@@ -1,5 +1,6 @@
 import { Snowflake } from '../discord_api/snowflake';
 import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
+import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
 import { GenerateGuid, Guid } from '../util/guid';
 import { iDatabaseModel } from './iDatabaseModel';
 
@@ -9,6 +10,7 @@ export class DB_CS2PugQueue implements iDatabaseModel {
     queueExpirationTime: Date;
     usersInQueue: Snowflake[];
     gameType: CS2PUGGameMode;
+    mapSelectionMode: CS2PUGMapSelectionMode;
     activeChannel: Snowflake;
 
     stopQueueButtonId: Guid;
@@ -24,6 +26,7 @@ export class DB_CS2PugQueue implements iDatabaseModel {
 
         this.usersInQueue = [];
         this.gameType = CS2PUGGameMode.undefined;
+        this.mapSelectionMode = CS2PUGMapSelectionMode.undefined;
         this.activeChannel = '';
         this.stopQueueButtonId = GenerateGuid();
         this.joinQueueButtonId = GenerateGuid();
@@ -34,7 +37,10 @@ export class DB_CS2PugQueue implements iDatabaseModel {
         return 'CS2PugQueues';
     }
 
-    BuildKey(id: string): string {
+    BuildKey(id: string, modifiedRoot: string = ''): string {
+        if (modifiedRoot) {
+            return `${modifiedRoot}/${id}.bson`;
+        }
         return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

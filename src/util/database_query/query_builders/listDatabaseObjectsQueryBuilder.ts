@@ -3,8 +3,15 @@ import { iDatabaseModel } from '../../../database_models/iDatabaseModel';
 import { StaticDeclarations } from '../../staticDeclarations';
 
 export class ListDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
+    private modifyTLK = '';
+
+    public ModifyTopLevelKey(newTLK: string): ListDatabaseObjectsQueryBuilder<T> {
+        this.modifyTLK = this.modifyTLK;
+        return this;
+    }
+
     public async Execute(type: { new (): T }): Promise<string[]> {
-        let prefix = new type().GetTopLevelKey();
+        let prefix = this.modifyTLK === '' ? new type().GetTopLevelKey() : this.modifyTLK;
 
         console.log('listing with prefix');
         console.log(prefix);

@@ -35,7 +35,10 @@ export class DB_PlaytestRequest implements iDatabaseModel {
         return `PlaytestRequests`;
     }
 
-    public BuildKey(id: string): string {
+    public BuildKey(id: string, modifiedRoot: string = ''): string {
+        if (modifiedRoot) {
+            return `${modifiedRoot}/${id}.bson`;
+        }
         return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

@@ -9,6 +9,7 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { ButtonComponent } from '../discord_api/messageComponent';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
+import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid } from '../util/guid';
@@ -27,11 +28,24 @@ module.exports = {
                     { name: '3v3', value: CS2PUGGameMode.threesome },
                     { name: '5v5', value: CS2PUGGameMode.classic },
                 ])
+        )
+        .addStringOption((option) =>
+            option
+                .setName('mapselection')
+                .setDescription('The map selection mode of the queue')
+                .setRequired(true)
+                .addChoices([
+                    { name: 'Random', value: CS2PUGMapSelectionMode.random },
+                    { name: 'All Pick', value: CS2PUGMapSelectionMode.allpick },
+                ])
         ),
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
 
         const gameMode = <CS2PUGGameMode>(<unknown>interactionData.options.find((o) => o.name === 'gamemode')?.value);
+        const mapSelectionMode = <CS2PUGMapSelectionMode>(
+            (<unknown>interactionData.options.find((o) => o.name === 'mapselection')?.value)
+        );
 
         // Ensure pugging is enabled on this server
         const guildSettings = await new DatabaseQuery()
@@ -109,6 +123,7 @@ module.exports = {
             .SetProperty('id', queueId)
             .SetProperty('activeChannel', interaction.channel_id)
             .SetProperty('gameType', gameMode)
+            .SetProperty('mapSelectionMode', mapSelectionMode)
             .SetProperty('stopQueueButtonId', stopButtonId)
             .SetProperty('joinQueueButtonId', joinButtonId)
             .SetProperty('leaveQueueButtonId', leaveButtonId)
@@ -120,13 +135,18 @@ module.exports = {
             const queueStarter = await DiscordApiRoutes.getUser(interaction.member.user.id);
             const embed: Embed = {
                 title: `${queueStarter.username} started a ${gameMode} queue!`,
-                description: 'Use `/queue` in this channel to join!',
+                description: 'Use the buttons to join!',
                 type: 'rich',
                 color: 6730746,
                 fields: [
                     {
                         name: 'Queue end time:',
                         value: `<t:${Math.round(queueObject.queueExpirationTime.getTime() / 1000)}:R>`,
+                        inline: true,
+                    },
+                    {
+                        name: 'Map selection mode:',
+                        value: `${mapSelectionMode}`,
                         inline: true,
                     },
                 ],

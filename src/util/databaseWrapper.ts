@@ -266,9 +266,10 @@ export abstract class DatabaseWrapper {
         // Copy Source
         const copyInput: CopyObjectCommandInput = {
             Bucket: bucketName,
-            CopySource: `ScheduledPlaytests/${guildId}/${playtestName}.bson`,
+            CopySource: `${bucketName}/ScheduledPlaytests/${guildId}/${playtestName}.bson`,
             Key: `CompletedPlaytests/${guildId}/${playtestName}.bson`,
         };
+
         const copyCommand = new CopyObjectCommand(copyInput);
         const copyResponse = await StaticDeclarations.s3client.send(copyCommand);
         console.log('Copy response:');

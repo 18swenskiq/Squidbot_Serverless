@@ -37,7 +37,10 @@ export class DB_RconServer implements iDatabaseModel {
         return `RconServers`;
     }
 
-    public BuildKey(id: string): string {
+    public BuildKey(id: string, modifiedRoot: string = ''): string {
+        if (modifiedRoot) {
+            return `${modifiedRoot}/${id}.bson`;
+        }
         return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

@@ -8,14 +8,21 @@ import { DatabaseQuery } from '../databaseQuery';
 export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
     private object_id: string;
     private createIfNotExist: boolean;
+    private modifyRoot: string;
 
     constructor(object_id: string) {
         this.object_id = object_id;
         this.createIfNotExist = false;
+        this.modifyRoot = '';
     }
 
     public CreateIfNotExist(): GetDatabaseObjectQueryBuilder<T> {
         this.createIfNotExist = true;
+        return this;
+    }
+
+    public ModifyRoot(newRoot: string): GetDatabaseObjectQueryBuilder<T> {
+        this.modifyRoot = newRoot;
         return this;
     }
 
@@ -26,7 +33,7 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
 
     private async GetExistingObject(type: { new (): T }): Promise<T | null> {
         const blank_obj = new type();
-        const key = blank_obj.BuildKey(this.object_id);
+        const key = blank_obj.BuildKey(this.object_id, this.modifyRoot);
 
         const input: GetObjectRequest = {
             Bucket: 'squidbot',

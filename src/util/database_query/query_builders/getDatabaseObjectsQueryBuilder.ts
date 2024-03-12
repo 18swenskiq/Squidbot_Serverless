@@ -3,9 +3,15 @@ import { DatabaseQuery } from '../databaseQuery';
 
 export class GetDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
     private modify_obj = <T>{};
+    private modify_root: string = '';
 
     public WherePropertyEquals<K extends keyof T>(property: K, value: T[K]): GetDatabaseObjectsQueryBuilder<T> {
         this.modify_obj[property] = value;
+        return this;
+    }
+
+    public ModifyObjectRoot(newRoot: string): GetDatabaseObjectsQueryBuilder<T> {
+        this.modify_root = newRoot;
         return this;
     }
 
@@ -25,15 +31,28 @@ export class GetDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
             console.log('List index ' + i);
             console.log(list[i]);
             let s3itemKey = list[i].replace(`${typeInstance.GetTopLevelKey()}/`, '').replace('.bson', '');
-            let s3Item = await new DatabaseQuery().GetObject<T>(s3itemKey).Execute(type);
 
-            if (s3Item === null) {
-                throw new Error(
-                    `Could not get object from database that appeared in list. [${s3itemKey} not in ${list}]`
-                );
+            if (this.modify_root) {
+                let s3Item = await new DatabaseQuery().GetObject<T>(s3itemKey).Execute(type);
+
+                if (s3Item === null) {
+                    throw new Error(
+                        `Could not get object from database that appeared in list. [${s3itemKey} not in ${list}]`
+                    );
+                }
+
+                awsObjects.push(s3Item);
+            } else {
+                let s3Item = await new DatabaseQuery().GetObject<T>(s3itemKey).Execute(type);
+
+                if (s3Item === null) {
+                    throw new Error(
+                        `Could not get object from database that appeared in list. [${s3itemKey} not in ${list}]`
+                    );
+                }
+
+                awsObjects.push(s3Item);
             }
-
-            awsObjects.push(s3Item);
         }
 
         // Filter based on properties

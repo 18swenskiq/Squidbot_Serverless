@@ -6,6 +6,23 @@ import { PlayerSummary } from './playerSummary';
 export abstract class SteamApi {
     static readonly baseUrl: string = 'https://api.steampowered.com';
 
+    public static async GetCSGOWorkshopMapsInCollection(collectionId: string): Promise<CSGOWorkshopMapDetail[]> {
+        const url = `${this.baseUrl}/ISteamRemoteStorage/GetCollectionDetails/v1/?key=${process.env.STEAM_WEB_API_KEY}&collectioncount=1&publishedfileids%5B0%5D=${collectionId}`;
+        const res = await axios.post(url);
+
+        const maps = res.data.response.collectiondetails[0].children as SteamCollectionMaps[];
+
+        let searchIds = '';
+        for (let i = 0; i < maps.length; i++) {
+            const map = maps[i];
+            searchIds += `&publishedfileids%5B${i}%5D=${map.publishedfileid}`;
+        }
+
+        const mapsUrl = `${this.baseUrl}/IPublishedFileService/GetDetails/v1/?key=${process.env.STEAM_WEB_API_KEY}${searchIds}&includetags=true&includeadditionalpreviews=true&includekvtags=true&includemetadata=true`;
+        const mapsRes = await axios.get(mapsUrl);
+        return mapsRes.data.response.publishedfiledetails as CSGOWorkshopMapDetail[];
+    }
+
     public static async GetCSGOWorkshopMapDetail(workshopId: string): Promise<CSGOWorkshopMapDetail> {
         const url = `${this.baseUrl}/IPublishedFileService/GetDetails/v1/?key=${process.env.STEAM_WEB_API_KEY}&publishedfileids%5B0%5D=${workshopId}&includetags=true&includeadditionalpreviews=true&includekvtags=true&includemetadata=true`;
         const res = await axios.get(url);
@@ -19,4 +36,10 @@ export abstract class SteamApi {
         const players: PlayerSummary[] = res.data.response.players;
         return players.find((x) => x);
     }
+}
+
+interface SteamCollectionMaps {
+    publishedfileid: string;
+    sortorder: number;
+    filetype: number;
 }
