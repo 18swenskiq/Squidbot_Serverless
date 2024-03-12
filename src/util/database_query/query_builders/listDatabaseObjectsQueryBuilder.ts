@@ -6,7 +6,7 @@ export class ListDatabaseObjectsQueryBuilder<T extends iDatabaseModel> {
     private modifyTLK = '';
 
     public ModifyTopLevelKey(newTLK: string): ListDatabaseObjectsQueryBuilder<T> {
-        this.modifyTLK = this.modifyTLK;
+        this.modifyTLK = newTLK;
         return this;
     }
 
