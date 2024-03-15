@@ -53,7 +53,11 @@ exports.handler = async (event: any) => {
             console.log(chosenCommand);
 
             if (chosenCommand != null) {
-                if (chosenCommand.data.valid_users && !chosenCommand.data.valid_users.includes(body.member.user.id)) {
+                if (
+                    chosenCommand.data.valid_users &&
+                    chosenCommand.data.valid_users.length > 0 &&
+                    !chosenCommand.data.valid_users.includes(body.member.user.id)
+                ) {
                     console.log('Inside of invalid block');
                     return new CommandResult('You are not in the valid users list for this command', false, false);
                 }
