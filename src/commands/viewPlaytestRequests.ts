@@ -24,6 +24,9 @@ module.exports = {
         const game = interactionData.options.find((o) => o.name === 'game')?.value;
         const playtestRequests = await DatabaseWrapper.GetPlaytestRequests(interaction.guild_id);
 
+        console.log('Playtest requests');
+        console.log(playtestRequests);
+
         const embed: Embed = {
             title: 'Playtest Requests',
             description: `Game: ${interactionData.options.find((o) => o.name === 'game')?.value}`,
@@ -33,6 +36,8 @@ module.exports = {
         };
 
         for (const key in playtestRequests) {
+            console.log('the key');
+            console.log(key);
             const value = playtestRequests[key];
 
             if (value.game !== game) {
@@ -40,6 +45,8 @@ module.exports = {
             }
 
             const user = await DiscordApiRoutes.getUser(value.mainAuthor);
+            console.log('user');
+            console.log(user);
             const composedDate = TimeUtils.ComposeDateFromStringComponents(value.requestDate, value.requestTime);
 
             const easternOffset = TimeUtils.GetOffset('US/Eastern');
@@ -55,6 +62,7 @@ module.exports = {
         if (embed.fields!.length > 0) {
             const cr = new CommandResult('Use `/approve_playtest_request` to schedule', true, false);
             cr.embeds = [embed];
+            console.log('returning cr');
             return cr;
         } else {
             return new CommandResult('no playtest requests :(', false, false);

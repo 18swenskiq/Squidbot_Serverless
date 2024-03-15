@@ -41,18 +41,25 @@ exports.handler = async (event: any) => {
         console.log('Commands loaded!');
     }
 
+    console.log('The body');
+    console.log(body.type);
     switch (body.type) {
         case 2:
             // Case 2: Submitting command for result
             const bodyData = <InteractionData>body.data;
             const chosenCommand = commands.find((c) => c.data.name === bodyData.name);
+            console.log('inside block');
+            console.log('chosen command');
+            console.log(chosenCommand);
 
             if (chosenCommand != null) {
                 if (chosenCommand.data.valid_users && !chosenCommand.data.valid_users.includes(body.member.user.id)) {
+                    console.log('Inside of invalid block');
                     return new CommandResult('You are not in the valid users list for this command', false, false);
                 }
 
                 try {
+                    console.log('executing');
                     const result = await chosenCommand.execute(body);
                     console.log('Returning result:', result);
                     await sendCommandResponse(body, result);
@@ -100,6 +107,7 @@ exports.handler = async (event: any) => {
 };
 
 async function sendCommandResponse(interaction: Interaction, result: CommandResult): Promise<void> {
+    console.log('sending the command response');
     const body: any = {};
 
     const message = result.message !== undefined ? result.message : true;
