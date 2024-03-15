@@ -48,6 +48,10 @@ exports.handler = async (event: any) => {
             const chosenCommand = commands.find((c) => c.data.name === bodyData.name);
 
             if (chosenCommand != null) {
+                if (chosenCommand.data.valid_users && !chosenCommand.data.valid_users.includes(body.member.user.id)) {
+                    return new CommandResult('You are not in the valid users list for this command', false, false);
+                }
+
                 try {
                     const result = await chosenCommand.execute(body);
                     console.log('Returning result:', result);

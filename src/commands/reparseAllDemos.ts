@@ -37,16 +37,15 @@ module.exports = {
 
         // Get all completed playtests
         for (let i = 0; i < completedPlaytests.length; i++) {
-            let rootName = completedPlaytests[i].split('/').splice(2, 1).join('/');
             let completedObjectName = completedPlaytests[i].replace('.bson', '').replace('CompletedPlaytests/', '');
             const playtest = await new DatabaseQuery()
                 .GetObject<DB_ScheduledPlaytest>(completedObjectName)
-                .ModifyRoot(rootName)
+                .ModifyRoot('CompletedPlaytests')
                 .Execute(DB_ScheduledPlaytest);
 
             if (playtest === null) {
                 throw new Error(
-                    `Error getting object. CompletedObjectName = '${completedObjectName}' | ModifiedRoot = '${rootName}'`
+                    `Error getting object. CompletedObjectName = '${completedObjectName}' | ModifiedRoot = '"CompletedPlaytests"'`
                 );
             }
 
