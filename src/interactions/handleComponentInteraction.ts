@@ -39,6 +39,10 @@ export abstract class HandleComponentInteraction {
                 break;
             case 'LeavePUG':
                 await HandleComponentInteraction.LeavePUG(interaction, data, interactionHandler);
+                break;
+            case 'PUGMapVote':
+                await HandleComponentInteraction.PUGMapVote(interaction, data, interactionHandler);
+                break;
             default:
                 console.log('Unexpected component interaction, aborting');
                 break;
@@ -167,6 +171,8 @@ export abstract class HandleComponentInteraction {
                     return 6;
                 case CS2PUGGameMode.classic:
                     return 10;
+                case CS2PUGGameMode.arena:
+                    return 2;
                 default:
                     throw Error('Invalid gamemode');
             }
@@ -212,10 +218,13 @@ export abstract class HandleComponentInteraction {
             return;
         }
 
+        const voteDropdownInteractionGuid: Guid = GenerateGuid();
+
         // Add player to queue
         await new DatabaseQuery()
             .ModifyObject<DB_CS2PugQueue>(`${interaction.guild_id}/${activeQueue.id}`)
             .AddToPropertyArray('usersInQueue', [interaction.member.user.id])
+            .SetProperty('voteComponentId', voteDropdownInteractionGuid)
             .Execute(DB_CS2PugQueue);
 
         const currentPlayerCount = activeQueue.usersInQueue.length + 1;
@@ -239,22 +248,20 @@ export abstract class HandleComponentInteraction {
         // Random Map
         if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.random) {
             const randomMap = maps[Math.floor(Math.random() * maps.length)];
+            // TODO: If all votes are counted, flow to next part
         }
         // All pick map
         else if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.allpick) {
             // Create map dropdown component
-            // TODO: Support multiple dropdowns for the same collection if size exceeds 25
             const dropdownComponent = new StringSelectComponent();
-
-            const interactionGuid: Guid = GenerateGuid();
 
             dropdownComponent.min_values = 0;
             dropdownComponent.max_values = 1;
-            dropdownComponent.placeholder = 'Vote for a map!';
-            dropdownComponent.custom_id = interactionGuid;
+            dropdownComponent.placeholder = 'Select a map';
+            dropdownComponent.custom_id = voteDropdownInteractionGuid;
             dropdownComponent.options = maps.map((map) => {
                 const label = map.title;
-                const value = map.publishedfileid;
+                const value = `id_${map.publishedfileid}`;
 
                 return <SelectOption>{ label, value, default: false };
             });
@@ -262,16 +269,14 @@ export abstract class HandleComponentInteraction {
             const componentWrapper: any = { type: 1, components: [] };
             componentWrapper.components.push(<any>dropdownComponent);
 
-            // TODO: Finish this
-            //cr.components = [];
-            //cr.components.push(componentWrapper);
-
             await DatabaseWrapper.SetInteractionHandler(
                 interaction.member.user.id,
                 interaction.guild_id,
-                interactionGuid,
-                'AssignRoles'
+                voteDropdownInteractionGuid,
+                'PUGMapVote'
             );
+
+            await DiscordApiRoutes.createNewMessage(interaction.channel_id, 'Vote for the map you would like to play:');
         } else {
             throw Error('Undefined map selection mode, aborting...');
         }
@@ -330,5 +335,54 @@ export abstract class HandleComponentInteraction {
             });
             return;
         }
+    }
+
+    private static async PUGMapVote(
+        interaction: Interaction,
+        data: ComponentInteractionData,
+        interactionHandler: DB_ComponentInteractionHandler
+    ): Promise<void> {
+        // Have to extract the id because of how discord values work
+        const selectedMapId = data.values[0].split('_')[1];
+
+        // Find queue in channel
+        const queues = await new DatabaseQuery().GetObjects<DB_CS2PugQueue>().Execute(DB_CS2PugQueue);
+        const activeQueue = queues.find((q) => q.activeChannel === interaction.channel_id);
+        if (activeQueue === undefined || activeQueue.voteComponentId != data.custom_id) {
+            await DiscordApiRoutes.createFollowupMessage(interaction, {
+                content: 'The queue you voted for is no longer valid',
+                flags: 64,
+            });
+            return;
+        }
+
+        // Verify user is in queue
+        if (!activeQueue?.usersInQueue.includes(interaction.member.user.id)) {
+            await DiscordApiRoutes.createFollowupMessage(interaction, {
+                content: 'You are not in this queue!',
+                flags: 64,
+            });
+            return;
+        }
+
+        // Verify user has not already voted
+        if (activeQueue.mapVotes.find((m) => m.userId === interaction.member.user.id)) {
+            await DiscordApiRoutes.createFollowupMessage(interaction, {
+                content: 'You have already voted for a map!',
+                flags: 64,
+            });
+            return;
+        }
+
+        // Log vote
+        activeQueue.mapVotes.push({ userId: interaction.member.user.id, mapVote: selectedMapId });
+        await new DatabaseQuery().PutObject<DB_CS2PugQueue>(activeQueue.id, activeQueue).Execute(DB_CS2PugQueue);
+
+        await DiscordApiRoutes.createFollowupMessage(interaction, {
+            content: `You voted for ${selectedMapId}!`,
+            flags: 64,
+        });
+
+        // TODO: If all votes are counted, flow to next part
     }
 }

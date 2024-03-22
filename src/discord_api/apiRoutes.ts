@@ -8,6 +8,7 @@ import { User } from './user';
 import { GuildEventEntityMetadata } from './guildEventEntityMetadata';
 import { GuildEventEntityType } from './guildEventEntityType';
 import { GuildScheduledEvent } from './guildScheduledEvent';
+import { MessageComponent } from './messageComponent';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class DiscordApiRoutes {
@@ -49,9 +50,14 @@ export abstract class DiscordApiRoutes {
         await DiscordApiRoutes.sendRequest('DELETE', url);
     }
 
-    public static async createNewMessage(channelId: Snowflake, content: string, embeds?: Embed[]): Promise<void> {
+    public static async createNewMessage(
+        channelId: Snowflake,
+        content: string,
+        embeds?: Embed[],
+        components: MessageComponent[] | undefined = undefined
+    ): Promise<void> {
         const url = `${DiscordApiRoutes.baseUrl}/channels/${channelId}/messages`;
-        await DiscordApiRoutes.sendRequest('POST', url, { content: content, embeds: embeds });
+        await DiscordApiRoutes.sendRequest('POST', url, { content: content, embeds: embeds, components: components });
     }
 
     public static async getUser(userId: Snowflake): Promise<User> {

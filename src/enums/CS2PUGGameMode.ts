@@ -3,4 +3,5 @@ export enum CS2PUGGameMode {
     wingman = 'wingman',
     threesome = 'threesome',
     classic = 'classic',
+    arena = 'arena',
 }

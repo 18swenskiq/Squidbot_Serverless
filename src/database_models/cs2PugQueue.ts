@@ -17,6 +17,9 @@ export class DB_CS2PugQueue implements iDatabaseModel {
     joinQueueButtonId: Guid;
     leaveQueueButtonId: Guid;
 
+    voteComponentId: Guid;
+    mapVotes: { userId: string; mapVote: string }[] = [];
+
     constructor() {
         this.id = GenerateGuid();
         this.queueStartTime = new Date();
@@ -31,6 +34,7 @@ export class DB_CS2PugQueue implements iDatabaseModel {
         this.stopQueueButtonId = GenerateGuid();
         this.joinQueueButtonId = GenerateGuid();
         this.leaveQueueButtonId = GenerateGuid();
+        this.voteComponentId = GenerateGuid();
     }
 
     GetTopLevelKey(): string {

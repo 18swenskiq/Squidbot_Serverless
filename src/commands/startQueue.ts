@@ -24,6 +24,7 @@ module.exports = {
                 .setDescription('The gamemode of the queue')
                 .setRequired(true)
                 .addChoices([
+                    { name: '1v1', value: CS2PUGGameMode.arena },
                     { name: '2v2', value: CS2PUGGameMode.wingman },
                     { name: '3v3', value: CS2PUGGameMode.threesome },
                     { name: '5v5', value: CS2PUGGameMode.classic },
