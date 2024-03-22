@@ -10,6 +10,7 @@ export abstract class StaticDeclarations {
 
     public static CollectionIdForGamemode(gameMode: CS2PUGGameMode): string {
         switch (gameMode) {
+            case CS2PUGGameMode.arena:
             case CS2PUGGameMode.wingman:
                 return this.wingmanCollectionId;
             case CS2PUGGameMode.threesome:
