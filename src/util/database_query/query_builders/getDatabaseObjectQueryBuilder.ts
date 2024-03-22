@@ -54,16 +54,10 @@ export class GetDatabaseObjectQueryBuilder<T extends iDatabaseModel> {
 
             const castedObj = obj as T;
 
-            console.log('Casted object');
-            console.log(castedObj);
-
             try {
                 // Fix up all date objects
                 for (const castKey in castedObj) {
-                    console.log('Object key iteration');
                     if (typeof castedObj[castKey] === 'object') {
-                        console.log('Found key of type object');
-                        console.log(`Key: ${castKey}`);
                         if ('$date' in (castedObj[castKey] as any)) {
                             const dateStringVal = (castedObj[castKey] as any)['$date'];
                             const newDate = new Date(dateStringVal);

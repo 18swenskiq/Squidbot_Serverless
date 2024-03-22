@@ -144,10 +144,6 @@ export abstract class HandleComponentInteraction {
     ): Promise<void> {
         // Get all queues
         const queues = await new DatabaseQuery().GetObjects<DB_CS2PugQueue>().Execute(DB_CS2PugQueue);
-        console.log('print all queues');
-        for (const printQueue in queues) {
-            console.log(printQueue);
-        }
 
         // Get time to determine if queue is timed out
         const curTime = new Date();
@@ -245,6 +241,8 @@ export abstract class HandleComponentInteraction {
         const collectionId = StaticDeclarations.CollectionIdForGamemode(activeQueue.gameType);
         const maps = await SteamApi.GetCSGOWorkshopMapsInCollection(collectionId);
 
+        console.log('Maps:');
+        console.log(maps.map((m) => m.title).join(', '));
         // Random Map
         if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.random) {
             const randomMap = maps[Math.floor(Math.random() * maps.length)];
@@ -269,6 +267,7 @@ export abstract class HandleComponentInteraction {
             const componentWrapper: any = { type: 1, components: [] };
             componentWrapper.components.push(<any>dropdownComponent);
 
+            console.log('Setting the interaction handler');
             await DatabaseWrapper.SetInteractionHandler(
                 interaction.member.user.id,
                 interaction.guild_id,
@@ -276,7 +275,13 @@ export abstract class HandleComponentInteraction {
                 'PUGMapVote'
             );
 
-            await DiscordApiRoutes.createNewMessage(interaction.channel_id, 'Vote for the map you would like to play:');
+            console.log('sending message');
+            await DiscordApiRoutes.createNewMessage(
+                interaction.channel_id,
+                'Vote for the map you would like to play:',
+                undefined,
+                [componentWrapper]
+            );
         } else {
             throw Error('Undefined map selection mode, aborting...');
         }
@@ -288,10 +293,6 @@ export abstract class HandleComponentInteraction {
         interactionHandler: DB_ComponentInteractionHandler
     ): Promise<void> {
         const queues = await new DatabaseQuery().GetObjects<DB_CS2PugQueue>().Execute(DB_CS2PugQueue);
-        console.log('print all queues');
-        for (const printQueue in queues) {
-            console.log(printQueue);
-        }
 
         // Get time to determine if queue is timed out
         const curTime = new Date();
