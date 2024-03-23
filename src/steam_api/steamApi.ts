@@ -7,10 +7,11 @@ export abstract class SteamApi {
     static readonly baseUrl: string = 'https://api.steampowered.com';
 
     public static async GetCSGOWorkshopMapsInCollection(collectionId: string): Promise<CSGOWorkshopMapDetail[]> {
-        const url = `${this.baseUrl}/ISteamRemoteStorage/GetCollectionDetails/v1/?key=${process.env.STEAM_WEB_API_KEY}`;
+        const url = `${this.baseUrl}/ISteamRemoteStorage/GetCollectionDetails/v1/`;
         const payload = {
+            key: process.env.STEAM_WEB_API_KEY,
             collectioncount: 1,
-            'publishedfileids%5B0%5D': collectionId,
+            'publishedfileids%5B0%5D': Number(collectionId),
         };
         console.log(payload);
 
