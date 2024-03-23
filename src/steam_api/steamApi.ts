@@ -11,7 +11,7 @@ export abstract class SteamApi {
         const payload = {
             key: process.env.STEAM_WEB_API_KEY,
             collectioncount: 1,
-            'publishedfileids%5B0%5D': Number(collectionId),
+            publishedfileids: [collectionId],
         };
         console.log(payload);
 
