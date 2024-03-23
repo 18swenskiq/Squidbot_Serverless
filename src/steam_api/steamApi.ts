@@ -10,7 +10,7 @@ export abstract class SteamApi {
         const url = `${this.baseUrl}/ISteamRemoteStorage/GetCollectionDetails/v1/?key=${process.env.STEAM_WEB_API_KEY}`;
         const payload = {
             collectioncount: 1,
-            'publishedfileids[0]': collectionId,
+            'publishedfileids%5B0%5D': collectionId,
         };
         console.log(payload);
 
