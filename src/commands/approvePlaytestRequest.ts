@@ -107,26 +107,6 @@ module.exports = {
             description.join('\n')
         );
 
-        /*
-        const scheduledPlaytest: DB_ScheduledPlaytest = {
-            Id: playtestId,
-            game: request.game,
-            mapName: request.mapName,
-            mainAuthor: request.mainAuthor,
-            otherAuthors: request.otherAuthors,
-            thumbnailImage: request.thumbnailImage,
-            playtestTime: newDate,
-            workshopId: request.workshopId,
-            mapType: request.mapType,
-            playtestType: request.playtestType,
-            moderator: interaction.member.user.id,
-            eventId: eventId,
-            server: <string>server,
-        };
-
-        await DatabaseWrapper.CreateScheduledPlaytest(interaction.guild_id, scheduledPlaytest);
-        */
-
         await new DatabaseQuery()
             .CreateNewObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
             .SetProperty('Id', playtestId)
@@ -158,8 +138,13 @@ module.exports = {
             `New Playtest Event - https://discord.com/events/${interaction.guild_id}/${eventId}`
         );
 
-        // Remove request object
-        // await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>request.Id);
+        await DiscordApiRoutes.createNewMessage(
+            guildSettings.playtesting.cs2.playtestChannel,
+            `<@${request.mainAuthor}> Your playtest has been scheduled for ${TimeUtils.GetDiscordTimestampFromDate(
+                newDate
+            )}. - https://discord.com/events/${interaction.guild_id}/${eventId}`
+        );
+
         await new DatabaseQuery()
             .DeleteObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
             .Execute(DB_PlaytestRequest);
