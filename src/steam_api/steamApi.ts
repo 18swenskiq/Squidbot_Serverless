@@ -10,12 +10,16 @@ export abstract class SteamApi {
         const url = `${this.baseUrl}/ISteamRemoteStorage/GetCollectionDetails/v1/`;
         const payload = {
             key: process.env.STEAM_WEB_API_KEY,
-            collectioncount: 1,
-            'publishedfileids%5B0%5D': collectionId,
+            collectioncount: '1',
+            'publishedfileids[0]': collectionId,
         };
         console.log(payload);
 
-        const res = await axios.post(url, payload);
+        const res = await axios.post(url, payload, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        });
 
         const maps = res.data.response.collectiondetails[0].children as SteamCollectionMaps[];
 
