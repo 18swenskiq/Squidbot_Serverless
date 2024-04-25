@@ -13,6 +13,7 @@ import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
 import { StaticDeclarations } from '../util/staticDeclarations';
 import { SteamApi } from '../steam_api/steamApi';
 import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
+import { PugQueueUtil } from '../util/pugQueueUitl';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class HandleComponentInteraction {
@@ -159,20 +160,7 @@ export abstract class HandleComponentInteraction {
             return;
         }
 
-        const maxPlayersForGamemode = (() => {
-            switch (activeQueue.gameType) {
-                case CS2PUGGameMode.wingman:
-                    return 4;
-                case CS2PUGGameMode.threesome:
-                    return 6;
-                case CS2PUGGameMode.classic:
-                    return 10;
-                case CS2PUGGameMode.arena:
-                    return 2;
-                default:
-                    throw Error('Invalid gamemode');
-            }
-        })();
+        const maxPlayersForGamemode = PugQueueUtil.GetMaxPlayersForGamemode(activeQueue.gameType);
 
         // Ensure queue isn't already full/started
         if (activeQueue.usersInQueue.length === maxPlayersForGamemode) {
@@ -241,18 +229,21 @@ export abstract class HandleComponentInteraction {
         const collectionId = StaticDeclarations.CollectionIdForGamemode(activeQueue.gameType);
         const maps = await SteamApi.GetCSGOWorkshopMapsInCollection(collectionId);
 
-        console.log('Maps:');
-        console.log(maps.map((m) => m.title).join(', '));
         // Random Map
         if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.random) {
-            const randomMap = maps[Math.floor(Math.random() * maps.length)];
-            // TODO: If all votes are counted, flow to next part
+            await DiscordApiRoutes.createNewMessage(interaction.channel_id, 'Randomly selecting a map...');
+
+            await PugQueueUtil.SetupPUG(
+                activeQueue,
+                maps.map((m) => m.publishedfileid)
+            );
         }
         // All pick map
         else if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.allpick) {
             // Create map dropdown component
             const dropdownComponent = new StringSelectComponent();
 
+            // TODO: Sort maps alphabetically
             dropdownComponent.min_values = 0;
             dropdownComponent.max_values = 1;
             dropdownComponent.placeholder = 'Select a map';
@@ -379,11 +370,25 @@ export abstract class HandleComponentInteraction {
         activeQueue.mapVotes.push({ userId: interaction.member.user.id, mapVote: selectedMapId });
         await new DatabaseQuery().PutObject<DB_CS2PugQueue>(activeQueue.id, activeQueue).Execute(DB_CS2PugQueue);
 
-        await DiscordApiRoutes.createFollowupMessage(interaction, {
-            content: `You voted for ${selectedMapId}!`,
-            flags: 64,
-        });
+        // Get map details to print the name out
+        const map = await SteamApi.GetCSGOWorkshopMapDetail(selectedMapId);
 
-        // TODO: If all votes are counted, flow to next part
+        await DiscordApiRoutes.createNewMessage(
+            activeQueue.activeChannel,
+            `${interaction.member.user.username} voted for ${map.title}!`
+        );
+
+        // If all votes are counted, flow to next part
+        const maxPlayers = PugQueueUtil.GetMaxPlayersForGamemode(activeQueue.gameType);
+        const voteCount = activeQueue.mapVotes.length;
+
+        if (maxPlayers === voteCount) {
+            await DiscordApiRoutes.createNewMessage(activeQueue.activeChannel, `All votes are in!`);
+
+            await PugQueueUtil.SetupPUG(
+                activeQueue,
+                activeQueue.mapVotes.map((m) => m.mapVote)
+            );
+        }
     }
 }
