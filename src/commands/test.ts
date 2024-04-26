@@ -1,9 +1,11 @@
+import { Collection } from 's3-db';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { SteamApi } from '../steam_api/steamApi';
+import { DB_UserSettings } from '../database_models/userSettings';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,8 +15,10 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
 
-        const maps = await SteamApi.GetCSGOWorkshopMapsInCollection('2747675401');
+        const collection = new Collection(new DB_UserSettings());
 
-        return new CommandResult(maps.map((m) => `${m.title}`).join(', '), false, false);
+        const user = await collection.save({ steamLink: '5' });
+
+        return new CommandResult('Updated user', false, false);
     },
 } as CommandDescription;

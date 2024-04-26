@@ -6,13 +6,9 @@ import { Guid } from '../util/guid';
 export class DB_UserSettings {
     @id()
     id?: string;
-    timeZoneName: string;
-    activeRconServer: { [guildId: Snowflake]: Guid };
-    steamLink: string; // This is steamID64
+    timeZoneName?: string;
+    activeRconServer?: { [guildId: Snowflake]: Guid };
+    steamLink?: string; // This is steamID64
 
-    constructor() {
-        this.timeZoneName = '';
-        this.activeRconServer = {};
-        this.steamLink = '';
-    }
+    constructor() {}
 }
