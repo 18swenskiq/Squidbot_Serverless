@@ -21,6 +21,7 @@ module.exports = {
         const dict: Record<string, string[]> = {};
 
         const now = Date.now();
+        /*
         for (const userId in response) {
             const settings = response[userId];
 
@@ -68,7 +69,8 @@ module.exports = {
             retString += `${hrs}:${mns} - (${test})\n`;
         }
 
-        retString += '```';
+        */
+        const retString = ''; //retString += '```';
         return new CommandResult(retString, false, false);
     },
 } as CommandDescription;

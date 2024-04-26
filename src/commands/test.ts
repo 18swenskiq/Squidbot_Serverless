@@ -4,7 +4,6 @@ import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { SteamApi } from '../steam_api/steamApi';
 import { DB_UserSettings } from '../database_models/userSettings';
 
 module.exports = {
