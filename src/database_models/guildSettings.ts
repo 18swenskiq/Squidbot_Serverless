@@ -1,8 +1,11 @@
+import { collection, id } from 's3-db';
 import { Snowflake } from '../discord_api/snowflake';
 import { Guid } from '../util/guid';
-import { iDatabaseModel } from './iDatabaseModel';
 
-export class DB_GuildSettings implements iDatabaseModel {
+@collection()
+export class DB_GuildSettings {
+    @id()
+    id?: Guid;
     assignableRoles: Snowflake[];
     rconServers: Guid[];
     playtesting: {
@@ -31,16 +34,5 @@ export class DB_GuildSettings implements iDatabaseModel {
         };
         this.activePlaytest = null;
         this.pugging_cs2_enabled = false;
-    }
-
-    public GetTopLevelKey(): string {
-        return `GuildSettings`;
-    }
-
-    public BuildKey(id: string, modifiedRoot: string = ''): string {
-        if (modifiedRoot) {
-            return `${modifiedRoot}/${id}.bson`;
-        }
-        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

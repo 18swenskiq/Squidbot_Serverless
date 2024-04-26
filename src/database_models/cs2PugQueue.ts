@@ -1,10 +1,12 @@
+import { collection, id } from 's3-db';
 import { Snowflake } from '../discord_api/snowflake';
 import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
 import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
 import { GenerateGuid, Guid } from '../util/guid';
-import { iDatabaseModel } from './iDatabaseModel';
 
-export class DB_CS2PugQueue implements iDatabaseModel {
+@collection()
+export class DB_CS2PugQueue {
+    @id()
     id: Guid;
     queueStartTime: Date;
     queueExpirationTime: Date;
@@ -35,16 +37,5 @@ export class DB_CS2PugQueue implements iDatabaseModel {
         this.joinQueueButtonId = GenerateGuid();
         this.leaveQueueButtonId = GenerateGuid();
         this.voteComponentId = GenerateGuid();
-    }
-
-    GetTopLevelKey(): string {
-        return 'CS2PugQueues';
-    }
-
-    BuildKey(id: string, modifiedRoot: string = ''): string {
-        if (modifiedRoot) {
-            return `${modifiedRoot}/${id}.bson`;
-        }
-        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

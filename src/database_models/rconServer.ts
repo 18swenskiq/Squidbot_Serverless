@@ -1,10 +1,12 @@
+import { collection, id } from 's3-db';
 import { Snowflake } from '../discord_api/snowflake';
 import { GenerateGuid, Guid } from '../util/guid';
-import { iDatabaseModel } from './iDatabaseModel';
 
 export type Game = 'cs2';
 
-export class DB_RconServer implements iDatabaseModel {
+@collection()
+export class DB_RconServer {
+    @id()
     id: Guid;
     guildId: Snowflake;
     nickname: string;
@@ -31,16 +33,5 @@ export class DB_RconServer implements iDatabaseModel {
         this.ftpPort = '';
         this.ftpUsername = '';
         this.ftpPassword = '';
-    }
-
-    public GetTopLevelKey(): string {
-        return `RconServers`;
-    }
-
-    public BuildKey(id: string, modifiedRoot: string = ''): string {
-        if (modifiedRoot) {
-            return `${modifiedRoot}/${id}.bson`;
-        }
-        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

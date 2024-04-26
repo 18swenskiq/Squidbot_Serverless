@@ -4,8 +4,6 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { SteamApi } from '../steam_api/steamApi';
-import { FTPUtil } from '../util/ftpUtil';
-import { RconUtils } from '../util/rconUtil';
 
 module.exports = {
     data: new SlashCommandBuilder()

@@ -4,7 +4,6 @@ import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { SteamApi } from '../steam_api/steamApi';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,6 +29,7 @@ module.exports = {
             return new CommandResult('Unable to find steam account. Please try again', false, false);
         }
 
+        /*
         // Ensure that id isn't already being used by somebody else
         const existingLinks = await new DatabaseQuery()
             .GetObjects<DB_UserSettings>()
@@ -46,6 +46,7 @@ module.exports = {
             .SetProperty('steamLink', steamId64)
             .Execute(DB_UserSettings);
 
+            */
         return new CommandResult('Updated SteamID link', false, false);
     },
 } as CommandDescription;

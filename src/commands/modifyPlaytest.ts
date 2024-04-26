@@ -6,7 +6,6 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { Guid } from '../util/guid';
 import { TimeUtils } from '../util/timeUtils';
 
@@ -60,7 +59,7 @@ module.exports = {
         const moderator = interactionData.options.find((o) => o.name === 'moderator')?.value;
         const server = interactionData.options.find((o) => o.name === 'server')?.value;
 
-        // const playtest = await DatabaseWrapper.GetScheduledPlaytest(interaction.guild_id, <Guid>playtestId);
+        /*
         const playtest = await new DatabaseQuery()
             .GetObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
             .Execute(DB_ScheduledPlaytest);
@@ -81,27 +80,8 @@ module.exports = {
 
             const easternOffset = TimeUtils.GetOffset('US/Eastern');
             date.setMinutes(date.getMinutes() + easternOffset);
-            // playtest.playtestTime = date;
-            // changed = true;
             updatePlaytestDate = date;
         }
-
-        /*
-        if (playtestType) {
-            playtest.playtestType = playtestType;
-            changed = true;
-        }
-
-        if (workshopId) {
-            playtest.workshopId = workshopId;
-            changed = true;
-        }
-
-        if (moderator) {
-            playtest.moderator = moderator;
-            changed = true;
-        }
-        */
 
         let updateServer = undefined;
         if (server) {
@@ -111,9 +91,7 @@ module.exports = {
             if (matchServer === undefined) {
                 return new CommandResult('Invalid playtest server, no changes were made', false, false);
             }
-            //playtest.server = `${matchServer.ip}:${matchServer.port}`;
             updateServer = `${matchServer.ip}:${matchServer.port}`;
-            // changed = true;
         }
 
         await new DatabaseQuery()
@@ -124,11 +102,6 @@ module.exports = {
             .SetPropertyIfValueNotUndefined('server', updateServer)
             .SetProperty('playtestTime', updatePlaytestDate)
             .Execute(DB_ScheduledPlaytest);
-
-        // if (changed) {
-        // Edit playtest in database
-        //await DatabaseWrapper.DeleteScheduledPlaytest(interaction.guild_id, <Guid>playtest.Id);
-        // await DatabaseWrapper.CreateScheduledPlaytest(interaction.guild_id, playtest);
 
         // Edit calendar item
         const moderatorUser = await DiscordApiRoutes.getUser(playtest.moderator);
@@ -158,9 +131,7 @@ module.exports = {
         } else {
             await DiscordApiRoutes.modifyGuildEvent(interaction.guild_id, playtest.eventId, description.join('\n'));
         }
+        */
         return new CommandResult('Updated playtest event', false, false);
-        // } else {
-        //    return new CommandResult('No changes were detected', false, false);
-        //}
     },
 } as CommandDescription;

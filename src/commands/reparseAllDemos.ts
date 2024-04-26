@@ -4,7 +4,6 @@ import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 
 module.exports = {
@@ -15,6 +14,7 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
 
+        /*
         let completedPlaytests = await new DatabaseQuery()
             .ListObjects<DB_ScheduledPlaytest>()
             .ModifyTopLevelKey('CompletedPlaytests')
@@ -76,16 +76,16 @@ module.exports = {
             }
 
             // Hack to get the guildid of this
-            const thisKey = completedPlaytests.find((c) => c.includes(thisPlaytest.Id));
+            const thisKey = completedPlaytests.find((c) => c.includes(thisPlaytest.id));
             if (thisKey === undefined) {
                 throw new Error(
-                    `Unable to re-find playtest (how did you do this?) | Could not re-find ${thisPlaytest.Id} in original list`
+                    `Unable to re-find playtest (how did you do this?) | Could not re-find ${thisPlaytest.id} in original list`
                 );
             }
             const guildId = thisKey.split('/')[1];
 
             const lambdaParameters = {
-                DemoName: thisPlaytest.Id,
+                DemoName: thisPlaytest.id,
                 GuildId: guildId,
                 DemoContext: 0,
                 PlaytestType: lambdaPlaytestType,
@@ -104,7 +104,7 @@ module.exports = {
             const response = await client.send(fetchCommand);
             await DiscordApiRoutes.createNewMessage(
                 interaction.channel_id,
-                `Parsing ${thisPlaytest.Id}, response from Lambda: ${response}`
+                `Parsing ${thisPlaytest.id}, response from Lambda: ${response}`
             );
             console.log('lambda response:');
             console.log(response);
@@ -114,6 +114,7 @@ module.exports = {
 
         // TODO: Include PUG demos in elo calculations
 
+        */
         return new CommandResult('Re-ran all demos', false, false);
     },
 } as CommandDescription;

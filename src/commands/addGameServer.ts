@@ -6,8 +6,7 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
-import { GenerateGuid, Guid } from '../util/guid';
+import { GenerateGuid } from '../util/guid';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -75,26 +74,9 @@ module.exports = {
             }
         }
 
-        /*
-        const newGameServer: DB_RconServer = {
-            id: GenerateGuid(),
-            nickname: <string>chosenNickname,
-            ip: <string>chosenIp,
-            port: <string>chosenPort,
-            game: <Game>chosenGame,
-            guildId: interaction.guild_id,
-            rconPassword: <string>chosenRconPassword,
-            countryCode: chosenFlag,
-            ftpHost: <string>ftpHost,
-            ftpPort: <string>ftpPort,
-            ftpUsername: <string>ftpUsername,
-            ftpPassword: <string>ftpPassword,
-        };
-
-        const result = await DatabaseWrapper.AddGameServer(newGameServer);
-        */
-
         const serverId = GenerateGuid();
+
+        /*
         await new DatabaseQuery()
             .CreateNewObject<DB_RconServer>(serverId)
             .SetProperty('id', serverId)
@@ -115,6 +97,7 @@ module.exports = {
             .ModifyObject<DB_GuildSettings>(interaction.guild_id)
             .AddToPropertyArray('rconServers', [serverId])
             .Execute(DB_GuildSettings);
+        */
 
         return new CommandResult(`Added Game Server \`${<string>chosenNickname}\``, true, true, '', true);
     },

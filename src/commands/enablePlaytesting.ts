@@ -5,7 +5,6 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -53,6 +52,7 @@ module.exports = {
         const competitiveChannel = interactionData.options.find((o) => o.name === 'competitive_channel')?.value;
 
         if (playtestGame === 'cs2') {
+            /*
             await new DatabaseQuery()
                 .ModifyObject<DB_GuildSettings>(interaction.guild_id)
                 .SetProperty('playtesting', {
@@ -66,15 +66,7 @@ module.exports = {
                 })
                 .Execute(DB_GuildSettings);
 
-            /*
-            await DatabaseWrapper.EnableCS2Playtesting(
-                interaction.guild_id,
-                <string>requestChannel,
-                <string>announceChannel,
-                <string>playtestChannel,
-                <string>competitiveChannel
-            );
-            */
+                */
             return new CommandResult('Enabled CS2 playtesting on this server!', true, false);
         } else {
             return new CommandResult('Unexpected game provided', true, false);

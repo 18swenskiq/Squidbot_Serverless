@@ -7,8 +7,10 @@ import { StaticDeclarations } from './util/staticDeclarations';
 import { CommandResult } from './discord_api/commandResult';
 import { HandleComponentInteraction } from './interactions/handleComponentInteraction';
 import { DiscordApiRoutes } from './discord_api/apiRoutes';
+import { S3DB } from 's3-db';
 
 exports.handler = async (event: any) => {
+    SetupDatabase();
     const strBody = event; // should be string, for successful sign
     const body: Interaction = JSON.parse(strBody);
 
@@ -149,4 +151,13 @@ async function sendCommandResponse(interaction: Interaction, result: CommandResu
         console.log('Error Status', error.response.status);
         console.log('Error Response Headers', error.response.headers);
     }
+}
+
+function SetupDatabase(): void {
+    S3DB.update({
+        baseName: 'squidbot_serverless',
+        stage: 'production',
+        region: 'us-east-2',
+        bucketPattern: '{{stage}}-{{region}}-{{baseName}}-{{bucketName}}',
+    });
 }

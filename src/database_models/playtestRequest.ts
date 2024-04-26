@@ -1,8 +1,10 @@
+import { collection, id } from 's3-db';
 import { Snowflake } from '../discord_api/snowflake';
 import { GenerateGuid, Guid } from '../util/guid';
-import { iDatabaseModel } from './iDatabaseModel';
 
-export class DB_PlaytestRequest implements iDatabaseModel {
+@collection()
+export class DB_PlaytestRequest {
+    @id()
     Id: Guid;
     game: string;
     mapName: string;
@@ -29,16 +31,5 @@ export class DB_PlaytestRequest implements iDatabaseModel {
         this.mapType = '';
         this.playtestType = '';
         this.dateSubmitted = new Date();
-    }
-
-    public GetTopLevelKey(): string {
-        return `PlaytestRequests`;
-    }
-
-    public BuildKey(id: string, modifiedRoot: string = ''): string {
-        if (modifiedRoot) {
-            return `${modifiedRoot}/${id}.bson`;
-        }
-        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

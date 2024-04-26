@@ -5,7 +5,6 @@ import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,6 +14,7 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
 
+        /*
         const objs = await new DatabaseQuery().ListObjects<DB_CS2PugQueue>().Execute(DB_CS2PugQueue);
 
         await DiscordApiRoutes.createNewMessage(interaction.channel_id, `Found ${objs.length} objects to be deleted`);
@@ -22,9 +22,10 @@ module.exports = {
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
             const blank_obj = new DB_CS2PugQueue();
-            await new DatabaseQuery().DeleteObject(blank_obj.BuildKey(obj)).Execute(DB_CS2PugQueue);
+            await new DatabaseQuery().DeleteObject('WHO CARES').Execute(DB_CS2PugQueue);
         }
 
-        return new CommandResult(`Deleted ${objs.length} objects`, false, false);
+        */
+        return new CommandResult(`Deleted ${0} objects`, false, false);
     },
 } as CommandDescription;

@@ -1,8 +1,11 @@
+import { collection, id } from 's3-db';
 import { Snowflake } from '../discord_api/snowflake';
 import { Guid } from '../util/guid';
-import { iDatabaseModel } from './iDatabaseModel';
 
-export class DB_UserSettings implements iDatabaseModel {
+@collection()
+export class DB_UserSettings {
+    @id()
+    id?: string;
     timeZoneName: string;
     activeRconServer: { [guildId: Snowflake]: Guid };
     steamLink: string; // This is steamID64
@@ -11,16 +14,5 @@ export class DB_UserSettings implements iDatabaseModel {
         this.timeZoneName = '';
         this.activeRconServer = {};
         this.steamLink = '';
-    }
-
-    public GetTopLevelKey(): string {
-        return `UserSettings`;
-    }
-
-    public BuildKey(id: string, modifiedRoot: string = ''): string {
-        if (modifiedRoot) {
-            return `${modifiedRoot}/${id}.bson`;
-        }
-        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

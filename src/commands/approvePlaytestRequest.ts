@@ -9,7 +9,6 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid } from '../util/guid';
 import { TimeUtils } from '../util/timeUtils';
 
@@ -43,9 +42,11 @@ module.exports = {
 
         // Create scheduled playtest object
         // const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
+        /*
         const request = await new DatabaseQuery()
             .GetObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
             .Execute(DB_PlaytestRequest);
+        
 
         if (request === null) {
             throw new Error('Scheduled playtest not found');
@@ -109,7 +110,7 @@ module.exports = {
 
         await new DatabaseQuery()
             .CreateNewObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
-            .SetProperty('Id', playtestId)
+            .SetProperty('id', playtestId)
             .SetProperty('game', request.game)
             .SetProperty('mapName', request.mapName)
             .SetProperty('mainAuthor', request.mainAuthor)
@@ -124,6 +125,7 @@ module.exports = {
             .SetProperty('server', <string>server)
             .Execute(DB_ScheduledPlaytest);
 
+            
         // Post announcement in announcement channel
         const guildSettings = await new DatabaseQuery()
             .GetObject<DB_GuildSettings>(interaction.guild_id)
@@ -149,6 +151,7 @@ module.exports = {
             .DeleteObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
             .Execute(DB_PlaytestRequest);
 
+            */
         return new CommandResult('Playtest Scheduled', false, false);
     },
 } as CommandDescription;

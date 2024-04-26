@@ -9,7 +9,6 @@ import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { SteamApi } from '../steam_api/steamApi';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid } from '../util/guid';
 import { TimeUtils } from '../util/timeUtils';
 
@@ -75,7 +74,8 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
 
         // Validate that guild has enabled CS2 playtesting
-        //const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+
+        /*
         const guildSettings = await new DatabaseQuery()
             .GetObject<DB_GuildSettings>(interaction.guild_id)
             .Execute(DB_GuildSettings);
@@ -213,13 +213,15 @@ module.exports = {
             [embed]
         );
 
+        */
         const cr = new CommandResult(
-            `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
+            // `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
+            'The playtest was requested for',
             false,
             false
         );
         cr.embeds = [];
-        cr.embeds.push(embed);
+        // cr.embeds.push(embed);
         return cr;
     },
 } as CommandDescription;

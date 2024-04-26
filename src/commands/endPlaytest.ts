@@ -9,9 +9,7 @@ import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { FTPUtil } from '../util/ftpUtil';
 import { RconUtils } from '../util/rconUtil';
-import { StaticDeclarations } from '../util/staticDeclarations';
 import { InvokeCommand, InvokeCommandInput, LambdaClient } from '@aws-sdk/client-lambda';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 
@@ -23,6 +21,8 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         // Get guild settings and verify there is currently a playtest
         // const guildSettings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+
+        /*
         const guildSettings = await new DatabaseQuery()
             .GetObject<DB_GuildSettings>(interaction.guild_id)
             .Execute(DB_GuildSettings);
@@ -116,7 +116,7 @@ module.exports = {
             title: `Ending playtest of ${playtest.mapName} by ${user.username}`,
             type: 'rich',
             description: `Demo will be retrieved from the server and posted in the announcements channel shortly`,
-            footer: { text: `Playtest Id: ${playtest.Id}` },
+            footer: { text: `Playtest Id: ${playtest.id}` },
         };
         await DiscordApiRoutes.createNewMessage(guildSettings.playtesting.cs2.playtestChannel, '', [embed]);
 
@@ -127,14 +127,14 @@ module.exports = {
             playtestRconServer.ftpUsername,
             playtestRconServer.ftpPassword,
             gameFolder,
-            playtest.Id
+            playtest.id
         );
         if (demoPath === null) {
             return new CommandResult('Unable to download demo from server to lambda', false, false);
         }
 
         // Upload demo to S3
-        const s3ObjectPath = await DatabaseWrapper.UploadFileToS3(demoPath, `Demos/${playtest.Id}.dem`);
+        const s3ObjectPath = await DatabaseWrapper.UploadFileToS3(demoPath, `Demos/${playtest.id}.dem`);
 
         // Post link to object in S3 in announcement channel, mention creator
         await DiscordApiRoutes.createNewMessage(
@@ -159,7 +159,7 @@ module.exports = {
 
         // Call demo parsing lambda
         const lambdaParameters = {
-            DemoName: playtest.Id,
+            DemoName: playtest.id,
             GuildId: interaction.guild_id,
             DemoContext: 0,
             PlaytestType: lambdaPlaytestType,
@@ -181,7 +181,7 @@ module.exports = {
 
         // Move "ScheduledPlaytest" event to a bucket for completed playtests
         try {
-            await DatabaseWrapper.MoveScheduledPlaytestToCompleted(interaction.guild_id, playtest.Id);
+            await DatabaseWrapper.MoveScheduledPlaytestToCompleted(interaction.guild_id, playtest.id);
         } catch (err: any) {
             return new CommandResult(
                 "Playtest successfully ended. All tasks completed except moving ScheduledPlaytests S3 object to the CompletedPlaytests folder (This shouldn't affect anything)",
@@ -190,6 +190,7 @@ module.exports = {
             );
         }
 
+        */
         // Done :)
         return new CommandResult('Playtest successfully ended and all steps completed successfully', false, false);
     },

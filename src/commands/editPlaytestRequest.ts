@@ -4,9 +4,6 @@ import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
-import { Guid } from '../util/guid';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -54,6 +51,7 @@ module.exports = {
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
         const authorId = interactionData.options.find((o) => o.name === 'author_id')?.value;
 
+        /*
         await new DatabaseQuery()
             .ModifyObject<DB_PlaytestRequest>(`${interaction.guild_id}/${playtestId}`)
             .ThrowIfNotExists()
@@ -64,40 +62,7 @@ module.exports = {
             .SetPropertyIfValueNotUndefined('mainAuthor', authorId)
             .Execute(DB_PlaytestRequest);
 
-        /*
-        const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>playtestId);
-
-        let changed = false;
-
-        if (newDate) {
-            request.requestDate = newDate;
-            changed = true;
-        }
-
-        if (newTime) {
-            request.requestTime = newTime;
-            changed = true;
-        }
-
-        if (playtestType) {
-            request.playtestType = playtestType;
-            changed = true;
-        }
-
-        if (workshopId) {
-            request.workshopId = workshopId;
-            changed = true;
-        }
-
-        if (authorId) {
-            request.mainAuthor = authorId;
-            changed = true;
-        }
-
-        await DatabaseWrapper.DeletePlaytestRequest(interaction.guild_id, <Guid>playtestId);
-        await DatabaseWrapper.CreateCS2PlaytestRequest(interaction.guild_id, request);
-
-        */
+            */
         return new CommandResult('Edited playtest request!', false, false);
     },
 } as CommandDescription;

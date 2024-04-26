@@ -11,7 +11,6 @@ import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
 import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid } from '../util/guid';
 
 module.exports = {
@@ -49,6 +48,7 @@ module.exports = {
         );
 
         // Ensure pugging is enabled on this server
+        /*
         const guildSettings = await new DatabaseQuery()
             .GetObject<DB_GuildSettings>(interaction.guild_id)
             .CreateIfNotExist()
@@ -132,7 +132,9 @@ module.exports = {
             .Execute(DB_CS2PugQueue);
 
         // Create embed showing queue
+        */
         try {
+            /*
             const queueStarter = await DiscordApiRoutes.getUser(interaction.member.user.id);
             const embed: Embed = {
                 title: `${queueStarter.username} started a ${gameMode} queue!`,
@@ -192,8 +194,10 @@ module.exports = {
                 'LeavePUG'
             );
 
+            */
             const cr = new CommandResult('', true, false);
             cr.embeds = [];
+            /*
             cr.embeds.push(embed);
 
             cr.components = [];
@@ -204,9 +208,11 @@ module.exports = {
             componentWrapper.components.push(<any>stopQueueButton);
 
             cr.components.push(componentWrapper);
+            */
             return cr;
         } catch {
-            return new CommandResult(`Failed: Time: ${queueObject.queueExpirationTime}`, false, false);
+            // return new CommandResult(`Failed: Time: ${queueObject.queueExpirationTime}`, false, false);
+            return new CommandResult('FIX ME', false, false);
         }
     },
 } as CommandDescription;

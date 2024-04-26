@@ -1,9 +1,11 @@
+import { collection, id } from 's3-db';
 import { Snowflake } from '../discord_api/snowflake';
 import { GenerateGuid, Guid } from '../util/guid';
-import { iDatabaseModel } from './iDatabaseModel';
 
-export class DB_ScheduledPlaytest implements iDatabaseModel {
-    Id: Guid;
+@collection()
+export class DB_ScheduledPlaytest {
+    @id()
+    id: Guid;
     game: string;
     mapName: string;
     mainAuthor: Snowflake;
@@ -18,7 +20,7 @@ export class DB_ScheduledPlaytest implements iDatabaseModel {
     server: string;
 
     constructor() {
-        this.Id = GenerateGuid();
+        this.id = GenerateGuid();
         this.game = '';
         this.mapName = '';
         this.mainAuthor = '';
@@ -31,16 +33,5 @@ export class DB_ScheduledPlaytest implements iDatabaseModel {
         this.moderator = '';
         this.eventId = '';
         this.server = '';
-    }
-
-    public GetTopLevelKey(): string {
-        return `ScheduledPlaytests`;
-    }
-
-    public BuildKey(id: string, modifiedRoot: string = ''): string {
-        if (modifiedRoot) {
-            return `${modifiedRoot}/${id}.bson`;
-        }
-        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

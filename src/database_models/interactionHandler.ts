@@ -1,9 +1,8 @@
 import { Snowflake } from '../discord_api/snowflake';
-import { iDatabaseModel } from './iDatabaseModel';
 
 export type HandlableComponentInteractionType = 'AssignRoles' | 'StopPUG' | 'JoinPUG' | 'LeavePUG' | 'PUGMapVote';
 
-export class DB_ComponentInteractionHandler implements iDatabaseModel {
+export class DB_ComponentInteractionHandler {
     type: HandlableComponentInteractionType;
     creationTimeEpoch: number;
     createdBy: Snowflake;
@@ -14,16 +13,5 @@ export class DB_ComponentInteractionHandler implements iDatabaseModel {
         this.creationTimeEpoch = -1;
         this.createdBy = '';
         this.timesHandled = -1;
-    }
-
-    public GetTopLevelKey(): string {
-        return `InteractableComponents`;
-    }
-
-    public BuildKey(id: string, modifiedRoot: string = ''): string {
-        if (modifiedRoot) {
-            return `${modifiedRoot}/${id}.bson`;
-        }
-        return `${this.GetTopLevelKey()}/${id}.bson`;
     }
 }

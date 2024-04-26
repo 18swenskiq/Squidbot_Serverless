@@ -6,13 +6,12 @@ import { Interaction } from '../discord_api/interaction';
 import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { GenerateGuid, Guid } from '../util/guid';
 
 module.exports = {
     data: new SlashCommandBuilder().setName('roleme').setDescription('Assign roles to yourself!'),
     async execute(interaction: Interaction): Promise<CommandResult> {
-        // const assignableRoles = await DatabaseWrapper.GetGuildRolesAssignable(interaction.guild_id);
+        /*
         const guildSettings = await new DatabaseQuery()
             .GetObject<DB_GuildSettings>(interaction.guild_id)
             .CreateIfNotExist()
@@ -27,6 +26,7 @@ module.exports = {
         // We need to get the server roles for the names for the dropdown
         const allRoles = await DiscordApiRoutes.getGuildRoles(interaction.guild_id);
 
+        */
         const cr = new CommandResult(
             'Select your roles!',
             true,
@@ -37,7 +37,7 @@ module.exports = {
         const roleDropdownComponent = new StringSelectComponent();
 
         const interactionGuid: Guid = GenerateGuid();
-
+        /*
         roleDropdownComponent.min_values = 0;
         roleDropdownComponent.max_values = assignableRoles.length;
         roleDropdownComponent.placeholder = 'Select your roles!';
@@ -51,6 +51,7 @@ module.exports = {
             return <SelectOption>{ label, value, default: isDefault };
         });
 
+        */
         const componentWrapper: any = { type: 1, components: [] };
         componentWrapper.components.push(<any>roleDropdownComponent);
 

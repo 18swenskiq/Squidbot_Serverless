@@ -4,12 +4,10 @@ import { Interaction } from '../discord_api/interaction';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { GenerateGuid, Guid } from '../util/guid';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DB_CS2PugQueue } from '../database_models/cs2PugQueue';
 import { DB_UserSettings } from '../database_models/userSettings';
 import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
-import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
 import { StaticDeclarations } from '../util/staticDeclarations';
 import { SteamApi } from '../steam_api/steamApi';
 import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
@@ -20,6 +18,7 @@ export abstract class HandleComponentInteraction {
     public static async Handle(interaction: Interaction): Promise<void> {
         const data = <ComponentInteractionData>interaction.data;
 
+        /*
         const interactionHandler = await new DatabaseQuery()
             .GetObject<DB_ComponentInteractionHandler>(`${interaction.guild_id}/${data.custom_id}`)
             .Execute(DB_ComponentInteractionHandler);
@@ -48,8 +47,10 @@ export abstract class HandleComponentInteraction {
                 console.log('Unexpected component interaction, aborting');
                 break;
         }
+                */
     }
 
+    /*
     private static async AssignRoles(
         interaction: Interaction,
         data: ComponentInteractionData,
@@ -391,4 +392,5 @@ export abstract class HandleComponentInteraction {
             );
         }
     }
+    */
 }

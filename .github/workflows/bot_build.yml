@@ -5,16 +5,16 @@ name: Node.js CI
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "new_database"]
   pull_request:
-    branches: ["master"]
+    branches: ["master", "new_database"]
 
 jobs:
   build_handler:
     environment: Build
     env:
-      APP_ID: ${{ secrets.APP_ID }}
-      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      APP_ID: ${{ github.ref == 'refs/heads/main' && secrets.APP_ID || secrets.APP_ID_TESTING }}
+      BOT_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.BOT_TOKEN || secrets.BOT_TOKEN_TESTING }}
     runs-on: ubuntu-latest
 
     defaults:
@@ -43,14 +43,14 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-east-2
-          function_name: SquidBotLambda-Delegator
+          function_name: ${{ github.ref == 'refs/heads/main' && 'SquidBotLambda-Delegator' || 'SquidBotLambda-Delegator_Testing' }}
           zip_file: handler_lambda.zip
 
   build_core:
     environment: Build
     env:
-      APP_ID: ${{ secrets.APP_ID }}
-      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      APP_ID: ${{ github.ref == 'refs/heads/main' && secrets.APP_ID || secrets.APP_ID_TESTING }}
+      BOT_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.BOT_TOKEN || secrets.BOT_TOKEN_TESTING }}
     runs-on: ubuntu-latest
 
     defaults:
@@ -91,5 +91,5 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-east-2
-          function_name: SquidBotLambda
+          function_name: ${{ github.ref == 'refs/heads/main' && 'SquidBotLambda' || 'SquidBotLambda_Testing' }}
           zip_file: lambda_bot.zip

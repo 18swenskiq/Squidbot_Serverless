@@ -9,9 +9,7 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 import { FTPUtil } from '../util/ftpUtil';
-import { Guid } from '../util/guid';
 import { RconUtils } from '../util/rconUtil';
 
 module.exports = {
@@ -32,7 +30,8 @@ module.exports = {
             : undefined;
 
         // Check if guild has an active playtest
-        // const settings = await DatabaseWrapper.GetGuildSettings(interaction.guild_id);
+
+        /*
         const settings = await new DatabaseQuery()
             .GetObject<DB_GuildSettings>(interaction.guild_id)
             .Execute(DB_GuildSettings);
@@ -174,13 +173,13 @@ module.exports = {
         await RconUtils.SendRconCommand(server.ip, server.port, server.rconPassword, `exec ${execName}`);
 
         // Send demo record
-        await RconUtils.SendRconCommand(server.ip, server.port, server.rconPassword, `tv_record ${playtest.Id}`);
+        await RconUtils.SendRconCommand(server.ip, server.port, server.rconPassword, `tv_record ${playtest.id}`);
 
         // Set active playtest
         // await DatabaseWrapper.SetGuildActivePlaytest(interaction.guild_id, playtest.Id);
         await new DatabaseQuery()
             .ModifyObject<DB_GuildSettings>(interaction.guild_id)
-            .SetProperty('activePlaytest', playtest.Id)
+            .SetProperty('activePlaytest', playtest.id)
             .Execute(DB_GuildSettings);
 
         const user = await DiscordApiRoutes.getUser(playtest.mainAuthor);
@@ -190,10 +189,10 @@ module.exports = {
         const embed: Embed = {
             title: `Starting playtest of ${playtest.mapName} by ${user.username}`,
             type: 'rich',
-            footer: { text: `Playtest Id: ${playtest.Id}` },
+            footer: { text: `Playtest Id: ${playtest.id}` },
         };
         await DiscordApiRoutes.createNewMessage(playtestChannel, '', [embed]);
-
+*/
         return new CommandResult('Starting playtest', false, false);
     },
 } as CommandDescription;

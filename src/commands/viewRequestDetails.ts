@@ -6,7 +6,6 @@ import { Embed } from '../discord_api/embed';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,8 +22,8 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
 
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
-        // const playtestRequest = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
 
+        /*
         const playtestRequest = await new DatabaseQuery()
             .GetObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
             .Execute(DB_PlaytestRequest);
@@ -80,8 +79,9 @@ module.exports = {
             ],
         };
 
+        */
         const cr = new CommandResult('Use <Other command for something>', true, false);
-        cr.embeds = [embed];
+        // cr.embeds = [embed];
         return cr;
     },
 } as CommandDescription;

@@ -1,11 +1,9 @@
-import { DB_UserSettings } from '../database_models/userSettings';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, InteractionDataOptions, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
-import { DatabaseQuery } from '../util/database_query/databaseQuery';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -44,8 +42,6 @@ module.exports = {
                         interaction.guild_id,
                         server.id
                     );
-
-                    // await new DatabaseQuery().ModifyObject<DB_UserSettings>(interaction.member.user.id).AddToPropertyArray('activeRconServer',)
 
                     return new CommandResult(
                         `Set the active server to \`${server.ip}:${server.port}\` (${server.nickname})`,
