@@ -97,7 +97,7 @@ export abstract class DatabaseWrapper {
     public static async SetActiveRconServer(userId: Snowflake, guildId: Snowflake, rconServerId: Guid): Promise<void> {
         try {
             const obj = await DatabaseWrapper.GetUserSettings_Single(userId);
-            obj.activeRconServer[guildId] = rconServerId;
+            // obj.activeRconServer[guildId] = rconServerId;
 
             await DatabaseWrapper.PutBSONObject(obj, 'UserSettings', userId);
         } catch (err: any) {
