@@ -36,7 +36,7 @@ files.forEach((file) => {
     .replace("let _classDecorators", "//let _classDecorators")
     .replace(
       "let _id_decorators;",
-      "//let _id_decorators;\nlet _classDecorators = null;\nlet _id_decorators = null;"
+      "//let _id_decorators;\nlet _classDecorators = [];\nlet _id_decorators = [];"
     )
     .replace("var __esDecorate = ", "/*\nvar __esDecorate = ")
     .replace("var __runInitializers", "*/\nvar __runInitializers")
