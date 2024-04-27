@@ -40,8 +40,7 @@ files.forEach((file) => {
     )
     .replace("var __esDecorate = ", "/*\nvar __esDecorate = ")
     .replace("var __runInitializers", "*/\nvar __runInitializers")
-    .replace("_id_decorators = [", "//_id_decorators = [")
-    .replace("let //_id_decorators", "let _id_decorators");
+    .replace("_id_decorators = [(", "//_id_decorators = [(");
   fileText = fileText.replace("__esDecorate", "//__esDecorate");
   console.log(`New File text: ${fileText}`);
   console.log("-------------------");
