@@ -14,7 +14,8 @@ let commands = [];
 
 fs.cpSync(
   path.resolve(__dirname, "../dist/"),
-  path.resolve(__dirname, "../commands_temp_dist/")
+  path.resolve(__dirname, "../commands_temp_dist/"),
+  { recursive: true }
 );
 
 let commandsPath = path.resolve(__dirname, "../commands_temp_dist/commands/");
