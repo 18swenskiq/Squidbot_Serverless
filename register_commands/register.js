@@ -34,7 +34,10 @@ files.forEach((file) => {
   console.log(`Old File text: ${fileText}`);
   fileText = fileText
     .replace("let _classDecorators", "//let _classDecorators")
-    .replace("let _id_decorators;", "//let _id_decorators;");
+    .replace(
+      "let _id_decorators;",
+      "//let _id_decorators;\nlet_classDecorators = null;\nlet _id_decorators = null;"
+    );
   console.log(`New File text: ${fileText}`);
   console.log("-------------------");
   fs.writeFileSync(file, fileText);
