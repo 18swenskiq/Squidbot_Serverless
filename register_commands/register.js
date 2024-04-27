@@ -11,11 +11,31 @@ const headers = {
 
 // Load Commands
 let commands = [];
-let commandsPath = path.resolve(__dirname, "../dist/commands/");
+
+fs.cpSync(
+  path.resolve(__dirname, "../dist/"),
+  path.resolve(__dirname, "../commands_temp_dist/")
+);
+
+let commandsPath = path.resolve(__dirname, "../commands_temp_dist/commands/");
+
+// We need to modify all command files to remove any and all decorators
+const files = fs.readdirSync(commandsPath);
+files.forEach((file) => {
+  file = path.join(commandsPath, file);
+  let fileText = fs.readFileSync(file, "utf8");
+  fileText = fileText
+    .replace("@collection()", "//@collection()")
+    .replace("@id()", "//@id()");
+  fs.writeFileSync(file, fileText);
+});
+
 let commandFiles = fs
   .readdirSync(commandsPath)
   .filter((file) => file.endsWith(".js"));
+
 console.log(`Loading ${commandFiles.length} commands...`);
+
 for (const file of commandFiles) {
   let command = require(`${commandsPath}/${file}`);
   commands.push(command);
