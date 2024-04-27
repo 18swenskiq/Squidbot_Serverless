@@ -26,12 +26,16 @@ const modelsPath = path.resolve(
   "../commands_temp_dist/database_models/"
 );
 const files = fs.readdirSync(modelsPath);
+console.log(`Found ${files.length} files to modify`);
 files.forEach((file) => {
+  console.log(`Modifying ${file}...`);
   file = path.join(modelsPath, file);
   let fileText = fs.readFileSync(file, "utf8");
+  console.log(`Old File text: ${fileText}`);
   fileText = fileText
     .replace("@collection()", "//@collection()")
     .replace("@id()", "//@id()");
+  console.log(`New File text: ${fileText}`);
   fs.writeFileSync(file, fileText);
 });
 
