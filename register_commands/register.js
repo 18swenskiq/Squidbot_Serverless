@@ -21,9 +21,13 @@ fs.cpSync(
 let commandsPath = path.resolve(__dirname, "../commands_temp_dist/commands/");
 
 // We need to modify all command files to remove any and all decorators
-const files = fs.readdirSync(commandsPath);
+const modelsPath = path.resolve(
+  __dirname,
+  "../commands_temp_dist/database_models/"
+);
+const files = fs.readdirSync(modelsPath);
 files.forEach((file) => {
-  file = path.join(commandsPath, file);
+  file = path.join(modelsPath, file);
   let fileText = fs.readFileSync(file, "utf8");
   fileText = fileText
     .replace("@collection()", "//@collection()")
