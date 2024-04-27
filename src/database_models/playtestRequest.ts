@@ -5,7 +5,7 @@ import { GenerateGuid, Guid } from '../util/guid';
 @collection()
 export class DB_PlaytestRequest {
     @id()
-    Id: Guid;
+    id: Guid;
     game: string;
     mapName: string;
     mainAuthor: Snowflake;
@@ -19,7 +19,7 @@ export class DB_PlaytestRequest {
     dateSubmitted: Date;
 
     constructor() {
-        this.Id = GenerateGuid();
+        this.id = GenerateGuid();
         this.game = '';
         this.mapName = '';
         this.mainAuthor = '';

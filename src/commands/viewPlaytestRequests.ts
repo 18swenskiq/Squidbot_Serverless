@@ -54,7 +54,7 @@ module.exports = {
 
             embed.fields?.push({
                 name: `${value.mapName} by ${user.username} - (${TimeUtils.GetDiscordTimestampFromDate(composedDate)})`,
-                value: `${value.Id}`,
+                value: `${value.id}`,
                 inline: true,
             });
         }
