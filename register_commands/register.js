@@ -32,10 +32,9 @@ files.forEach((file) => {
   file = path.join(modelsPath, file);
   let fileText = fs.readFileSync(file, "utf8");
   console.log(`Old File text: ${fileText}`);
-  fileText = fileText
-    .replace("@collection()", "//@collection()")
-    .replace("@id()", "//@id()");
+  fileText = fileText.replace("__esDecorate", "//__esDecorate");
   console.log(`New File text: ${fileText}`);
+  console.log("-------------------");
   fs.writeFileSync(file, fileText);
 });
 
