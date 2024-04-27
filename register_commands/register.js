@@ -41,7 +41,7 @@ files.forEach((file) => {
     .replace("var __esDecorate = ", "/*\nvar __esDecorate = ")
     .replace("var __runInitializers", "*/\nvar __runInitializers")
     .replace("_id_decorators = [", "//_id_decorators = [")
-    .replace("__esDecorate", "//__esDecorate");
+    .replace("__esDecorate(", "//__esDecorate(");
   console.log(`New File text: ${fileText}`);
   console.log("-------------------");
   fs.writeFileSync(file, fileText);
