@@ -53,7 +53,7 @@ exports.handler = async (event) => {
       }
 
       const lambdaParams = {
-        FunctionName: "SquidBotLambda",
+        FunctionName: process.env.EXECUTE_LAMBDA_NAME,
         InvocationType: "Event",
         LogType: "Tail",
         Payload: JSON.stringify(strBody),
@@ -70,7 +70,7 @@ exports.handler = async (event) => {
       return { type: 5, data: { flags: 64 } };
     case 4:
       const autocompletelambdaParams = {
-        FunctionName: "SquidBotLambda",
+        FunctionName: process.env.EXECUTE_LAMBDA_NAME,
         InvocationType: "RequestResponse",
         LogType: "Tail",
         Payload: JSON.stringify(strBody),
