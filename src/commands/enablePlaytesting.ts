@@ -7,7 +7,6 @@ import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { AppDataSource } from '../util/data-source';
-import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -72,6 +71,8 @@ module.exports = {
                 const newSettings = new GuildSettings();
                 newSettings.id = interaction.guild_id;
                 newSettings.playtesting = playtesting;
+
+                playtesting.guildSettings = newSettings;
 
                 await guildRepository.save(newSettings);
             } else {
