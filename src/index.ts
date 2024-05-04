@@ -7,10 +7,14 @@ import { StaticDeclarations } from './util/staticDeclarations';
 import { CommandResult } from './discord_api/commandResult';
 import { HandleComponentInteraction } from './interactions/handleComponentInteraction';
 import { DiscordApiRoutes } from './discord_api/apiRoutes';
+import { AppDataSource } from './util/data-source';
 
 exports.handler = async (event: any) => {
     const strBody = event; // should be string, for successful sign
     const body: Interaction = JSON.parse(strBody);
+
+    // Initialize database
+    await AppDataSource.initialize();
 
     // Creating static declarations
     StaticDeclarations.GenerateOptions();
