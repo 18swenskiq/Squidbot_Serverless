@@ -9,7 +9,7 @@ export class GuildSettings {
     @PrimaryColumn('text')
     id: Snowflake;
 
-    @Column({ type: 'text', array: true })
+    @Column({ type: 'text', array: true, default: [] })
     assignableRoles: Snowflake[];
 
     @OneToMany(() => RconServer, (rconServer) => rconServer.guild, { cascade: true })
