@@ -8,10 +8,10 @@ export class GuildPlaytestingInformation {
     @PrimaryGeneratedColumn('uuid')
     id: Guid;
 
-    @OneToOne(() => GuildSettings, (guildSettings) => guildSettings.playtesting)
+    @OneToOne(() => GuildSettings, (guildSettings) => guildSettings.playtesting, { cascade: true })
     guildSettings: GuildSettings;
 
-    @OneToOne(() => CS2PlaytestingInformation)
+    @OneToOne(() => CS2PlaytestingInformation, { cascade: true })
     @JoinColumn()
     cs2: CS2PlaytestingInformation;
 }

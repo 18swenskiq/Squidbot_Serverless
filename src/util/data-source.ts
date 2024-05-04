@@ -9,6 +9,7 @@ import { PlaytestRequest } from '../database_models/playtestRequest';
 import { RconServer } from '../database_models/rconServer';
 import { ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { UserSettings } from '../database_models/userSettings';
+import { AddCascadeSave1714853845629 } from '../migrations/1714853845629-add-cascade-save';
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
@@ -31,7 +32,7 @@ export const AppDataSource = new DataSource({
         ScheduledPlaytest,
         UserSettings,
     ],
-    migrations: ['../migrations/**/*.{.ts,.js}'],
+    migrations: [AddCascadeSave1714853845629],
     ssl: true,
     extra: {
         ssl: {

@@ -1,8 +1,11 @@
+import { GuildPlaytestingInformation } from '../database_models/guildPlaytestingInformation';
+import { GuildSettings } from '../database_models/guildSettings';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { AppDataSource } from '../util/data-source';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 
 module.exports = {
@@ -51,6 +54,15 @@ module.exports = {
         const competitiveChannel = interactionData.options.find((o) => o.name === 'competitive_channel')?.value;
 
         if (playtestGame === 'cs2') {
+            const guildRepository = AppDataSource.getRepository(GuildSettings);
+
+            const guildSettings = await guildRepository.findOneBy({ id: interaction.guild_id });
+
+            if (guildSettings == null) {
+                const newSettings = new GuildSettings();
+                newSettings.id = interaction.guild_id;
+                newSettings.playtesting;
+            }
             /*
             await new DatabaseQuery()
                 .ModifyObject<DB_GuildSettings>(interaction.guild_id)

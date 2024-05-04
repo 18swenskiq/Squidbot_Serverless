@@ -42,19 +42,19 @@ export class CS2PugQueue {
     @Column({ type: 'text' })
     activeChannel: Snowflake;
 
-    @OneToOne(() => ComponentInteractionHandler)
+    @OneToOne(() => ComponentInteractionHandler, { cascade: true })
     @JoinColumn()
     stopQueueButton: ComponentInteractionHandler;
 
-    @OneToOne(() => ComponentInteractionHandler)
+    @OneToOne(() => ComponentInteractionHandler, { cascade: true })
     @JoinColumn()
     joinQueueButton: ComponentInteractionHandler;
 
-    @OneToOne(() => ComponentInteractionHandler)
+    @OneToOne(() => ComponentInteractionHandler, { cascade: true })
     @JoinColumn()
     leaveQueueButton: ComponentInteractionHandler;
 
-    @OneToOne(() => ComponentInteractionHandler)
+    @OneToOne(() => ComponentInteractionHandler, { cascade: true })
     @JoinColumn()
     voteComponent: ComponentInteractionHandler;
 

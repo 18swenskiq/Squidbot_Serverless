@@ -12,7 +12,7 @@ export class ActiveRconServer {
     @Column({ type: 'text' })
     guildId: Snowflake;
 
-    @OneToOne(() => RconServer)
+    @OneToOne(() => RconServer, { cascade: true })
     @JoinColumn()
     rconServer: RconServer;
 

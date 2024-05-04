@@ -12,7 +12,7 @@ export class GuildSettings {
     @Column({ type: 'text', array: true })
     assignableRoles: Snowflake[];
 
-    @OneToMany(() => RconServer, (rconServer) => rconServer.guild)
+    @OneToMany(() => RconServer, (rconServer) => rconServer.guild, { cascade: true })
     rconServers: RconServer[];
 
     @OneToOne(() => GuildPlaytestingInformation, (guildPI) => guildPI.guildSettings)

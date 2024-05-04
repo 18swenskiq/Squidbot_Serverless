@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateDatabase1714851469909 implements MigrationInterface {
-    name = 'CreateDatabase1714851469909'
+export class AddCascadeSave1714853845629 implements MigrationInterface {
+    name = 'AddCascadeSave1714853845629'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "cs2_playtesting_information" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "enabled" boolean NOT NULL, "requestChannel" text NOT NULL, "announceChannel" text NOT NULL, "playtestChannel" text NOT NULL, "competitiveChannel" text NOT NULL, CONSTRAINT "PK_d1204073ec6703005551639a9d3" PRIMARY KEY ("id"))`);

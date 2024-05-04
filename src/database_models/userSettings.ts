@@ -9,7 +9,7 @@ export class UserSettings {
     @Column({ type: 'text', nullable: true })
     timeZoneName?: string;
 
-    @OneToMany(() => ActiveRconServer, (activeRconServer) => activeRconServer.userSettings)
+    @OneToMany(() => ActiveRconServer, (activeRconServer) => activeRconServer.userSettings, { cascade: true })
     activeRconServer: ActiveRconServer[];
 
     @Column({ type: 'text', nullable: true })
