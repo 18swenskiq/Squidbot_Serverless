@@ -1,12 +1,12 @@
-import { DB_ComponentInteractionHandler } from '../database_models/interactionHandler';
+import { ComponentInteractionHandler } from '../database_models/componentInteractionHandler';
 import { ComponentInteractionData } from '../discord_api/componentInteraction';
 import { Interaction } from '../discord_api/interaction';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { GenerateGuid, Guid } from '../util/guid';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
-import { DB_GuildSettings } from '../database_models/guildSettings';
-import { DB_CS2PugQueue } from '../database_models/cs2PugQueue';
-import { DB_UserSettings } from '../database_models/userSettings';
+import { GuildSettings } from '../database_models/guildSettings';
+import { CS2PugQueue } from '../database_models/cs2PugQueue';
+import { UserSettings } from '../database_models/userSettings';
 import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
 import { StaticDeclarations } from '../util/staticDeclarations';
 import { SteamApi } from '../steam_api/steamApi';

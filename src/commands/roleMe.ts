@@ -1,10 +1,10 @@
-import { DB_GuildSettings } from '../database_models/guildSettings';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { Interaction } from '../discord_api/interaction';
 import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { HandlableComponentInteractionType } from '../enums/HandlableComponentInteractionType';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { GenerateGuid, Guid } from '../util/guid';
 
@@ -62,7 +62,7 @@ module.exports = {
             interaction.member.user.id,
             interaction.guild_id,
             interactionGuid,
-            'AssignRoles'
+            HandlableComponentInteractionType.ASSIGNROLES
         );
 
         return cr;

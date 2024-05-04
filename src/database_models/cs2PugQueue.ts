@@ -1,41 +1,73 @@
-import { collection, id } from 's3-db';
+import {
+    AfterInsert,
+    AfterLoad,
+    AfterUpdate,
+    Column,
+    Entity,
+    JoinColumn,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Snowflake } from '../discord_api/snowflake';
 import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
 import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
-import { GenerateGuid, Guid } from '../util/guid';
+import { Guid } from '../util/guid';
+import { ComponentInteractionHandler } from './componentInteractionHandler';
 
-@collection()
-export class DB_CS2PugQueue {
-    @id()
+@Entity()
+export class CS2PugQueue {
+    @PrimaryGeneratedColumn('uuid')
     id: Guid;
+
+    @Column({ type: 'timestamptz' })
     queueStartTime: Date;
-    queueExpirationTime: Date;
-    usersInQueue: Snowflake[];
+
+    @Column({ type: 'text', array: true })
+    userIdsInQueue: Snowflake[];
+
+    @Column({
+        type: 'enum',
+        enum: CS2PUGGameMode,
+        default: CS2PUGGameMode.undefined,
+    })
     gameType: CS2PUGGameMode;
+
+    @Column({
+        type: 'enum',
+        enum: CS2PUGMapSelectionMode,
+        default: CS2PUGMapSelectionMode.UNDEFINED,
+    })
     mapSelectionMode: CS2PUGMapSelectionMode;
+
+    @Column({ type: 'text' })
     activeChannel: Snowflake;
 
-    stopQueueButtonId: Guid;
-    joinQueueButtonId: Guid;
-    leaveQueueButtonId: Guid;
+    @OneToOne(() => ComponentInteractionHandler)
+    @JoinColumn()
+    stopQueueButton: ComponentInteractionHandler;
 
-    voteComponentId: Guid;
+    @OneToOne(() => ComponentInteractionHandler)
+    @JoinColumn()
+    joinQueueButton: ComponentInteractionHandler;
+
+    @OneToOne(() => ComponentInteractionHandler)
+    @JoinColumn()
+    leaveQueueButton: ComponentInteractionHandler;
+
+    @OneToOne(() => ComponentInteractionHandler)
+    @JoinColumn()
+    voteComponent: ComponentInteractionHandler;
+
+    @Column({ type: 'simple-json', array: true })
     mapVotes: { userId: string; mapVote: string }[] = [];
 
-    constructor() {
-        this.id = GenerateGuid();
-        this.queueStartTime = new Date();
+    queueExpirationTime: Date;
 
+    @AfterLoad()
+    @AfterInsert()
+    @AfterUpdate()
+    updateQueueExpirationTime() {
         this.queueExpirationTime = new Date();
         this.queueExpirationTime.setMinutes(this.queueStartTime.getMinutes() + 15);
-
-        this.usersInQueue = [];
-        this.gameType = CS2PUGGameMode.undefined;
-        this.mapSelectionMode = CS2PUGMapSelectionMode.undefined;
-        this.activeChannel = '';
-        this.stopQueueButtonId = GenerateGuid();
-        this.joinQueueButtonId = GenerateGuid();
-        this.leaveQueueButtonId = GenerateGuid();
-        this.voteComponentId = GenerateGuid();
     }
 }

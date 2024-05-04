@@ -1,6 +1,3 @@
-import { DB_CS2PugQueue } from '../database_models/cs2PugQueue';
-import { DB_GuildSettings } from '../database_models/guildSettings';
-import { DB_UserSettings } from '../database_models/userSettings';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -35,8 +32,8 @@ module.exports = {
                 .setDescription('The map selection mode of the queue')
                 .setRequired(true)
                 .addChoices([
-                    { name: 'Random', value: CS2PUGMapSelectionMode.random },
-                    { name: 'All Pick', value: CS2PUGMapSelectionMode.allpick },
+                    { name: 'Random', value: CS2PUGMapSelectionMode.RANDOM },
+                    { name: 'All Pick', value: CS2PUGMapSelectionMode.ALLPICK },
                 ])
         ),
     async execute(interaction: Interaction): Promise<CommandResult> {

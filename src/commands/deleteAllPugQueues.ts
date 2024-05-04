@@ -1,5 +1,3 @@
-import { DB_CS2PugQueue } from '../database_models/cs2PugQueue';
-import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';

@@ -1,14 +1,17 @@
-import { collection, id } from 's3-db';
-import { Snowflake } from '../discord_api/snowflake';
-import { Guid } from '../util/guid';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { ActiveRconServer } from './activeRconServer';
 
-@collection()
-export class DB_UserSettings {
-    @id()
-    id?: string;
+@Entity()
+export class UserSettings {
+    @PrimaryColumn('text')
+    id: string;
+
+    @Column({ type: 'text', nullable: true })
     timeZoneName?: string;
-    activeRconServer?: { [guildId: Snowflake]: Guid };
-    steamLink?: string; // This is steamID64
 
-    constructor() {}
+    @OneToMany(() => ActiveRconServer, (activeRconServer) => activeRconServer.userSettings)
+    activeRconServer: ActiveRconServer[];
+
+    @Column({ type: 'text', nullable: true })
+    steamLink?: string; // This is steamID64
 }

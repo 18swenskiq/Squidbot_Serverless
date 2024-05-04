@@ -1,4 +1,4 @@
-import { type CommandDescription } from '../discord_api/command';
+import { type CommandDescription } from '../discord_api/command.js';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, InteractionDataOptions, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';

@@ -1,5 +1,4 @@
 import { InvokeCommand, InvokeCommandInput, LambdaClient } from '@aws-sdk/client-lambda';
-import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';

@@ -1,10 +1,10 @@
-import { DB_CS2PugQueue } from '../database_models/cs2PugQueue';
+import { CS2PugQueue } from '../database_models/cs2PugQueue';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
 import { SteamApi } from '../steam_api/steamApi';
 
 export abstract class PugQueueUtil {
-    public static async SetupPUG(queue: DB_CS2PugQueue, mapIds: string[]): Promise<void> {
+    public static async SetupPUG(queue: CS2PugQueue, mapIds: string[]): Promise<void> {
         const randomMap = mapIds[Math.floor(Math.random() * mapIds.length)];
         const mapDetails = await SteamApi.GetCSGOWorkshopMapDetail(randomMap);
 

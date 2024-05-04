@@ -1,15 +1,16 @@
-import { DB_GuildSettings } from '../database_models/guildSettings';
-import { DB_PlaytestRequest } from '../database_models/playtestRequest';
+import { GuildSettings } from '../database_models/guildSettings';
+import { PlaytestRequest } from '../database_models/playtestRequest';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { Embed } from '../discord_api/embed';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
-import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { CS2PlaytestGameMode } from '../enums/CS2PlaytestGameMode';
+import { CS2PlaytestType } from '../enums/CS2PlaytestType';
+import { Game } from '../enums/Game';
 import { SteamApi } from '../steam_api/steamApi';
-import { DatabaseWrapper } from '../util/databaseWrapper';
-import { GenerateGuid } from '../util/guid';
+import { AppDataSource } from '../util/data-source';
 import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
@@ -31,8 +32,8 @@ module.exports = {
                 .setDescription('The gamemode of the map')
                 .setRequired(true)
                 .addChoices([
-                    { name: 'Defuse', value: 'defuse' },
-                    { name: 'Hostage', value: 'hostage' },
+                    { name: 'Defuse', value: CS2PlaytestGameMode.DEFUSE },
+                    { name: 'Hostage', value: CS2PlaytestGameMode.HOSTAGE },
                 ])
         )
         .addStringOption((option) =>
@@ -41,9 +42,9 @@ module.exports = {
                 .setDescription('The type of the playtest')
                 .setRequired(true)
                 .addChoices([
-                    { name: '2v2', value: '2v2' },
-                    { name: '5v5', value: '5v5' },
-                    { name: '10v10', value: '10v10' },
+                    { name: '2v2', value: CS2PlaytestType.WINGMAN },
+                    { name: '5v5', value: CS2PlaytestType.CLASSIC },
+                    { name: '10v10', value: CS2PlaytestType.CASUAL },
                 ])
         )
         .addStringOption((option) =>
@@ -75,10 +76,14 @@ module.exports = {
 
         // Validate that guild has enabled CS2 playtesting
 
+        const guildRepository = AppDataSource.getRepository(GuildSettings);
+        const guildSettings = await guildRepository.findOneBy({ id: interaction.guild_id });
+
         /*
         const guildSettings = await new DatabaseQuery()
             .GetObject<DB_GuildSettings>(interaction.guild_id)
             .Execute(DB_GuildSettings);
+        */
 
         if (guildSettings === null) {
             throw new Error('Could not find guild settings');
@@ -147,6 +152,23 @@ module.exports = {
             );
         }
 
+        const requestRepository = AppDataSource.getRepository(PlaytestRequest);
+
+        const request = new PlaytestRequest();
+        request.mapName = <string>mapName;
+        request.game = Game.cs2;
+        request.mainAuthor = interaction.member.user.id;
+        request.otherAuthors = otherCreators?.split(',') ?? [];
+        request.thumbnailImage = map.preview_url;
+        request.requestDate = TimeUtils.GetDBFriendlyDateString(composedRequestDateTime);
+        request.requestTime = TimeUtils.GetDBFriendlyTimeString(composedRequestDateTime);
+        request.workshopId = <string>workshopId;
+        request.mapType = <CS2PlaytestGameMode>gameMode;
+        request.playtestType = <CS2PlaytestType>playtestType;
+        request.dateSubmitted = currentDate;
+
+        await requestRepository.save(request);
+        /*
         const playtestId = GenerateGuid();
         await new DatabaseQuery()
             .CreateNewObject<DB_PlaytestRequest>(`${interaction.guild_id}/${playtestId}`)
@@ -163,6 +185,7 @@ module.exports = {
             .SetProperty('playtestType', <string>playtestType)
             .SetProperty('dateSubmitted', currentDate)
             .Execute(DB_PlaytestRequest);
+        */
 
         // Now that we've sent this to the DB, we can reset the offset
         composedRequestDateTime.setMinutes(composedRequestDateTime.getMinutes() + easternOffset);
@@ -170,7 +193,7 @@ module.exports = {
         // Create embed showcasing successful request
         const embed: Embed = {
             title: `${mapName} by ${interaction.member.user.username}`,
-            description: `||${playtestId}||`,
+            description: `||${request.id}||`,
             type: 'rich',
             image: {
                 url: map.preview_url,
@@ -213,7 +236,6 @@ module.exports = {
             [embed]
         );
 
-        */
         const cr = new CommandResult(
             // `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
             'The playtest was requested for',
@@ -221,7 +243,7 @@ module.exports = {
             false
         );
         cr.embeds = [];
-        // cr.embeds.push(embed);
+        cr.embeds.push(embed);
         return cr;
     },
 } as CommandDescription;

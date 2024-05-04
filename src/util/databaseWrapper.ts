@@ -10,19 +10,16 @@ import {
     PutObjectCommand,
     PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
-import { BSON, EJSON, Document } from 'bson';
-import { DB_UserSettings } from '../database_models/userSettings';
+import { UserSettings } from '../database_models/userSettings';
 import { Snowflake } from '../discord_api/snowflake';
 import { StaticDeclarations } from './staticDeclarations';
-import { DB_GuildSettings } from '../database_models/guildSettings';
+import { GuildSettings } from '../database_models/guildSettings';
 import { Guid } from './guid';
-import {
-    DB_ComponentInteractionHandler,
-    HandlableComponentInteractionType,
-} from '../database_models/interactionHandler';
-import { DB_RconServer } from '../database_models/rconServer';
-import { DB_PlaytestRequest } from '../database_models/playtestRequest';
+import { ComponentInteractionHandler } from '../database_models/componentInteractionHandler';
+import { RconServer } from '../database_models/rconServer';
+import { PlaytestRequest } from '../database_models/playtestRequest';
 import { promises as fs } from 'fs';
+import { HandlableComponentInteractionType } from '../enums/HandlableComponentInteractionType';
 
 const bucketName = 'squidbot';
 type ObjectDirectory =
@@ -39,7 +36,7 @@ export abstract class DatabaseWrapper {
     public static async ToggleGuildRoleAssignable(guildId: Snowflake, roleId: Snowflake): Promise<string> {
         let obj: any;
         try {
-            obj = await DatabaseWrapper.GetBSONObject<DB_GuildSettings>('GuildSettings', guildId);
+            obj = await DatabaseWrapper.GetBSONObject<GuildSettings>('GuildSettings', guildId);
         } catch (err: any) {
             console.log('error getting object from db, file: ', `GuildSettings/${guildId}.bson`, err);
             obj = {
@@ -74,24 +71,21 @@ export abstract class DatabaseWrapper {
         return retString;
     }
 
-    public static async GetActiveRconServer(userId: Snowflake, guildId: Snowflake): Promise<DB_RconServer> {
+    public static async GetActiveRconServer(userId: Snowflake, guildId: Snowflake): Promise<RconServer> {
         const user = await DatabaseWrapper.GetUserSettings_Single(userId);
 
         console.log('user', user);
 
         if (user.activeRconServer && guildId in user.activeRconServer) {
             try {
-                const server = await DatabaseWrapper.GetBSONObject<DB_RconServer>(
-                    'RconServers',
-                    user.activeRconServer[guildId]
-                );
+                const server = await DatabaseWrapper.GetBSONObject<RconServer>('RconServers', '');
                 return server;
             } catch {
-                return <DB_RconServer>{};
+                return <RconServer>{};
             }
         }
 
-        return <DB_RconServer>{};
+        return <RconServer>{};
     }
 
     public static async SetActiveRconServer(userId: Snowflake, guildId: Snowflake, rconServerId: Guid): Promise<void> {
@@ -105,20 +99,20 @@ export abstract class DatabaseWrapper {
         }
     }
 
-    public static async GetGameServers(guildId: Snowflake): Promise<DB_RconServer[]> {
+    public static async GetGameServers(guildId: Snowflake): Promise<RconServer[]> {
         try {
             const objects = await DatabaseWrapper.ListObjects('RconServers');
 
-            let rconServers: DB_RconServer[] = [];
+            let rconServers: RconServer[] = [];
             for (let i = 1; i < objects.length; i++) {
                 const serverEntry = objects[i];
 
-                const rconServer = await DatabaseWrapper.GetBSONObject<DB_RconServer>(
+                const rconServer = await DatabaseWrapper.GetBSONObject<RconServer>(
                     'RconServers',
                     serverEntry.split('/')[1].split('.')[0]
                 );
 
-                if (rconServer.guildId === guildId) {
+                if (rconServer.guild.id === guildId) {
                     rconServers.push(rconServer);
                 }
             }
@@ -129,32 +123,32 @@ export abstract class DatabaseWrapper {
         }
     }
 
-    public static async GetUserSettings_Single(userId: Snowflake): Promise<DB_UserSettings> {
+    public static async GetUserSettings_Single(userId: Snowflake): Promise<UserSettings> {
         try {
-            const obj = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', userId);
+            const obj = await DatabaseWrapper.GetBSONObject<UserSettings>('UserSettings', userId);
 
             if (!obj.activeRconServer) {
-                obj.activeRconServer = {};
+                obj.activeRconServer = [];
             }
 
             return obj;
         } catch (err: any) {
-            return <DB_UserSettings>{ activeRconServer: {} };
+            return <UserSettings>{ activeRconServer: {} };
         }
     }
 
-    public static async GetUserSettings(userIds: Snowflake[]): Promise<Record<Snowflake, DB_UserSettings>> {
+    public static async GetUserSettings(userIds: Snowflake[]): Promise<Record<Snowflake, UserSettings>> {
         let listObj = await DatabaseWrapper.ListObjects('UserSettings');
         listObj.shift();
         listObj = listObj.map((o) => o.split('/')[1].replace('.bson', ''));
 
         const validUserIds = listObj.filter((l) => userIds.includes(l));
 
-        const retObj: Record<Snowflake, DB_UserSettings> = {};
+        const retObj: Record<Snowflake, UserSettings> = {};
 
         for (let i = 0; i < validUserIds.length; i++) {
             const id = validUserIds[i];
-            const res = await DatabaseWrapper.GetBSONObject<DB_UserSettings>('UserSettings', id);
+            const res = await DatabaseWrapper.GetBSONObject<UserSettings>('UserSettings', id);
 
             if (Object.keys(res).length > 0) {
                 retObj[id] = res;
@@ -164,7 +158,7 @@ export abstract class DatabaseWrapper {
         return retObj;
     }
 
-    public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, DB_PlaytestRequest>> {
+    public static async GetPlaytestRequests(guildId: Snowflake): Promise<Record<Snowflake, PlaytestRequest>> {
         let objects = await DatabaseWrapper.ListObjects(`PlaytestRequests`);
 
         objects = objects.filter((o) => o.endsWith('bson'));
@@ -172,11 +166,11 @@ export abstract class DatabaseWrapper {
         objects = objects.filter((o) => o.includes(guildId));
         objects = objects.map((o) => o.replace('PlaytestRequests/', ''));
 
-        const retObj: Record<Snowflake, DB_PlaytestRequest> = {};
+        const retObj: Record<Snowflake, PlaytestRequest> = {};
 
         for (let i = 0; i < objects.length; i++) {
             const id = objects[i];
-            const res = await DatabaseWrapper.GetBSONObject<DB_PlaytestRequest>(`PlaytestRequests`, id);
+            const res = await DatabaseWrapper.GetBSONObject<PlaytestRequest>(`PlaytestRequests`, id);
 
             if (Object.keys(res).length > 0) {
                 retObj[id] = res;
@@ -193,7 +187,7 @@ export abstract class DatabaseWrapper {
         handleType: HandlableComponentInteractionType,
         handled: number = 0
     ): Promise<void> {
-        const obj = <DB_ComponentInteractionHandler>{
+        const obj = <ComponentInteractionHandler>{
             type: handleType,
             creationTimeEpoch: Date.now(),
             createdBy: creator,
@@ -323,15 +317,17 @@ export abstract class DatabaseWrapper {
             throw Error('thing was undefined');
         }
 
+        /*
         const doc: Document = BSON.deserialize(respBytes);
         const obj = JSON.parse(EJSON.stringify(doc));
-
-        return obj as T;
+        */
+        return {} as T;
     }
 
     private static async PutBSONObject(obj: any, dir: ObjectDirectory, key: string): Promise<boolean> {
         const itemKey = `${dir}/${key}.bson`;
 
+        /*
         const binObj = BSON.serialize(obj);
 
         const input: PutObjectCommandInput = {
@@ -342,6 +338,7 @@ export abstract class DatabaseWrapper {
 
         const command = new PutObjectCommand(input);
         await StaticDeclarations.s3client.send(command);
+        */
         return true;
     }
 }

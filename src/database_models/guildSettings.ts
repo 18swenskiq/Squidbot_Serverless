@@ -1,38 +1,27 @@
-import { collection, id } from 's3-db';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { Snowflake } from '../discord_api/snowflake';
 import { Guid } from '../util/guid';
+import { GuildPlaytestingInformation } from './guildPlaytestingInformation';
+import { RconServer } from './rconServer';
 
-@collection()
-export class DB_GuildSettings {
-    @id()
-    id?: Guid;
+@Entity()
+export class GuildSettings {
+    @PrimaryColumn('text')
+    id: Snowflake;
+
+    @Column({ type: 'text', array: true })
     assignableRoles: Snowflake[];
-    rconServers: Guid[];
-    playtesting: {
-        cs2: {
-            enabled: boolean;
-            requestChannel: Snowflake;
-            announceChannel: Snowflake;
-            playtestChannel: Snowflake;
-            competitiveChannel: Snowflake;
-        };
-    };
-    activePlaytest: Guid | null;
-    pugging_cs2_enabled: boolean;
 
-    constructor() {
-        this.assignableRoles = [];
-        this.rconServers = [];
-        this.playtesting = {
-            cs2: {
-                enabled: false,
-                requestChannel: '',
-                announceChannel: '',
-                playtestChannel: '',
-                competitiveChannel: '',
-            },
-        };
-        this.activePlaytest = null;
-        this.pugging_cs2_enabled = false;
-    }
+    @OneToMany(() => RconServer, (rconServer) => rconServer.guild)
+    rconServers: RconServer[];
+
+    @OneToOne(() => GuildPlaytestingInformation, (guildPI) => guildPI.guildSettings)
+    @JoinColumn()
+    playtesting: GuildPlaytestingInformation;
+
+    @Column({ type: 'uuid', nullable: true, default: null })
+    activePlaytest: Guid | null;
+
+    @Column({ type: 'bool', default: false })
+    pugging_cs2_enabled: boolean;
 }

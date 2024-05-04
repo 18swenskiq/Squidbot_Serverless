@@ -4,7 +4,6 @@ import { Interaction, InteractionData } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { CommandResult } from '../discord_api/commandResult';
-import { DB_UserSettings } from '../database_models/userSettings';
 
 module.exports = {
     data: new SlashCommandBuilder()

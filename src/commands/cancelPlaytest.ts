@@ -1,5 +1,3 @@
-import { DB_PlaytestRequest } from '../database_models/playtestRequest';
-import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';

@@ -10,8 +10,6 @@ import { DatabaseWrapper } from '../util/databaseWrapper';
 import { FTPUtil } from '../util/ftpUtil';
 import { RconUtils } from '../util/rconUtil';
 import { InvokeCommand, InvokeCommandInput, LambdaClient } from '@aws-sdk/client-lambda';
-import { DB_GuildSettings } from '../database_models/guildSettings';
-import { DB_ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 
 module.exports = {
     data: new SlashCommandBuilder()

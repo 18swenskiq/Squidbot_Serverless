@@ -1,4 +1,3 @@
-import { DB_GuildSettings } from '../database_models/guildSettings';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';

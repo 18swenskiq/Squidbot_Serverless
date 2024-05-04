@@ -1,37 +1,50 @@
-import { collection, id } from 's3-db';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Snowflake } from '../discord_api/snowflake';
-import { GenerateGuid, Guid } from '../util/guid';
+import { Guid } from '../util/guid';
+import { Game } from '../enums/Game';
+import { CS2PlaytestGameMode } from '../enums/CS2PlaytestGameMode';
+import { CS2PlaytestType } from '../enums/CS2PlaytestType';
+import { RconServer } from './rconServer';
 
-@collection()
-export class DB_ScheduledPlaytest {
-    @id()
+@Entity()
+export class ScheduledPlaytest {
+    @PrimaryGeneratedColumn('uuid')
     id: Guid;
-    game: string;
-    mapName: string;
-    mainAuthor: Snowflake;
-    otherAuthors: Snowflake[];
-    thumbnailImage: string;
-    playtestTime: Date;
-    workshopId: string;
-    mapType: string;
-    playtestType: string;
-    moderator: Snowflake;
-    eventId: Snowflake;
-    server: string;
 
-    constructor() {
-        this.id = GenerateGuid();
-        this.game = '';
-        this.mapName = '';
-        this.mainAuthor = '';
-        this.otherAuthors = [];
-        this.thumbnailImage = '';
-        this.playtestTime = new Date();
-        this.workshopId = '';
-        this.mapType = '';
-        this.playtestType = '';
-        this.moderator = '';
-        this.eventId = '';
-        this.server = '';
-    }
+    @Column({ type: 'enum', enum: Game, default: Game.undefined })
+    game: Game;
+
+    @Column({ type: 'text' })
+    mapName: string;
+
+    @Column({ type: 'text' })
+    mainAuthor: Snowflake;
+
+    @Column({ type: 'text', array: true })
+    otherAuthors: Snowflake[];
+
+    @Column({ type: 'text' })
+    thumbnailImage: string;
+
+    @Column({ type: 'timestamptz' })
+    playtestTime: Date;
+
+    @Column({ type: 'text' })
+    workshopId: string;
+
+    @Column({ type: 'enum', enum: CS2PlaytestGameMode, default: CS2PlaytestGameMode.UNDEFINED })
+    mapType: CS2PlaytestGameMode;
+
+    @Column({ type: 'enum', enum: CS2PlaytestType, default: CS2PlaytestType.UNDEFINED })
+    playtestType: CS2PlaytestType;
+
+    @Column({ type: 'text' })
+    moderator: Snowflake;
+
+    @Column({ type: 'text' })
+    eventId: Snowflake;
+
+    @OneToOne(() => RconServer)
+    @JoinColumn()
+    server: RconServer;
 }
