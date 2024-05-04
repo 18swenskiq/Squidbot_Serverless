@@ -70,6 +70,8 @@ exports.handler = async (event: any) => {
                     console.log('executing');
                     const result = await chosenCommand.execute(body);
                     console.log('Returning result:', result);
+
+                    await AppDataSource.destroy();
                     await sendCommandResponse(body, result);
                     return { statusCode: 200 };
                 } catch (error: any) {
