@@ -1,3 +1,4 @@
+import { CS2PlaytestingInformation } from '../database_models/cs2PlaytestingInformation';
 import { GuildPlaytestingInformation } from '../database_models/guildPlaytestingInformation';
 import { GuildSettings } from '../database_models/guildSettings';
 import { type CommandDescription } from '../discord_api/command';
@@ -59,25 +60,33 @@ module.exports = {
             const guildSettings = await guildRepository.findOneBy({ id: interaction.guild_id });
 
             if (guildSettings == null) {
+                const cs2 = new CS2PlaytestingInformation();
+                cs2.requestChannel = <string>requestChannel;
+                cs2.announceChannel = <string>announceChannel;
+                cs2.playtestChannel = <string>playtestChannel;
+                cs2.competitiveChannel = <string>competitiveChannel;
+
+                const playtesting = new GuildPlaytestingInformation();
+                playtesting.cs2 = cs2;
+
                 const newSettings = new GuildSettings();
                 newSettings.id = interaction.guild_id;
-                newSettings.playtesting;
-            }
-            /*
-            await new DatabaseQuery()
-                .ModifyObject<DB_GuildSettings>(interaction.guild_id)
-                .SetProperty('playtesting', {
-                    cs2: {
-                        requestChannel: <string>requestChannel,
-                        announceChannel: <string>announceChannel,
-                        playtestChannel: <string>playtestChannel,
-                        competitiveChannel: <string>competitiveChannel,
-                        enabled: true,
-                    },
-                })
-                .Execute(DB_GuildSettings);
+                newSettings.playtesting = playtesting;
 
-                */
+                await guildRepository.save(newSettings);
+            } else {
+                const cs2 = new CS2PlaytestingInformation();
+                cs2.requestChannel = <string>requestChannel;
+                cs2.announceChannel = <string>announceChannel;
+                cs2.playtestChannel = <string>playtestChannel;
+                cs2.competitiveChannel = <string>competitiveChannel;
+
+                const playtesting = new GuildPlaytestingInformation();
+                playtesting.cs2 = cs2;
+
+                guildSettings.playtesting = playtesting;
+                await guildRepository.save(playtesting);
+            }
             return new CommandResult('Enabled CS2 playtesting on this server!', true, false);
         } else {
             return new CommandResult('Unexpected game provided', true, false);
