@@ -59,21 +59,6 @@ module.exports = {
             const guildSettings = await guildRepository.findOneBy({ id: interaction.guild_id });
 
             if (guildSettings == null) {
-                const cs2 = new CS2PlaytestingInformation();
-                cs2.requestChannel = <string>requestChannel;
-                cs2.announceChannel = <string>announceChannel;
-                cs2.playtestChannel = <string>playtestChannel;
-                cs2.competitiveChannel = <string>competitiveChannel;
-
-                const playtesting = new GuildPlaytestingInformation();
-                playtesting.cs2 = cs2;
-
-                const newSettings = new GuildSettings();
-                newSettings.id = interaction.guild_id;
-                newSettings.playtesting = playtesting;
-
-                playtesting.guildSettings = newSettings;
-
                 await guildRepository.save(<GuildSettings>{
                     id: interaction.guild_id,
                     playtesting: <GuildPlaytestingInformation>{
