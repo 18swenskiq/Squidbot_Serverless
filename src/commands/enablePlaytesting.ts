@@ -58,6 +58,8 @@ module.exports = {
 
             const guildSettings = await guildRepository.findOneBy({ id: interaction.guild_id });
 
+            console.log('Checking guild settings');
+            console.log(guildSettings);
             if (guildSettings == null) {
                 await guildRepository.save(<GuildSettings>{
                     id: interaction.guild_id,
@@ -67,6 +69,7 @@ module.exports = {
                             announceChannel: <string>announceChannel,
                             playtestChannel: <string>playtestChannel,
                             competitiveChannel: <string>competitiveChannel,
+                            enabled: true,
                         },
                     },
                 });
