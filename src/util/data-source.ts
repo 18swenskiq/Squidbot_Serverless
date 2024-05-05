@@ -18,7 +18,6 @@ export const AppDataSource = new DataSource({
     username: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     database: 'squidbot_testing',
-    synchronize: true,
     logging: true,
     entities: [
         ActiveRconServer,
