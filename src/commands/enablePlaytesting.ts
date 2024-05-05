@@ -74,7 +74,17 @@ module.exports = {
 
                 playtesting.guildSettings = newSettings;
 
-                await guildRepository.save(newSettings);
+                await guildRepository.save(<GuildSettings>{
+                    id: interaction.guild_id,
+                    playtesting: <GuildPlaytestingInformation>{
+                        cs2: <CS2PlaytestingInformation>{
+                            requestChannel: <string>requestChannel,
+                            announceChannel: <string>announceChannel,
+                            playtestChannel: <string>playtestChannel,
+                            competitiveChannel: <string>competitiveChannel,
+                        },
+                    },
+                });
             } else {
                 const cs2 = new CS2PlaytestingInformation();
                 cs2.requestChannel = <string>requestChannel;
