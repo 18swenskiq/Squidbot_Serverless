@@ -77,7 +77,15 @@ module.exports = {
         // Validate that guild has enabled CS2 playtesting
 
         const guildRepository = AppDataSource.getRepository(GuildSettings);
-        const guildSettings = await guildRepository.findOneBy({ id: interaction.guild_id });
+
+        const guildSettings = await guildRepository.findOne({
+            where: { id: interaction.guild_id },
+            relations: {
+                playtesting: {
+                    cs2: true,
+                },
+            },
+        });
 
         /*
         const guildSettings = await new DatabaseQuery()
