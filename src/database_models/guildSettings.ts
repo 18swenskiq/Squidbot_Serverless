@@ -15,7 +15,7 @@ export class GuildSettings {
     @OneToMany(() => RconServer, (rconServer) => rconServer.guild, { cascade: true })
     rconServers: RconServer[];
 
-    @OneToOne(() => GuildPlaytestingInformation, (guildPI) => guildPI.guildSettings)
+    @OneToOne(() => GuildPlaytestingInformation, (guildPI) => guildPI.guildSettings, { cascade: true })
     @JoinColumn()
     playtesting: GuildPlaytestingInformation;
 
