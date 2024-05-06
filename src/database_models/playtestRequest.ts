@@ -4,10 +4,9 @@ import { Guid } from '../util/guid';
 import { Game } from '../enums/Game';
 import { CS2PlaytestGameMode } from '../enums/CS2PlaytestGameMode';
 import { CS2PlaytestType } from '../enums/CS2PlaytestType';
-import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class PlaytestRequest implements IDatabaseModel {
+export class PlaytestRequest {
     @PrimaryGeneratedColumn('uuid')
     id: Guid;
 

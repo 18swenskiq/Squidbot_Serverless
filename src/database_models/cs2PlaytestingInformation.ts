@@ -1,10 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Guid } from '../util/guid';
 import { Snowflake } from '../discord_api/snowflake';
-import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class CS2PlaytestingInformation implements IDatabaseModel {
+export class CS2PlaytestingInformation {
     @PrimaryGeneratedColumn('uuid')
     id: Guid;
 

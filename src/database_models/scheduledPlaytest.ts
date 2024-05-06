@@ -5,10 +5,9 @@ import { Game } from '../enums/Game';
 import { CS2PlaytestGameMode } from '../enums/CS2PlaytestGameMode';
 import { CS2PlaytestType } from '../enums/CS2PlaytestType';
 import { RconServer } from './rconServer';
-import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class ScheduledPlaytest implements IDatabaseModel {
+export class ScheduledPlaytest {
     @PrimaryGeneratedColumn('uuid')
     id: Guid;
 

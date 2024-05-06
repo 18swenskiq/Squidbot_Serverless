@@ -1,9 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { ActiveRconServer } from './activeRconServer';
-import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class UserSettings implements IDatabaseModel {
+export class UserSettings {
     @PrimaryColumn('text')
     id: string;
 

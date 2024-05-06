@@ -1,10 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Snowflake } from '../discord_api/snowflake';
 import { HandlableComponentInteractionType } from '../enums/HandlableComponentInteractionType';
-import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class ComponentInteractionHandler implements IDatabaseModel {
+export class ComponentInteractionHandler {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

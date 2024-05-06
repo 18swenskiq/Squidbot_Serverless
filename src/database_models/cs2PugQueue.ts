@@ -13,10 +13,9 @@ import { CS2PUGGameMode } from '../enums/CS2PUGGameMode';
 import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
 import { Guid } from '../util/guid';
 import { ComponentInteractionHandler } from './componentInteractionHandler';
-import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class CS2PugQueue implements IDatabaseModel {
+export class CS2PugQueue {
     @PrimaryGeneratedColumn('uuid')
     id: Guid;
 

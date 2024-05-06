@@ -2,10 +2,9 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Guid } from '../util/guid';
 import { Game } from '../enums/Game';
 import { GuildSettings } from './guildSettings';
-import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class RconServer implements IDatabaseModel {
+export class RconServer {
     @PrimaryGeneratedColumn('uuid')
     id: Guid;
 
