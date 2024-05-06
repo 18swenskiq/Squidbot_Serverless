@@ -3,9 +3,10 @@ import { Snowflake } from '../discord_api/snowflake';
 import { Guid } from '../util/guid';
 import { GuildPlaytestingInformation } from './guildPlaytestingInformation';
 import { RconServer } from './rconServer';
+import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class GuildSettings {
+export class GuildSettings implements IDatabaseModel {
     @PrimaryColumn('text')
     id: Snowflake;
 

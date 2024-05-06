@@ -6,7 +6,7 @@ import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { AppDataSource } from '../util/data-source';
+import { DatabaseRepository } from '../util/databaseRepository';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -54,14 +54,10 @@ module.exports = {
         const competitiveChannel = interactionData.options.find((o) => o.name === 'competitive_channel')?.value;
 
         if (playtestGame === 'cs2') {
-            const guildRepository = AppDataSource.getRepository(GuildSettings);
+            const guildSettings = await DatabaseRepository.GetEntityBy(GuildSettings, { id: interaction.guild_id });
 
-            const guildSettings = await guildRepository.findOneBy({ id: interaction.guild_id });
-
-            console.log('Checking guild settings');
-            console.log(guildSettings);
             if (guildSettings == null) {
-                await guildRepository.save(<GuildSettings>{
+                await DatabaseRepository.SaveEntity(<GuildSettings>{
                     id: interaction.guild_id,
                     playtesting: <GuildPlaytestingInformation>{
                         cs2: <CS2PlaytestingInformation>{
@@ -84,7 +80,7 @@ module.exports = {
                 playtesting.cs2 = cs2;
 
                 guildSettings.playtesting = playtesting;
-                await guildRepository.save(playtesting);
+                await DatabaseRepository.SaveEntity(playtesting);
             }
             return new CommandResult('Enabled CS2 playtesting on this server!', true, false);
         } else {

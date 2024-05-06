@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Snowflake } from '../discord_api/snowflake';
 import { Guid } from '../util/guid';
 import { Game } from '../enums/Game';
 import { GuildSettings } from './guildSettings';
+import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class RconServer {
+export class RconServer implements IDatabaseModel {
     @PrimaryGeneratedColumn('uuid')
     id: Guid;
 

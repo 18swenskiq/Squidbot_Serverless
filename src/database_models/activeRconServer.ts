@@ -3,9 +3,10 @@ import { Guid } from '../util/guid';
 import { Snowflake } from '../discord_api/snowflake';
 import { RconServer } from './rconServer';
 import { UserSettings } from './userSettings';
+import { IDatabaseModel } from '../util/databaseRepository';
 
 @Entity()
-export class ActiveRconServer {
+export class ActiveRconServer implements IDatabaseModel {
     @PrimaryGeneratedColumn('uuid')
     id: Guid;
 

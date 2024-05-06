@@ -11,6 +11,7 @@ import { CS2PlaytestType } from '../enums/CS2PlaytestType';
 import { Game } from '../enums/Game';
 import { SteamApi } from '../steam_api/steamApi';
 import { AppDataSource } from '../util/data-source';
+import { DatabaseRepository } from '../util/databaseRepository';
 import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
@@ -75,23 +76,7 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
 
         // Validate that guild has enabled CS2 playtesting
-
-        const guildRepository = AppDataSource.getRepository(GuildSettings);
-
-        const guildSettings = await guildRepository.findOne({
-            where: { id: interaction.guild_id },
-            relations: {
-                playtesting: {
-                    cs2: true,
-                },
-            },
-        });
-
-        /*
-        const guildSettings = await new DatabaseQuery()
-            .GetObject<DB_GuildSettings>(interaction.guild_id)
-            .Execute(DB_GuildSettings);
-        */
+        const guildSettings = await DatabaseRepository.GetEntityBy(GuildSettings, [{ id: interaction.guild_id }]);
 
         if (guildSettings === null) {
             throw new Error('Could not find guild settings');
@@ -176,24 +161,6 @@ module.exports = {
         request.dateSubmitted = currentDate;
 
         await requestRepository.save(request);
-        /*
-        const playtestId = GenerateGuid();
-        await new DatabaseQuery()
-            .CreateNewObject<DB_PlaytestRequest>(`${interaction.guild_id}/${playtestId}`)
-            .SetProperty('Id', playtestId)
-            .SetProperty('mapName', <string>mapName)
-            .SetProperty('game', 'cs2')
-            .SetProperty('mainAuthor', interaction.member.user.id)
-            .SetProperty('otherAuthors', otherCreators?.split(',') ?? [])
-            .SetProperty('thumbnailImage', map.preview_url)
-            .SetProperty('requestDate', TimeUtils.GetDBFriendlyDateString(composedRequestDateTime))
-            .SetProperty('requestTime', TimeUtils.GetDBFriendlyTimeString(composedRequestDateTime))
-            .SetProperty('workshopId', <string>workshopId)
-            .SetProperty('mapType', <string>gameMode)
-            .SetProperty('playtestType', <string>playtestType)
-            .SetProperty('dateSubmitted', currentDate)
-            .Execute(DB_PlaytestRequest);
-        */
 
         // Now that we've sent this to the DB, we can reset the offset
         composedRequestDateTime.setMinutes(composedRequestDateTime.getMinutes() + easternOffset);
@@ -245,8 +212,7 @@ module.exports = {
         );
 
         const cr = new CommandResult(
-            // `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
-            'The playtest was requested for',
+            `The playtest was requested for ${TimeUtils.GetDiscordTimestampFromDate(composedRequestDateTime)}`,
             false,
             false
         );
