@@ -1,5 +1,6 @@
-import { GuildSettings } from '../database_models/guildSettings';
 import { PlaytestRequest } from '../database_models/playtestRequest';
+import { GuildSettingsService } from '../database_services/guildSettingsService';
+import { PlaytestRequestsService } from '../database_services/playtestRequestsService';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -10,8 +11,6 @@ import { CS2PlaytestGameMode } from '../enums/CS2PlaytestGameMode';
 import { CS2PlaytestType } from '../enums/CS2PlaytestType';
 import { Game } from '../enums/Game';
 import { SteamApi } from '../steam_api/steamApi';
-import { AppDataSource } from '../util/data-source';
-import { DatabaseRepository } from '../util/databaseRepository';
 import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
@@ -75,8 +74,10 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
 
+        const guildSettingsSvc = new GuildSettingsService();
+
         // Validate that guild has enabled CS2 playtesting
-        const guildSettings = await DatabaseRepository.GetEntityBy(GuildSettings, [{ id: interaction.guild_id }]);
+        const guildSettings = await guildSettingsSvc.GetById(interaction.guild_id);
 
         if (guildSettings === null) {
             throw new Error('Could not find guild settings');
@@ -145,7 +146,7 @@ module.exports = {
             );
         }
 
-        const requestRepository = AppDataSource.getRepository(PlaytestRequest);
+        const requestsSvc = new PlaytestRequestsService();
 
         const request = new PlaytestRequest();
         request.mapName = <string>mapName;
@@ -160,7 +161,7 @@ module.exports = {
         request.playtestType = <CS2PlaytestType>playtestType;
         request.dateSubmitted = currentDate;
 
-        await requestRepository.save(request);
+        await requestsSvc.Save(request);
 
         // Now that we've sent this to the DB, we can reset the offset
         composedRequestDateTime.setMinutes(composedRequestDateTime.getMinutes() + easternOffset);

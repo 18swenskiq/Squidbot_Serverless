@@ -1,12 +1,12 @@
 import { CS2PlaytestingInformation } from '../database_models/cs2PlaytestingInformation';
 import { GuildPlaytestingInformation } from '../database_models/guildPlaytestingInformation';
 import { GuildSettings } from '../database_models/guildSettings';
+import { GuildSettingsService } from '../database_services/guildSettingsService';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseRepository } from '../util/databaseRepository';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -53,11 +53,13 @@ module.exports = {
         const playtestChannel = interactionData.options.find((o) => o.name === 'playtest_channel')?.value;
         const competitiveChannel = interactionData.options.find((o) => o.name === 'competitive_channel')?.value;
 
+        const guildSettingsService = new GuildSettingsService();
+
         if (playtestGame === 'cs2') {
-            const guildSettings = await DatabaseRepository.GetEntityBy(GuildSettings, { id: interaction.guild_id });
+            const guildSettings = await guildSettingsService.GetById(interaction.guild_id);
 
             if (guildSettings == null) {
-                await DatabaseRepository.SaveEntity(<GuildSettings>{
+                await guildSettingsService.Save(<GuildSettings>{
                     id: interaction.guild_id,
                     playtesting: <GuildPlaytestingInformation>{
                         cs2: <CS2PlaytestingInformation>{
@@ -80,7 +82,7 @@ module.exports = {
                 playtesting.cs2 = cs2;
 
                 guildSettings.playtesting = playtesting;
-                await DatabaseRepository.SaveEntity(playtesting);
+                await guildSettingsService.Save(guildSettings);
             }
             return new CommandResult('Enabled CS2 playtesting on this server!', true, false);
         } else {
