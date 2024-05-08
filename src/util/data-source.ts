@@ -10,6 +10,7 @@ import { RconServer } from '../database_models/rconServer';
 import { ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 import { UserSettings } from '../database_models/userSettings';
 import { AddCascadeSave1714853845629 } from '../migrations/1714853845629-add-cascade-save';
+import { UpdateGuildSettingsLink1715202459096 } from '../migrations/1715202459096-update_guild_settings_link';
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
@@ -31,7 +32,7 @@ export const AppDataSource = new DataSource({
         ScheduledPlaytest,
         UserSettings,
     ],
-    migrations: [AddCascadeSave1714853845629],
+    migrations: [AddCascadeSave1714853845629, UpdateGuildSettingsLink1715202459096],
     ssl: true,
     extra: {
         ssl: {

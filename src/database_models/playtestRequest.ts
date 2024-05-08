@@ -42,4 +42,7 @@ export class PlaytestRequest {
 
     @Column({ type: 'timestamptz' })
     dateSubmitted: Date;
+
+    @Column({ type: 'text' })
+    guildId: Snowflake;
 }

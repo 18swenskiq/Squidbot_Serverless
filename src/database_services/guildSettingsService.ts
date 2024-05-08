@@ -1,3 +1,4 @@
+import { FindOptionsWhere } from 'typeorm';
 import { GuildSettings } from '../database_models/guildSettings';
 import { Snowflake } from '../discord_api/snowflake';
 import { BaseDomainService } from './baseDomainService';
@@ -12,5 +13,9 @@ export class GuildSettingsService extends BaseDomainService(GuildSettings) imple
         const ent = await this.repository.findOneBy({ id: id });
 
         return ent;
+    }
+
+    public async GetAllWhere(options: FindOptionsWhere<GuildSettings>): Promise<GuildSettings[]> {
+        return await this.repository.findBy(options);
     }
 }

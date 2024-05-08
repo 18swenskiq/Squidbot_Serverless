@@ -1,10 +1,10 @@
+import { Services } from '../database_services/services';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { Embed } from '../discord_api/embed';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseWrapper } from '../util/databaseWrapper';
 import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
@@ -22,10 +22,8 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
 
         const game = interactionData.options.find((o) => o.name === 'game')?.value;
-        const playtestRequests = await DatabaseWrapper.GetPlaytestRequests(interaction.guild_id);
 
-        console.log('Playtest requests');
-        console.log(playtestRequests);
+        const playtestRequests = await Services.PlaytestRequestsSvc.GetAllWhere({ guildId: interaction.guild_id });
 
         const embed: Embed = {
             title: 'Playtest Requests',
@@ -36,8 +34,6 @@ module.exports = {
         };
 
         for (const key in playtestRequests) {
-            console.log('the key');
-            console.log(key);
             const value = playtestRequests[key];
 
             if (value.game !== game) {
@@ -45,8 +41,6 @@ module.exports = {
             }
 
             const user = await DiscordApiRoutes.getUser(value.mainAuthor);
-            console.log('user');
-            console.log(user);
             const composedDate = TimeUtils.ComposeDateFromStringComponents(value.requestDate, value.requestTime);
 
             const easternOffset = TimeUtils.GetOffset('US/Eastern');

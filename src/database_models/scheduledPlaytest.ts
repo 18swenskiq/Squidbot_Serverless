@@ -47,4 +47,7 @@ export class ScheduledPlaytest {
     @OneToOne(() => RconServer)
     @JoinColumn()
     server: RconServer;
+
+    @Column({ type: 'text' })
+    guildId: Snowflake;
 }

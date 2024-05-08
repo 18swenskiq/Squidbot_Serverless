@@ -1,3 +1,4 @@
+import { FindOptionsWhere } from 'typeorm';
 import { PlaytestRequest } from '../database_models/playtestRequest';
 import { Guid } from '../util/guid';
 import { BaseDomainService } from './baseDomainService';
@@ -15,5 +16,9 @@ export class PlaytestRequestsService
         const ent = await this.repository.findOneBy({ id: id });
 
         return ent;
+    }
+
+    public async GetAllWhere(options: FindOptionsWhere<PlaytestRequest>): Promise<PlaytestRequest[]> {
+        return await this.repository.findBy(options);
     }
 }
