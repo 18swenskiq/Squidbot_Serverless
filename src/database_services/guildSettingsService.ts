@@ -10,7 +10,7 @@ export class GuildSettingsService extends BaseDomainService(GuildSettings) imple
     }
 
     public async GetById(id: Snowflake): Promise<GuildSettings | null> {
-        const ent = await this.repository.findOneBy({ id: id });
+        const ent = await this.repository.findOne({ where: { id: id }, relations: ['playtesting', 'playtesting.cs2'] });
 
         return ent;
     }
