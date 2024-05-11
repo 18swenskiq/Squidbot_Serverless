@@ -1,8 +1,12 @@
+import { Services } from '../database_services/services';
+import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
+import { Embed } from '../discord_api/embed';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { Guid } from '../util/guid';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,10 +24,7 @@ module.exports = {
 
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
 
-        /*
-        const playtestRequest = await new DatabaseQuery()
-            .GetObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
-            .Execute(DB_PlaytestRequest);
+        const playtestRequest = await Services.PlaytestRequestsSvc.GetById(id as Guid);
 
         if (playtestRequest === null) {
             throw new Error('Could not find playtest request');
@@ -42,7 +43,7 @@ module.exports = {
 
         const embed: Embed = {
             title: `${playtestRequest.mapName} by ${mainAuthorName}`,
-            description: playtestRequest.Id,
+            description: playtestRequest.id,
             thumbnail: { url: playtestRequest.thumbnailImage },
             url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${playtestRequest.workshopId}`,
             type: 'rich',
@@ -76,9 +77,8 @@ module.exports = {
             ],
         };
 
-        */
         const cr = new CommandResult('Use <Other command for something>', true, false);
-        // cr.embeds = [embed];
+        cr.embeds = [embed];
         return cr;
     },
 } as CommandDescription;
