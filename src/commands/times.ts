@@ -22,18 +22,18 @@ module.exports = {
 
         const now = Date.now();
 
-        for (const userId in response) {
-            const settings = response[userId];
+        for (let i = 0; i < response.length; i++) {
+            const settings = response[i];
 
             if (!settings.timeZoneName) {
                 continue;
             }
 
             const timeZoneCode: string = settings.timeZoneName;
-            const username = result.find((e) => e.user?.id === userId)?.user?.username;
+            const username = result.find((e) => e.user?.id === settings.id)?.user?.username;
 
             if (username === undefined) {
-                throw Error(`Username not found for ${userId}`);
+                throw Error(`Username not found for ${settings.id}`);
             }
 
             const currentTimeZone = zones.find((z) => z.name === timeZoneCode);
