@@ -12,7 +12,7 @@ export class RconServer {
     @ManyToOne(() => GuildSettings, (guildSettings) => guildSettings.rconServers)
     guild: GuildSettings;
 
-    @Column()
+    @Column({ type: 'text' })
     guildId: Snowflake;
 
     @Column({ type: 'text' })
