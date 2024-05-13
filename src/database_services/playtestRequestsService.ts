@@ -18,6 +18,19 @@ export class PlaytestRequestsService
         return ent;
     }
 
+    public async GetByIds(ids: Guid[]): Promise<PlaytestRequest[]> {
+        const objs = ids.map((i) => {
+            return {
+                id: i,
+            };
+        });
+
+        const result = this.repository.find({
+            where: objs as FindOptionsWhere<PlaytestRequest>,
+        });
+        return result;
+    }
+
     public async GetAllWhere(options: FindOptionsWhere<PlaytestRequest>): Promise<PlaytestRequest[]> {
         return await this.repository.findBy(options);
     }
