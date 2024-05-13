@@ -18,14 +18,17 @@ export class UserSettingsService extends BaseDomainService(UserSettings) impleme
     }
 
     public async GetByIds(ids: Snowflake[]): Promise<UserSettings[]> {
-        const objs = ids.map((i) => {
+        const objs: FindOptionsWhere<UserSettings>[] = ids.map((i) => {
             return {
                 id: i,
             };
         });
 
+        console.log(objs);
+        console.log('The objects');
+
         const result = this.repository.find({
-            where: objs as FindOptionsWhere<UserSettings>,
+            where: objs,
             relations: this.relations,
         });
         return result;
