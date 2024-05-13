@@ -33,13 +33,13 @@ module.exports = {
             const username = result.find((e) => e.user?.id === userId)?.user?.username;
 
             if (username === undefined) {
-                throw Error();
+                throw Error(`Username not found for ${userId}`);
             }
 
             const currentTimeZone = zones.find((z) => z.name === timeZoneCode);
 
             if (currentTimeZone === undefined) {
-                throw Error();
+                throw Error(`Match not found for ${timeZoneCode}`);
             }
 
             const currentOffset = currentTimeZone?.currentTimeOffsetInMinutes;
