@@ -1,8 +1,11 @@
+import { RconServer } from '../database_models/rconServer';
+import { Services } from '../database_services/services';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { Game } from '../enums/Game';
 import { DatabaseWrapper } from '../util/databaseWrapper';
 import { GenerateGuid } from '../util/guid';
 
@@ -57,7 +60,7 @@ module.exports = {
         const ftpUsername = interactionData.options.find((o) => o.name === 'ftp_username')?.value;
         const ftpPassword = interactionData.options.find((o) => o.name === 'ftp_password')?.value;
 
-        const existingGameServers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
+        const existingGameServers = await Services.RconServerSvc.GetAllWhere({ guildId: interaction.guild_id });
 
         // Verify we aren't adding a duplicate game server
         for (let i = 0; i < existingGameServers.length - 1; i++) {
@@ -74,28 +77,19 @@ module.exports = {
 
         const serverId = GenerateGuid();
 
-        /*
-        await new DatabaseQuery()
-            .CreateNewObject<DB_RconServer>(serverId)
-            .SetProperty('id', serverId)
-            .SetProperty('nickname', <string>chosenNickname)
-            .SetProperty('ip', <string>chosenIp)
-            .SetProperty('port', <string>chosenPort)
-            .SetProperty('game', <Game>chosenGame)
-            .SetProperty('guildId', interaction.guild_id)
-            .SetProperty('rconPassword', <string>chosenRconPassword)
-            .SetProperty('countryCode', chosenFlag)
-            .SetProperty('ftpHost', <string>ftpHost)
-            .SetProperty('ftpPort', <string>ftpUsername)
-            .SetProperty('ftpPassword', <string>ftpPassword)
-            .Execute(DB_RconServer);
-
-        // Need to do "add to array" property
-        const modifyServerResult = await new DatabaseQuery()
-            .ModifyObject<DB_GuildSettings>(interaction.guild_id)
-            .AddToPropertyArray('rconServers', [serverId])
-            .Execute(DB_GuildSettings);
-        */
+        const server = new RconServer();
+        server.nickname = <string>chosenNickname;
+        server.ip = <string>chosenIp;
+        server.port = <string>chosenPort;
+        server.game = Game.cs2;
+        server.guildId = interaction.guild_id;
+        server.rconPassword = <string>chosenRconPassword;
+        server.countryCode = chosenFlag;
+        server.ftpHost = <string>ftpHost;
+        server.ftpPort = <string>ftpPort;
+        server.ftpUsername = <string>ftpUsername;
+        server.ftpPassword = <string>ftpPassword;
+        await Services.RconServerSvc.Save(server);
 
         return new CommandResult(`Added Game Server \`${<string>chosenNickname}\``, true, true, '', true);
     },
