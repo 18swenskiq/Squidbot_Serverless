@@ -31,6 +31,9 @@ export class UserSettingsService extends BaseDomainService(UserSettings) impleme
             where: objs,
             relations: this.relations,
         });
+
+        console.log('the result');
+        console.log(result);
         return result;
     }
 
