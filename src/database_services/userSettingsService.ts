@@ -33,7 +33,7 @@ export class UserSettingsService extends BaseDomainService(UserSettings) impleme
         });
 
         console.log('the result');
-        console.log(result);
+        console.log(await result);
         return result;
     }
 
