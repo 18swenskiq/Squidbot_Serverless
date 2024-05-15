@@ -5,5 +5,6 @@ import { Guid } from '../util/guid';
 export interface IDatabaseService<T> {
     Save(entity: T): Promise<T>;
     GetById(id: Guid | Snowflake): Promise<T | null>;
+    GetByIds(ids: Guid[] | Snowflake[]): Promise<T[]>;
     GetAllWhere(options: FindOptionsWhere<T>): Promise<T[]>;
 }

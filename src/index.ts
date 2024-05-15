@@ -79,6 +79,7 @@ exports.handler = async (event: any) => {
                     stackTrace.splice(0, 2);
                     stackTrace = stackTrace.join('\n"');
 
+                    await AppDataSource.destroy();
                     // Only send a stack trace if I used the comamnd
                     if (body.member.user.id === '66318815247466496') {
                         await sendCommandResponse(

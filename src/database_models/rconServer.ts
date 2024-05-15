@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Guid } from '../util/guid';
 import { Game } from '../enums/Game';
 import { GuildSettings } from './guildSettings';
+import { Snowflake } from '../discord_api/snowflake';
 
 @Entity()
 export class RconServer {
@@ -10,6 +11,9 @@ export class RconServer {
 
     @ManyToOne(() => GuildSettings, (guildSettings) => guildSettings.rconServers)
     guild: GuildSettings;
+
+    @Column({ type: 'text' })
+    guildId: Snowflake;
 
     @Column({ type: 'text' })
     nickname: string;

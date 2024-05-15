@@ -3,8 +3,8 @@ import { type CommandDescription } from '../discord_api/command';
 import { type Interaction } from '../discord_api/interaction';
 import { MiscEndpoints } from '../discord_api/miscEndpoints';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseWrapper } from '../util/databaseWrapper';
 import { CommandResult } from '../discord_api/commandResult';
+import { Services } from '../database_services/services';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,28 +14,32 @@ module.exports = {
         const result = await MiscEndpoints.GetGuildMembers(interaction.guild_id);
 
         const userIds: string[] = result.map((r) => (r.user !== null ? r.user.id : ''));
-        const response = await DatabaseWrapper.GetUserSettings(userIds);
+        const response = await Services.UserSettingsSvc.GetByIds(userIds);
 
         const zones = getTimeZones({ includeUtc: true });
 
         const dict: Record<string, string[]> = {};
 
         const now = Date.now();
-        /*
-        for (const userId in response) {
-            const settings = response[userId];
+
+        for (let i = 0; i < response.length; i++) {
+            const settings = response[i];
+
+            if (!settings.timeZoneName) {
+                continue;
+            }
 
             const timeZoneCode: string = settings.timeZoneName;
-            const username = result.find((e) => e.user?.id === userId)?.user?.username;
+            const username = result.find((e) => e.user?.id === settings.id)?.user?.username;
 
             if (username === undefined) {
-                throw Error();
+                throw Error(`Username not found for ${settings.id}`);
             }
 
             const currentTimeZone = zones.find((z) => z.name === timeZoneCode);
 
             if (currentTimeZone === undefined) {
-                throw Error();
+                throw Error(`Match not found for ${timeZoneCode}`);
             }
 
             const currentOffset = currentTimeZone?.currentTimeOffsetInMinutes;
@@ -69,8 +73,7 @@ module.exports = {
             retString += `${hrs}:${mns} - (${test})\n`;
         }
 
-        */
-        const retString = ''; //retString += '```';
+        retString += '```';
         return new CommandResult(retString, false, false);
     },
 } as CommandDescription;

@@ -1,3 +1,4 @@
+import { Services } from '../database_services/services';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { Embed, EmbedField } from '../discord_api/embed';
@@ -8,7 +9,7 @@ import { DatabaseWrapper } from '../util/databaseWrapper';
 module.exports = {
     data: new SlashCommandBuilder().setName('servers').setDescription('Lists the game servers for this server'),
     async execute(interaction: Interaction): Promise<CommandResult> {
-        const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
+        const servers = await Services.RconServerSvc.GetAllWhere({ guildId: interaction.guild_id });
 
         if (servers.length === 0) {
             return new CommandResult('No servers :(', false, false);
