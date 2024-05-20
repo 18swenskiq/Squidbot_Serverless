@@ -1,3 +1,5 @@
+import { UserSettings } from '../database_models/userSettings';
+import { Services } from '../database_services/services';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
@@ -28,24 +30,19 @@ module.exports = {
             return new CommandResult('Unable to find steam account. Please try again', false, false);
         }
 
-        /*
         // Ensure that id isn't already being used by somebody else
-        const existingLinks = await new DatabaseQuery()
-            .GetObjects<DB_UserSettings>()
-            .WherePropertyEquals('steamLink', steamId64)
-            .Execute(DB_UserSettings);
+        const existingLinks = await Services.UserSettingsSvc.GetAllWhere({ steamLink: steamId64 });
 
         if (!existingLinks || existingLinks.length > 0) {
             return new CommandResult('Steam id provided is already linked to another user', false, false);
         }
 
-        // Add to db
-        await new DatabaseQuery()
-            .ModifyObject<DB_UserSettings>(interaction.member.user.id)
-            .SetProperty('steamLink', steamId64)
-            .Execute(DB_UserSettings);
+        const userResult = await Services.UserSettingsSvc.GetById(interaction.member.user.id);
+        const user = userResult ?? <UserSettings>{ id: interaction.member.user.id };
 
-            */
+        user.steamLink = steamId64;
+        await Services.UserSettingsSvc.Save(user);
+
         return new CommandResult('Updated SteamID link', false, false);
     },
 } as CommandDescription;
