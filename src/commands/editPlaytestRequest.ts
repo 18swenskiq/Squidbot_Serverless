@@ -1,8 +1,11 @@
+import { PlaytestRequest } from '../database_models/playtestRequest';
+import { Services } from '../database_services/services';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { Guid } from '../util/guid';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -50,6 +53,13 @@ module.exports = {
         const workshopId = interactionData.options.find((o) => o.name === 'workshop_id')?.value;
         const authorId = interactionData.options.find((o) => o.name === 'author_id')?.value;
 
+        const playtestRequest = await Services.PlaytestRequestsSvc.GetById(<Guid>playtestId);
+
+        if (playtestRequest === null)
+        {
+            throw new Error("Request not found");
+        }
+        
         /*
         await new DatabaseQuery()
             .ModifyObject<DB_PlaytestRequest>(`${interaction.guild_id}/${playtestId}`)
