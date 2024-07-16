@@ -2,6 +2,7 @@ import { CS2PlaytestingInformation } from '../database_models/cs2PlaytestingInfo
 import { GuildPlaytestingInformation } from '../database_models/guildPlaytestingInformation';
 import { GuildSettings } from '../database_models/guildSettings';
 import { GuildSettingsService } from '../database_services/guildSettingsService';
+import { Services } from '../database_services/services';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
@@ -53,13 +54,11 @@ module.exports = {
         const playtestChannel = interactionData.options.find((o) => o.name === 'playtest_channel')?.value;
         const competitiveChannel = interactionData.options.find((o) => o.name === 'competitive_channel')?.value;
 
-        const guildSettingsService = new GuildSettingsService();
-
         if (playtestGame === 'cs2') {
-            const guildSettings = await guildSettingsService.GetById(interaction.guild_id);
+            const guildSettings = await Services.GuildSettingsSvc.GetById(interaction.guild_id);
 
             if (guildSettings == null) {
-                await guildSettingsService.Save(<GuildSettings>{
+                await Services.GuildSettingsSvc.Save(<GuildSettings>{
                     id: interaction.guild_id,
                     playtesting: <GuildPlaytestingInformation>{
                         cs2: <CS2PlaytestingInformation>{
@@ -82,7 +81,7 @@ module.exports = {
                 playtesting.cs2 = cs2;
 
                 guildSettings.playtesting = playtesting;
-                await guildSettingsService.Save(guildSettings);
+                await Services.GuildSettingsSvc.Save(guildSettings);
             }
             return new CommandResult('Enabled CS2 playtesting on this server!', true, false);
         } else {

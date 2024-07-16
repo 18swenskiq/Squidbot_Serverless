@@ -77,7 +77,7 @@ module.exports = {
             ],
         };
 
-        const cr = new CommandResult('Use <Other command for something>', true, false);
+        const cr = new CommandResult('Playtest moderators can use `/approve_playtest_request <id>` to schedule this test', true, false);
         cr.embeds = [embed];
         return cr;
     },

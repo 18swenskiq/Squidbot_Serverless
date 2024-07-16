@@ -1,6 +1,5 @@
 import { PlaytestRequest } from '../database_models/playtestRequest';
 import { Services } from '../database_services/services';
-import { PlaytestRequestsService } from '../database_services/playtestRequestsService';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';

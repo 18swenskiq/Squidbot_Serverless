@@ -1,3 +1,5 @@
+import { GuildSettings } from '../database_models/guildSettings';
+import { Services } from '../database_services/services';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
@@ -16,7 +18,24 @@ module.exports = {
     async execute(interaction: Interaction): Promise<CommandResult> {
         const interactionData = <InteractionData>interaction.data;
         const roleOpt = interactionData.options[0];
-        const result = await DatabaseWrapper.ToggleGuildRoleAssignable(interaction.guild_id, roleOpt.value);
-        return new CommandResult(result, false, false);
+
+        let guildSettings = await Services.GuildSettingsSvc.GetById(interaction.guild_id);
+        guildSettings ??= <GuildSettings>{ id: interaction.guild_id };
+
+        guildSettings.assignableRoles ??= [];
+
+        let response = "";
+        if (guildSettings.assignableRoles.includes(roleOpt.value)) {
+            let idx = guildSettings.assignableRoles.indexOf(roleOpt.value);
+            guildSettings.assignableRoles.splice(idx, 1);
+            response = 'Role set to be unassignable';
+        }
+        else {
+            guildSettings.assignableRoles.push(roleOpt.value);
+            response = 'Role set to be assignable';
+        }
+            
+        await Services.GuildSettingsSvc.Save(guildSettings);
+        return new CommandResult(response, false, false);
     },
 } as CommandDescription;
