@@ -5,6 +5,7 @@ import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
+import { CS2PlaytestType } from '../enums/CS2PlaytestType';
 import { Guid } from '../util/guid';
 
 module.exports = {
@@ -59,19 +60,15 @@ module.exports = {
         {
             throw new Error("Request not found");
         }
-        
-        /*
-        await new DatabaseQuery()
-            .ModifyObject<DB_PlaytestRequest>(`${interaction.guild_id}/${playtestId}`)
-            .ThrowIfNotExists()
-            .SetPropertyIfValueNotUndefined('requestDate', newDate)
-            .SetPropertyIfValueNotUndefined('requestTime', newTime)
-            .SetPropertyIfValueNotUndefined('playtestType', playtestType)
-            .SetPropertyIfValueNotUndefined('workshopId', workshopId)
-            .SetPropertyIfValueNotUndefined('mainAuthor', authorId)
-            .Execute(DB_PlaytestRequest);
 
-            */
+        playtestRequest.requestDate = newDate ?? playtestRequest.requestDate;
+        playtestRequest.requestTime = newTime ?? playtestRequest.requestTime;
+        playtestRequest.playtestType = <CS2PlaytestType>playtestType ?? playtestRequest.playtestType;
+        playtestRequest.workshopId = workshopId ?? playtestRequest.workshopId;
+        playtestRequest.mainAuthor = authorId ?? playtestRequest.mainAuthor;
+
+        await Services.PlaytestRequestsSvc.Save(playtestRequest);
+
         return new CommandResult('Edited playtest request!', false, false);
     },
 } as CommandDescription;
