@@ -15,7 +15,7 @@ module.exports = {
 
         let guildSettings = await Services.GuildSettingsSvc.GetById(interaction.guild_id);
         
-        if (!guildSettings)
+        if (!guildSettings || guildSettings.assignableRoles.length === 0)
         {
             return new CommandResult(
                 'Server has not set up assignable roles. Users with permission can use `/toggle_role_assignable` to toggle specific assignable roles',
