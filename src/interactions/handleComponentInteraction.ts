@@ -12,16 +12,13 @@ import { StaticDeclarations } from '../util/staticDeclarations';
 import { SteamApi } from '../steam_api/steamApi';
 import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
 import { PugQueueUtil } from '../util/pugQueueUitl';
+import { Services } from '../database_services/services';
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class HandleComponentInteraction {
     public static async Handle(interaction: Interaction): Promise<void> {
         const data = <ComponentInteractionData>interaction.data;
 
-        /*
-        const interactionHandler = await new DatabaseQuery()
-            .GetObject<DB_ComponentInteractionHandler>(`${interaction.guild_id}/${data.custom_id}`)
-            .Execute(DB_ComponentInteractionHandler);
+        const interactionHandler = await Services.ComponentInteractionHandlerSvc.GetById(<Guid>data.custom_id);
 
         if (interactionHandler === null) {
             throw new Error('Interaction handler not found');
@@ -47,18 +44,14 @@ export abstract class HandleComponentInteraction {
                 console.log('Unexpected component interaction, aborting');
                 break;
         }
-                */
     }
 
-    /*
     private static async AssignRoles(
         interaction: Interaction,
         data: ComponentInteractionData,
-        interactionHandler: DB_ComponentInteractionHandler
+        interactionHandler: ComponentInteractionHandler
     ): Promise<void> {
-        const guildSettings = await new DatabaseQuery()
-            .GetObject<DB_GuildSettings>(interaction.guild_id)
-            .Execute(DB_GuildSettings);
+        const guildSettings = await Services.GuildSettingsSvc.GetById(interaction.guild_id);
 
         if (guildSettings === null) {
             throw new Error('Guild not found when attempting to retrieve roles from database');
@@ -96,19 +89,14 @@ export abstract class HandleComponentInteraction {
         }
 
         // Update the interactionHandler
-        await DatabaseWrapper.SetInteractionHandler(
-            interactionHandler.createdBy,
-            interaction.guild_id,
-            data.custom_id as Guid,
-            'AssignRoles',
-            interactionHandler.timesHandled++
-        );
+        interactionHandler.timesHandled++;
+        await Services.ComponentInteractionHandlerSvc.Save(interactionHandler);
     }
 
     private static async StopPUG(
         interaction: Interaction,
         data: ComponentInteractionData,
-        interactionHandler: DB_ComponentInteractionHandler
+        interactionHandler: ComponentInteractionHandler
     ): Promise<void> {
         const queues = await new DatabaseQuery()
             .GetObjects<DB_CS2PugQueue>()
@@ -392,5 +380,4 @@ export abstract class HandleComponentInteraction {
             );
         }
     }
-    */
 }

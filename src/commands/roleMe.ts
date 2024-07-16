@@ -61,6 +61,7 @@ module.exports = {
         cr.components.push(componentWrapper);
 
         const handler = <ComponentInteractionHandler>{
+            id: interactionGuid,
             type: HandlableComponentInteractionType.ASSIGNROLES,
             creationTimeEpoch: Date.now(),
             createdBy: interaction.member.user.id,
