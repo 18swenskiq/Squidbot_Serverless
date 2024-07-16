@@ -1,9 +1,11 @@
+import { ComponentInteractionHandlerService } from './componentInteractionHandlerService';
 import { GuildSettingsService } from './guildSettingsService';
 import { PlaytestRequestsService } from './playtestRequestsService';
 import { RconServerService } from './rconServerService';
 import { UserSettingsService } from './userSettingsService';
 
 export abstract class Services {
+    public static ComponentInteractionHandlerSvc = new ComponentInteractionHandlerService();
     public static GuildSettingsSvc = new GuildSettingsService();
     public static PlaytestRequestsSvc = new PlaytestRequestsService();
     public static RconServerSvc = new RconServerService();
