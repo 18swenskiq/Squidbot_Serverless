@@ -7,6 +7,9 @@ import { CS2PugQueue } from '../database_models/cs2PugQueue';
 import { SteamApi } from '../steam_api/steamApi';
 import { PugQueueUtil } from '../util/pugQueueUitl';
 import { Services } from '../database_services/services';
+import { SelectOption, StringSelectComponent } from '../discord_api/messageComponent';
+import { CS2PUGMapSelectionMode } from '../enums/CS2PUGMapSelectionMode';
+import { StaticDeclarations } from '../util/staticDeclarations';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class HandleComponentInteraction {
@@ -193,7 +196,7 @@ export abstract class HandleComponentInteraction {
     const maps = await SteamApi.GetCSGOWorkshopMapsInCollection(collectionId);
 
     // Random Map
-    if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.random) {
+    if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.RANDOM) {
       await DiscordApiRoutes.createNewMessage(interaction.channel_id, 'Randomly selecting a map...');
 
       await PugQueueUtil.SetupPUG(
@@ -202,7 +205,7 @@ export abstract class HandleComponentInteraction {
       );
     }
     // All pick map
-    else if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.allpick) {
+    else if (activeQueue.mapSelectionMode === CS2PUGMapSelectionMode.ALLPICK) {
     // Create map dropdown component
       const dropdownComponent = new StringSelectComponent();
 
