@@ -61,6 +61,9 @@ export class CS2PugQueue {
     @Column({ type: 'simple-json', array: true })
     mapVotes: { userId: string; mapVote: string }[] = [];
 
+    @Column({ type: 'bool', default: false })
+    queueEnded: boolean;
+
     queueExpirationTime: Date;
 
     @AfterLoad()
