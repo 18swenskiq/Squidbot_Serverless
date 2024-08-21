@@ -1,3 +1,4 @@
+import { Services } from '../database_services/services';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -19,10 +20,7 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
 
-        /*
-        const playtestDetails = await new DatabaseQuery()
-            .GetObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${id}`)
-            .Execute(DB_ScheduledPlaytest);
+        const playtestDetails = await Services.ScheduledPlaytestSvc.GetById(<Guid>id);
 
         if (playtestDetails === null) {
             throw new Error('Could not find scheduled playtest in database');
@@ -32,11 +30,8 @@ module.exports = {
         await DiscordApiRoutes.deleteGuildEvent(interaction.guild_id, playtestDetails.eventId);
 
         // Delete from DB
-        await new DatabaseQuery()
-            .DeleteObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${id}`)
-            .Execute(DB_ScheduledPlaytest);
+        await Services.ScheduledPlaytestSvc.DeleteById(<Guid>id);
 
-            */
         return new CommandResult('Cancelled playtest', false, false);
     },
 } as CommandDescription;
