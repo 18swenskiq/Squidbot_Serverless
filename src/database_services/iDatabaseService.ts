@@ -7,4 +7,5 @@ export interface IDatabaseService<T> {
     GetById(id: Guid | Snowflake): Promise<T | null>;
     GetByIds(ids: Guid[] | Snowflake[]): Promise<T[]>;
     GetAllWhere(options: FindOptionsWhere<T>): Promise<T[]>;
+    DeleteById(id: Guid | Snowflake): Promise<void>;
 }

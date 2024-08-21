@@ -34,4 +34,8 @@ export class GuildSettingsService extends BaseDomainService(GuildSettings) imple
     public async GetAllWhere(options: FindOptionsWhere<GuildSettings>): Promise<GuildSettings[]> {
         return await this.repository.findBy(options);
     }
+
+    public async DeleteById(id: Snowflake): Promise<void> {
+        await this.repository.softDelete(id);
+    }
 }

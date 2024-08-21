@@ -4,10 +4,7 @@ import { BaseDomainService } from './baseDomainService';
 import { IDatabaseService } from './iDatabaseService';
 import { CS2PugQueue } from '../database_models/cs2PugQueue';
 
-export class CS2PugQueueService
-    extends BaseDomainService(CS2PugQueue)
-    implements IDatabaseService<CS2PugQueue>
-{
+export class CS2PugQueueService extends BaseDomainService(CS2PugQueue) implements IDatabaseService<CS2PugQueue> {
     private relations: string[] = ['stopQueueButton', 'joinQueueButton', 'leaveQueueButton', 'voteComponent'];
 
     public async Save(entity: CS2PugQueue): Promise<CS2PugQueue> {
@@ -36,5 +33,9 @@ export class CS2PugQueueService
 
     public async GetAllWhere(options: FindOptionsWhere<CS2PugQueue>): Promise<CS2PugQueue[]> {
         return await this.repository.findBy(options);
+    }
+
+    public async DeleteById(id: Guid): Promise<void> {
+        await this.repository.softDelete(id);
     }
 }

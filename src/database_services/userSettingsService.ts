@@ -24,20 +24,19 @@ export class UserSettingsService extends BaseDomainService(UserSettings) impleme
             };
         });
 
-        console.log(objs);
-        console.log('The objects');
-
         const result = this.repository.find({
             where: objs,
             relations: this.relations,
         });
 
-        console.log('the result');
-        console.log(await result);
         return result;
     }
 
     public async GetAllWhere(options: FindOptionsWhere<UserSettings>): Promise<UserSettings[]> {
         return await this.repository.findBy(options);
+    }
+
+    public async DeleteById(id: Snowflake): Promise<void> {
+        await this.repository.softDelete(id);
     }
 }

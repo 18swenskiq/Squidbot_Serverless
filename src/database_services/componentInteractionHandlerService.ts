@@ -4,7 +4,10 @@ import { IDatabaseService } from './iDatabaseService';
 import { ComponentInteractionHandler } from '../database_models/componentInteractionHandler';
 import { Guid } from '../util/guid';
 
-export class ComponentInteractionHandlerService extends BaseDomainService(ComponentInteractionHandler) implements IDatabaseService<ComponentInteractionHandler> {
+export class ComponentInteractionHandlerService
+    extends BaseDomainService(ComponentInteractionHandler)
+    implements IDatabaseService<ComponentInteractionHandler>
+{
     private relations: string[] = [];
 
     public async Save(entity: ComponentInteractionHandler): Promise<ComponentInteractionHandler> {
@@ -31,7 +34,13 @@ export class ComponentInteractionHandlerService extends BaseDomainService(Compon
         return result;
     }
 
-    public async GetAllWhere(options: FindOptionsWhere<ComponentInteractionHandler>): Promise<ComponentInteractionHandler[]> {
+    public async GetAllWhere(
+        options: FindOptionsWhere<ComponentInteractionHandler>
+    ): Promise<ComponentInteractionHandler[]> {
         return await this.repository.findBy(options);
+    }
+
+    public async DeleteById(id: Guid): Promise<void> {
+        await this.repository.softDelete(id);
     }
 }

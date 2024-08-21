@@ -1,3 +1,5 @@
+import { ScheduledPlaytest } from '../database_models/scheduledPlaytest';
+import { Services } from '../database_services/services';
 import { DiscordApiRoutes } from '../discord_api/apiRoutes';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
@@ -5,8 +7,7 @@ import { GuildEventEntityType } from '../discord_api/guildEventEntityType';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseWrapper } from '../util/databaseWrapper';
-import { GenerateGuid } from '../util/guid';
+import { GenerateGuid, Guid } from '../util/guid';
 import { TimeUtils } from '../util/timeUtils';
 
 module.exports = {
@@ -38,11 +39,7 @@ module.exports = {
         }
 
         // Create scheduled playtest object
-        const request = await DatabaseWrapper.GetPlaytestRequest(interaction.guild_id, <Guid>id);
-
-        const request = await new DatabaseQuery()
-            .GetObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
-            .Execute(DB_PlaytestRequest);
+        const request = await Services.PlaytestRequestsSvc.GetById(<Guid>id);
 
         if (request === null) {
             throw new Error('Scheduled playtest not found');
@@ -65,8 +62,6 @@ module.exports = {
         newDate.setMinutes(newDate.getMinutes() + easternOffset);
 
         // Add playtest to event calendar
-        // const playtestSettings = (await DatabaseWrapper.GetGuildSettings(interaction.guild_id)).playtesting.cs2;
-
         const startTime = newDate.toISOString();
         const endTimeDate = TimeUtils.GetNewDateFromAddMinutes(newDate, 90);
 
@@ -75,9 +70,17 @@ module.exports = {
         const playtestId = GenerateGuid();
 
         // Validate server
-        const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
         const inputServerArray = server.split(':');
-        const selectedServer = servers.find((s) => s.ip === inputServerArray[0] && s.port === inputServerArray[1]);
+        const serverMatches = await Services.RconServerSvc.GetAllWhere({
+            ip: inputServerArray[0],
+            port: inputServerArray[1],
+        });
+
+        if (serverMatches.length !== 1) {
+            throw new Error('Could not find playtest server');
+        }
+
+        const selectedServer = serverMatches[0];
 
         if (selectedServer == null) {
             return new CommandResult('Provided playtest server was not found, could not approve', false, false);
@@ -104,27 +107,27 @@ module.exports = {
             description.join('\n')
         );
 
-        await new DatabaseQuery()
-            .CreateNewObject<DB_ScheduledPlaytest>(`${interaction.guild_id}/${playtestId}`)
-            .SetProperty('id', playtestId)
-            .SetProperty('game', request.game)
-            .SetProperty('mapName', request.mapName)
-            .SetProperty('mainAuthor', request.mainAuthor)
-            .SetProperty('otherAuthors', request.otherAuthors)
-            .SetProperty('thumbnailImage', request.thumbnailImage)
-            .SetProperty('playtestTime', newDate)
-            .SetProperty('workshopId', request.workshopId)
-            .SetProperty('mapType', request.mapType)
-            .SetProperty('playtestType', request.playtestType)
-            .SetProperty('moderator', interaction.member.user.id)
-            .SetProperty('eventId', eventId)
-            .SetProperty('server', <string>server)
-            .Execute(DB_ScheduledPlaytest);
+        const scheduledPlaytest: ScheduledPlaytest = {
+            id: playtestId,
+            guildId: interaction.guild_id,
+            game: request.game,
+            mapName: request.mapName,
+            mainAuthor: request.mainAuthor,
+            otherAuthors: request.otherAuthors,
+            thumbnailImage: request.thumbnailImage,
+            playtestTime: newDate,
+            workshopId: request.workshopId,
+            mapType: request.mapType,
+            playtestType: request.playtestType,
+            moderator: interaction.member.user.id,
+            eventId: eventId,
+            server: selectedServer,
+        };
+
+        await Services.ScheduledPlaytestSvc.Save(scheduledPlaytest);
 
         // Post announcement in announcement channel
-        const guildSettings = await new DatabaseQuery()
-            .GetObject<DB_GuildSettings>(interaction.guild_id)
-            .Execute(DB_GuildSettings);
+        const guildSettings = await Services.GuildSettingsSvc.GetById(interaction.guild_id);
 
         if (guildSettings === null) {
             throw new Error('Unable to find guild settings in database');
@@ -142,9 +145,7 @@ module.exports = {
             )}. - https://discord.com/events/${interaction.guild_id}/${eventId}`
         );
 
-        await new DatabaseQuery()
-            .DeleteObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
-            .Execute(DB_PlaytestRequest);
+        await Services.PlaytestRequestsSvc.DeleteById(<Guid>id);
 
         return new CommandResult('Playtest Scheduled', false, false);
     },

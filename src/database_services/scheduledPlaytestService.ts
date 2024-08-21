@@ -1,24 +1,26 @@
 import { FindOptionsWhere } from 'typeorm';
+import { Guid } from '../util/guid';
 import { BaseDomainService } from './baseDomainService';
 import { IDatabaseService } from './iDatabaseService';
-import { RconServer } from '../database_models/rconServer';
-import { Guid } from '../util/guid';
-import { Snowflake } from '../discord_api/snowflake';
+import { ScheduledPlaytest } from '../database_models/scheduledPlaytest';
 
-export class RconServerService extends BaseDomainService(RconServer) implements IDatabaseService<RconServer> {
-    private relations: string[] = ['guild'];
+export class ScheduledPlaytestService
+    extends BaseDomainService(ScheduledPlaytest)
+    implements IDatabaseService<ScheduledPlaytest>
+{
+    private relations: string[] = ['server'];
 
-    public async Save(entity: RconServer): Promise<RconServer> {
+    public async Save(entity: ScheduledPlaytest): Promise<ScheduledPlaytest> {
         return await this.repository.save(entity);
     }
 
-    public async GetById(id: Guid): Promise<RconServer | null> {
+    public async GetById(id: Guid): Promise<ScheduledPlaytest | null> {
         const ent = await this.repository.findOne({ where: { id: id }, relations: this.relations });
 
         return ent;
     }
 
-    public async GetByIds(ids: Guid[]): Promise<RconServer[]> {
+    public async GetByIds(ids: Guid[]): Promise<ScheduledPlaytest[]> {
         const objs = ids.map((i) => {
             return {
                 id: i,
@@ -26,13 +28,13 @@ export class RconServerService extends BaseDomainService(RconServer) implements 
         });
 
         const result = this.repository.find({
-            where: objs as FindOptionsWhere<RconServer>,
+            where: objs as FindOptionsWhere<ScheduledPlaytest>,
             relations: this.relations,
         });
         return result;
     }
 
-    public async GetAllWhere(options: FindOptionsWhere<RconServer>): Promise<RconServer[]> {
+    public async GetAllWhere(options: FindOptionsWhere<ScheduledPlaytest>): Promise<ScheduledPlaytest[]> {
         return await this.repository.findBy(options);
     }
 

@@ -34,4 +34,8 @@ export class PlaytestRequestsService
     public async GetAllWhere(options: FindOptionsWhere<PlaytestRequest>): Promise<PlaytestRequest[]> {
         return await this.repository.findBy(options);
     }
+
+    public async DeleteById(id: Guid): Promise<void> {
+        await this.repository.softDelete(id);
+    }
 }
