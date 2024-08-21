@@ -1,3 +1,4 @@
+import { Services } from '../database_services/services';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
@@ -18,11 +19,7 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
 
-        /*
-        await new DatabaseQuery()
-            .DeleteObject<DB_PlaytestRequest>(`${interaction.guild_id}/${id}`)
-            .Execute(DB_PlaytestRequest);
-*/
+        await Services.PlaytestRequestsSvc.DeleteById(<Guid>id);
 
         return new CommandResult('Deleted the request!', false, false);
     },

@@ -33,7 +33,7 @@
         "build": "tsc",
         "postbuild": "copyfiles package*.json ../dist/ && cd ../dist && npm ci --omit=dev",
         "typeorm": "typeorm-ts-node-esm -d ./util/data-source.ts",
-        "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate ./migrations/add_pug_queue_ended_column -d=./util/data-source.ts",
+        "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate ./migrations/add_playtest_request_deleted_date_column -d=./util/data-source.ts",
         "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d=./util/data-source.ts"
     }
 }

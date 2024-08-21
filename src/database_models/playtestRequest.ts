@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Snowflake } from '../discord_api/snowflake';
 import { Guid } from '../util/guid';
 import { Game } from '../enums/Game';
@@ -45,4 +45,7 @@ export class PlaytestRequest {
 
     @Column({ type: 'text' })
     guildId: Snowflake;
+
+    @DeleteDateColumn()
+    deletedAt?: Date;
 }
