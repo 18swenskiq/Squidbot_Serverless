@@ -4,7 +4,6 @@ import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseWrapper } from '../util/databaseWrapper';
 import { Guid } from '../util/guid';
 
 module.exports = {
@@ -19,7 +18,10 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
         const id = interactionData.options.find((o) => o.name === 'playtest_id')?.value;
 
-        await Services.PlaytestRequestsSvc.DeleteById(<Guid>id);
+        console.log(`deleting ${id}`);
+        const result = await Services.PlaytestRequestsSvc.DeleteById(<Guid>id);
+
+        console.log(result);
 
         return new CommandResult('Deleted the request!', false, false);
     },

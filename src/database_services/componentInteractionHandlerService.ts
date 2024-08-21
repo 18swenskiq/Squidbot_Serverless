@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, UpdateResult } from 'typeorm';
 import { BaseDomainService } from './baseDomainService';
 import { IDatabaseService } from './iDatabaseService';
 import { ComponentInteractionHandler } from '../database_models/componentInteractionHandler';
@@ -40,7 +40,7 @@ export class ComponentInteractionHandlerService
         return await this.repository.findBy(options);
     }
 
-    public async DeleteById(id: Guid): Promise<void> {
-        await this.repository.softDelete(id);
+    public async DeleteById(id: Guid): Promise<UpdateResult> {
+        return await this.repository.softDelete(id);
     }
 }

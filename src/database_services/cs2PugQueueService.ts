@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, UpdateResult } from 'typeorm';
 import { Guid } from '../util/guid';
 import { BaseDomainService } from './baseDomainService';
 import { IDatabaseService } from './iDatabaseService';
@@ -35,7 +35,7 @@ export class CS2PugQueueService extends BaseDomainService(CS2PugQueue) implement
         return await this.repository.findBy(options);
     }
 
-    public async DeleteById(id: Guid): Promise<void> {
-        await this.repository.softDelete(id);
+    public async DeleteById(id: Guid): Promise<UpdateResult> {
+        return await this.repository.softDelete(id);
     }
 }

@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, UpdateResult } from 'typeorm';
 import { BaseDomainService } from './baseDomainService';
 import { IDatabaseService } from './iDatabaseService';
 import { RconServer } from '../database_models/rconServer';
@@ -36,7 +36,7 @@ export class RconServerService extends BaseDomainService(RconServer) implements 
         return await this.repository.findBy(options);
     }
 
-    public async DeleteById(id: Guid): Promise<void> {
-        await this.repository.softDelete(id);
+    public async DeleteById(id: Guid): Promise<UpdateResult> {
+        return await this.repository.softDelete(id);
     }
 }

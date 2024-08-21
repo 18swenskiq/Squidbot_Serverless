@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, UpdateResult } from 'typeorm';
 import { PlaytestRequest } from '../database_models/playtestRequest';
 import { Guid } from '../util/guid';
 import { BaseDomainService } from './baseDomainService';
@@ -35,7 +35,7 @@ export class PlaytestRequestsService
         return await this.repository.findBy(options);
     }
 
-    public async DeleteById(id: Guid): Promise<void> {
-        await this.repository.softDelete(id);
+    public async DeleteById(id: Guid): Promise<UpdateResult> {
+        return await this.repository.softDelete(id);
     }
 }

@@ -1,4 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, UpdateResult } from 'typeorm';
 import { GuildSettings } from '../database_models/guildSettings';
 import { Snowflake } from '../discord_api/snowflake';
 import { BaseDomainService } from './baseDomainService';
@@ -35,7 +35,7 @@ export class GuildSettingsService extends BaseDomainService(GuildSettings) imple
         return await this.repository.findBy(options);
     }
 
-    public async DeleteById(id: Snowflake): Promise<void> {
-        await this.repository.softDelete(id);
+    public async DeleteById(id: Snowflake): Promise<UpdateResult> {
+        return await this.repository.softDelete(id);
     }
 }
