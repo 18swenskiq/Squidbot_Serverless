@@ -1,9 +1,9 @@
+import { Services } from '../database_services/services';
 import { type CommandDescription } from '../discord_api/command';
 import { CommandResult } from '../discord_api/commandResult';
 import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseWrapper } from '../util/databaseWrapper';
 import Rcon from 'rcon-ts';
 
 module.exports = {
@@ -16,17 +16,29 @@ module.exports = {
         const interactionData = <InteractionData>interaction.data;
         const command = interactionData.options.find((o) => o.name === 'command')?.value;
 
-        // Get current RCON server
-        const rconServer = await DatabaseWrapper.GetActiveRconServer(interaction.member.user.id, interaction.guild_id);
+        const rconServers = await Services.ActiveRconServerSvc.GetAllWhere({
+            guildId: interaction.guild_id,
+            userSettings: { id: interaction.member.user.id },
+        });
 
-        if (!rconServer) {
+        if (rconServers.length === 0) {
             return new CommandResult('No active RCON server!', false, false);
         }
 
+        if (rconServers.length > 1) {
+            return new CommandResult(
+                'More than one active rcon server found. This is an invalid data state. Aborting.',
+                false,
+                false
+            );
+        }
+
+        const rconServer = rconServers[0];
+
         const rcon = new Rcon({
-            host: rconServer.ip,
-            port: Number(rconServer.port),
-            password: rconServer.rconPassword,
+            host: rconServer.rconServer.ip,
+            port: Number(rconServer.rconServer.port),
+            password: rconServer.rconServer.rconPassword,
             timeout: 5000,
         });
 

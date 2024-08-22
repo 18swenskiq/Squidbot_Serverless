@@ -1,9 +1,11 @@
+import { UserSettings } from '../database_models/userSettings.js';
+import { Services } from '../database_services/services.js';
 import { type CommandDescription } from '../discord_api/command.js';
 import { CommandResult } from '../discord_api/commandResult';
-import { InteractionData, InteractionDataOptions, type Interaction } from '../discord_api/interaction';
+import { InteractionData, type Interaction } from '../discord_api/interaction';
 import { GuildPermissions } from '../discord_api/permissions';
 import { SlashCommandBuilder } from '../discord_api/slash_command_builder';
-import { DatabaseWrapper } from '../util/databaseWrapper';
+import { GenerateGuid } from '../util/guid.js';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,7 +20,7 @@ module.exports = {
         )
         .setDefaultMemberPermissions([GuildPermissions.MANAGE_CHANNELS]),
     async execute(interaction: Interaction): Promise<CommandResult> {
-        const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
+        const servers = await Services.RconServerSvc.GetAllWhere({ guildId: interaction.guild_id });
 
         if (!servers || servers.length === 0) {
             return new CommandResult(
@@ -37,11 +39,33 @@ module.exports = {
                 const server = servers.find((s) => s.ip === chosenServerIp);
 
                 if (server) {
-                    await DatabaseWrapper.SetActiveRconServer(
-                        interaction.member.user.id,
-                        interaction.guild_id,
-                        server.id
-                    );
+                    const previouslyActiveServers = await Services.ActiveRconServerSvc.GetAllWhere({
+                        userSettings: { id: interaction.member.user.id },
+                        guildId: interaction.guild_id,
+                    });
+
+                    const userSettings =
+                        (await Services.UserSettingsSvc.GetById(interaction.member.user.id)) ??
+                        <UserSettings>{ id: interaction.member.user.id };
+
+                    if (previouslyActiveServers.length > 1) {
+                        return new CommandResult(
+                            'User has multiple active servers for current guild. This is an invalid data state. Aborting',
+                            false,
+                            false
+                        );
+                    } else if (previouslyActiveServers.length == 0) {
+                        await Services.ActiveRconServerSvc.Save({
+                            id: GenerateGuid(),
+                            rconServer: server,
+                            userSettings: userSettings,
+                            guildId: interaction.guild_id,
+                        });
+                    } else {
+                        const activeServer = previouslyActiveServers[0];
+                        activeServer.rconServer = server;
+                        await Services.ActiveRconServerSvc.Save(activeServer);
+                    }
 
                     return new CommandResult(
                         `Set the active server to \`${server.ip}:${server.port}\` (${server.nickname})`,
@@ -58,26 +82,15 @@ module.exports = {
             }
         }
 
-        const res = await DatabaseWrapper.GetActiveRconServer(interaction.member.user.id, interaction.guild_id);
-        if (res?.ip) {
-            return new CommandResult(`Current active server is \`${res.ip}:${res.port}\``, true, false);
+        const res = await Services.ActiveRconServerSvc.GetAllWhere({
+            guildId: interaction.guild_id,
+            userSettings: { id: interaction.member.user.id },
+        });
+        if (res.length > 0) {
+            const resServer = res[0].rconServer;
+            return new CommandResult(`Current active server is \`${resServer.ip}:${resServer.port}\``, true, false);
         }
 
         return new CommandResult('Currently no RCON server registered', true, false);
-    },
-    async autocomplete(interaction: Interaction): Promise<InteractionDataOptions[] | null> {
-        const data = <InteractionData>interaction.data;
-        if (data.options.find((o) => o.name === 'server')) {
-            const value = data.options.find((o) => o.name === 'server')?.value;
-            if (value) {
-                const servers = await DatabaseWrapper.GetGameServers(interaction.guild_id);
-                const match = servers.filter((s) => s.ip.toLowerCase().startsWith(value));
-
-                if (match) {
-                    return match.map((m) => new InteractionDataOptions(3, 'server', m.ip));
-                }
-            }
-        }
-        return null;
     },
 } as CommandDescription;
